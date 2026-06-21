@@ -39,3 +39,12 @@ def test_audit_review_is_redacted(client, csrf):
     assert "service_entry_created" in response.text
     assert "correct-password" not in response.text
 
+
+def test_existing_service_form_prefills_assigned_groups(client, csrf):
+    sign_in(client, csrf, email="admin@example.test")
+
+    response = client.get("/admin/services")
+
+    assert response.status_code == 200
+    demo_form = response.text.split('action="/admin/services/demo"', 1)[1].split("</form>", 1)[0]
+    assert 'name="group_names" value="staff"' in demo_form

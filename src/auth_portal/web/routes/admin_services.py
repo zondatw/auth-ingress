@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auth_portal.config import Settings, get_settings
-from auth_portal.models import Group, ServiceEntry
+from auth_portal.models import AccessRule, Group, ServiceEntry
 from auth_portal.repositories.database import get_db
 from auth_portal.security.csrf import valid_csrf
 from auth_portal.security.dependencies import Identity, require_admin
@@ -17,7 +17,25 @@ router = APIRouter(prefix="/admin")
 def page(request: Request, db: Session, settings: Settings, identity: Identity, *, error: str | None = None, status_code: int = 200):
     services = list(db.scalars(select(ServiceEntry).order_by(ServiceEntry.display_name)).all())
     groups = list(db.scalars(select(Group).order_by(Group.name)).all())
-    return template(request, "admin/services.html", settings, user=identity.user, services=services, groups=groups, error=error, status_code=status_code)
+    service_group_names: dict[int, list[str]] = {}
+    assigned_groups = db.execute(
+        select(AccessRule.service_entry_id, Group.name)
+        .join(Group, Group.id == AccessRule.group_id)
+        .order_by(Group.name)
+    )
+    for service_entry_id, group_name in assigned_groups:
+        service_group_names.setdefault(service_entry_id, []).append(group_name)
+    return template(
+        request,
+        "admin/services.html",
+        settings,
+        user=identity.user,
+        services=services,
+        groups=groups,
+        service_group_names={service_id: ", ".join(names) for service_id, names in service_group_names.items()},
+        error=error,
+        status_code=status_code,
+    )
 
 
 @router.get("/services")

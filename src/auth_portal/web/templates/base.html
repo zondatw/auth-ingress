@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Auth Portal{% endblock %}</title>
+  <link rel="stylesheet" href="/static/portal.css">
+</head>
+<body>
+  <header class="site-header"><a href="/" class="brand">Auth Portal</a>{% if user %}<span>{{ user.display_name }}</span>{% endif %}</header>
+  <main class="container">{% block content %}{% endblock %}</main>
+</body>
+</html>
+

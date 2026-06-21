@@ -82,7 +82,7 @@ Expected outcome:
 uv run pytest
 uv run pytest tests/security
 uv run pytest tests/integration
-uv run playwright test
+uv run pytest tests/e2e
 ```
 
 Expected outcome:
@@ -91,3 +91,20 @@ Expected outcome:
 - Expired or revoked sessions cannot authorize service entry.
 - Repeated failed sign-in attempts are throttled.
 - Audit-event tests confirm sensitive values are excluded.
+
+## Validation Record
+
+Validated on 2026-06-21:
+
+- `uv sync --extra test` completed successfully.
+- `uv run auth-portal init-db` and `uv run auth-portal seed-demo` completed
+  without printing credentials or session identifiers; the seed contained three
+  users and one protected service.
+- `uv run pytest` passed 37 unit, contract, integration, security, performance,
+  and end-to-end tests.
+- `uv run pytest tests/e2e` passed all three real Chromium journeys for service
+  entry/sign-out, denial recovery/user switching, and administrator management.
+- The automated journeys verify requested-service preservation, immediate
+  permission and enabled-state enforcement, generic authentication failure,
+  throttling, audit redaction, downstream unavailability, and browser-history
+  revalidation after sign-out.

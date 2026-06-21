@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 
 from auth_portal.repositories.schema import create_schema
 from auth_portal.services.downstream_service import close_clients
-from auth_portal.web.routes import auth, portal, services
+from auth_portal.web.routes import admin_audit, admin_services, auth, portal, services
 from auth_portal.web.web import WEB_ROOT
 
 logger = logging.getLogger("auth_portal")
@@ -51,6 +51,8 @@ def create_app(*, initialize_schema: bool = True) -> FastAPI:
     app.include_router(auth.router)
     app.include_router(portal.router)
     app.include_router(services.router)
+    app.include_router(admin_services.router)
+    app.include_router(admin_audit.router)
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):

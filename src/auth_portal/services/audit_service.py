@@ -6,6 +6,17 @@ from auth_portal.models import AuditEvent
 
 ALLOWED_CONTEXT_KEYS = {"correlation_id", "client_category"}
 
+PROXY_AUDIT_EVENTS = {
+    "proxy_launch_created",
+    "proxy_launch_consumed",
+    "proxy_launch_denied",
+    "proxy_request_denied",
+    "proxy_websocket_denied",
+    "proxy_redirect_denied",
+    "proxy_upstream_unavailable",
+    "proxy_compatibility_checked",
+}
+
 
 def sanitized_context(context: dict | None) -> dict:
     return {key: str(value)[:120] for key, value in (context or {}).items() if key in ALLOWED_CONTEXT_KEYS}
@@ -32,4 +43,3 @@ def record_event(
     db.add(event)
     db.commit()
     return event
-

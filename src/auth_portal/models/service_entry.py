@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from auth_portal.repositories.database import Base
@@ -21,6 +21,12 @@ class ServiceEntry(Base):
     description: Mapped[str | None] = mapped_column(String(500))
     destination: Mapped[str] = mapped_column(String(2048))
     status: Mapped[str] = mapped_column(String(16), default="enabled")
+    proxy_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    websocket_enabled: Mapped[bool] = mapped_column(Boolean, default=False, server_default="0")
+    external_redirect_policy: Mapped[str] = mapped_column(String(16), default="deny", server_default="deny")
+    compatibility_status: Mapped[str] = mapped_column(String(16), default="unchecked", server_default="unchecked")
+    compatibility_checked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    compatibility_summary: Mapped[str | None] = mapped_column(String(500))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
     rules: Mapped[list[AccessRule]] = relationship(back_populates="service_entry", cascade="all, delete-orphan")
@@ -37,4 +43,3 @@ class AccessRule(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
     service_entry: Mapped[ServiceEntry] = relationship(back_populates="rules")
-

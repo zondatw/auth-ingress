@@ -107,3 +107,21 @@ Expected outcome: the contract, security, integration, real-browser compatibilit
 and existing auth portal regression suites pass, including the measurable
 criteria in [spec.md](./spec.md).
 
+## Validation Record — 2026-06-22
+
+- `uv sync --extra test`: passed; the WebSocket runtime dependency resolved.
+- Full suite with coverage: 78 passed, 0 failed, 87% line coverage.
+- Real Chromium journeys: all three rendering, interaction/state-isolation, and
+  WebSocket/reconnect-denial scenarios passed.
+- Streaming checks: 50 MB upload and 100 MB download passed; iterator probes
+  stayed below the 5 MB peak-allocation threshold and connection pooling was used.
+- Security and failure checks: ticket replay/mismatch, authorization changes,
+  unsafe hosts/destinations/redirects, reserved cookies, and redaction passed.
+- Administrator compatibility checks and actionable failure results passed.
+- Wildcard DNS, TLS, trusted-network, secure-cookie, rollout, and rollback
+  production requirements are documented in the project README; automated
+  validation used loopback wildcard hosts and development-cookie mode.
+
+The suite emitted only dependency deprecation warnings from Starlette/Uvicorn's
+current HTTPX and legacy WebSocket adapters; no application warnings or failures
+were present.

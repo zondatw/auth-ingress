@@ -10,6 +10,8 @@ from auth_portal.security.dependencies import Identity, optional_identity
 from auth_portal.services.access_service import may_enter
 from auth_portal.services.audit_service import record_event
 from auth_portal.services.downstream_service import DownstreamUnavailable, fetch_downstream
+from auth_portal.services.proxy_authorization_service import issue_launch_ticket
+from auth_portal.security.proxy_host import service_origin
 from auth_portal.web.web import template
 
 router = APIRouter()
@@ -39,6 +41,20 @@ async def enter_service(
     if not may_enter(db, identity.user, service):
         record_event(db, "service_entry_denied", "denied", "not_authorized", actor_user_id=identity.user.id, service_entry_id=service.id, context=ctx(request))
         return template(request, "errors/access_denied.html", settings, title="Access denied", message="You are not authorized for this service. Return to your service list.", status_code=403)
+    if service.proxy_enabled:
+        ticket = issue_launch_ticket(
+            db,
+            identity.session,
+            service,
+            settings,
+            context={"correlation_id": getattr(request.state, "correlation_id", ""), "client_category": "browser"},
+        )
+        record_event(db, "proxy_launch_created", "allowed", "ticket_issued", actor_user_id=identity.user.id, service_entry_id=service.id, context=ctx(request))
+        return RedirectResponse(
+            f"{service_origin(service.slug, settings)}/__portal/bootstrap?ticket={ticket}",
+            status_code=302,
+            headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"},
+        )
     try:
         body, content_type = await fetch_downstream(service.destination, settings.downstream_timeout_seconds)
     except DownstreamUnavailable:
@@ -46,4 +62,3 @@ async def enter_service(
         return template(request, "errors/access_denied.html", settings, title="Service unavailable", message="The service could not be reached. Try again later.", status_code=503)
     record_event(db, "service_entry_allowed", "allowed", "access_rule_matched", actor_user_id=identity.user.id, service_entry_id=service.id, context=ctx(request))
     return Response(body, media_type=content_type, headers={"Cache-Control": "no-store"})
-

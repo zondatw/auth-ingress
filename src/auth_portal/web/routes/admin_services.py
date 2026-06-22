@@ -9,6 +9,8 @@ from auth_portal.security.csrf import valid_csrf
 from auth_portal.security.dependencies import Identity, require_admin
 from auth_portal.services.audit_service import record_event
 from auth_portal.services.service_admin_service import ServiceValidationError, save_service
+from auth_portal.services.service_compatibility_service import check_service_compatibility
+from auth_portal.security.proxy_host import service_origin
 from auth_portal.web.web import template
 
 router = APIRouter(prefix="/admin")
@@ -33,6 +35,7 @@ def page(request: Request, db: Session, settings: Settings, identity: Identity, 
         services=services,
         groups=groups,
         service_group_names={service_id: ", ".join(names) for service_id, names in service_group_names.items()},
+        service_origins={service.id: service_origin(service.slug, settings) for service in services},
         error=error,
         status_code=status_code,
     )
@@ -61,6 +64,8 @@ def persist(
     status: str,
     group_names: str,
     csrf: str,
+    proxy_enabled: bool = False,
+    websocket_enabled: bool = False,
 ):
     if not valid_csrf(csrf, settings):
         return page(request, db, settings, identity, error="The form expired. Please try again.", status_code=400)
@@ -74,6 +79,8 @@ def persist(
             destination=destination,
             status=status,
             group_names=group_names.split(","),
+            proxy_enabled=proxy_enabled,
+            websocket_enabled=websocket_enabled,
         )
     except ServiceValidationError as exc:
         db.rollback()
@@ -100,11 +107,13 @@ def create_service(
     status: str = Form(...),
     group_names: str = Form(""),
     csrf: str = Form(...),
+    proxy_enabled: bool = Form(False),
+    websocket_enabled: bool = Form(False),
     identity: Identity = Depends(require_admin),
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ):
-    return persist(request, identity, db, settings, None, slug, display_name, description, destination, status, group_names, csrf)
+    return persist(request, identity, db, settings, None, slug, display_name, description, destination, status, group_names, csrf, proxy_enabled, websocket_enabled)
 
 
 @router.post("/services/{service_slug}")
@@ -118,10 +127,39 @@ def update_service(
     status: str = Form(...),
     group_names: str = Form(""),
     csrf: str = Form(...),
+    proxy_enabled: bool = Form(False),
+    websocket_enabled: bool = Form(False),
     identity: Identity = Depends(require_admin),
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ):
     if not db.scalar(select(ServiceEntry).where(ServiceEntry.slug == service_slug)):
         return template(request, "errors/access_denied.html", settings, title="Service not found", message="The service entry does not exist.", status_code=404)
-    return persist(request, identity, db, settings, service_slug, slug, display_name, description, destination, status, group_names, csrf)
+    return persist(request, identity, db, settings, service_slug, slug, display_name, description, destination, status, group_names, csrf, proxy_enabled, websocket_enabled)
+
+
+@router.post("/services/{service_slug}/compatibility")
+async def check_compatibility(
+    service_slug: str,
+    request: Request,
+    csrf: str = Form(...),
+    identity: Identity = Depends(require_admin),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+):
+    service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == service_slug))
+    if not service:
+        return template(request, "errors/access_denied.html", settings, title="Service not found", message="The service entry does not exist.", status_code=404)
+    if not valid_csrf(csrf, settings):
+        return page(request, db, settings, identity, error="The form expired. Please try again.", status_code=400)
+    status, summary = await check_service_compatibility(db, service, settings)
+    record_event(
+        db,
+        "proxy_compatibility_checked",
+        "informational",
+        status,
+        actor_user_id=identity.user.id,
+        service_entry_id=service.id,
+        context={"correlation_id": getattr(request.state, "correlation_id", ""), "client_category": "browser"},
+    )
+    return page(request, db, settings, identity, error=f"Compatibility: {status} ({summary})")

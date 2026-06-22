@@ -23,10 +23,10 @@ story implementation.
 **Purpose**: Add the proxy dependency and establish configuration and test
 fixtures shared by every story.
 
-- [ ] T001 Add the maintained `websockets` runtime dependency and refresh resolved packages in pyproject.toml and uv.lock
-- [ ] T002 Add validated portal host, proxy base domain, trusted proxy/network, launch-ticket TTL, transfer limit, timeout, and WebSocket lifetime settings in src/auth_portal/config.py
-- [ ] T003 [P] Create a representative downstream application with relative/root assets, nested routes, forms, JSON, cookies, redirects, uploads, downloads, ranges, and WebSocket echo in tests/fixtures/downstream_app.py
-- [ ] T004 Extend isolated database, wildcard service-host, downstream server, and Playwright live-server fixtures for proxy tests in tests/conftest.py
+- [X] T001 Add the maintained `websockets` runtime dependency and refresh resolved packages in pyproject.toml and uv.lock
+- [X] T002 Add validated portal host, proxy base domain, trusted proxy/network, launch-ticket TTL, transfer limit, timeout, and WebSocket lifetime settings in src/auth_portal/config.py
+- [X] T003 [P] Create a representative downstream application with relative/root assets, nested routes, forms, JSON, cookies, redirects, uploads, downloads, ranges, and WebSocket echo in tests/fixtures/downstream_app.py
+- [X] T004 Extend isolated database, wildcard service-host, downstream server, and Playwright live-server fixtures for proxy tests in tests/conftest.py
 
 ---
 
@@ -37,17 +37,17 @@ all HTTP and WebSocket proxy stories.
 
 **⚠️ CRITICAL**: No user story implementation begins until this phase is complete.
 
-- [ ] T005 [P] Add proxy-enabled, WebSocket-enabled, redirect-policy, and compatibility fields with validation defaults to ServiceEntry in src/auth_portal/models/service_entry.py
-- [ ] T006 [P] Create the one-time ProxyLaunchTicket model with digest uniqueness, expiry, consumption, session, service, and allowlisted context fields in src/auth_portal/models/proxy_launch_ticket.py
-- [ ] T007 Register ProxyLaunchTicket and its relationships in src/auth_portal/models/__init__.py
-- [ ] T008 Implement an idempotent schema upgrade for existing ServiceEntry rows plus proxy launch-ticket table creation in src/auth_portal/repositories/schema.py
-- [ ] T009 [P] Implement strict portal/service Host parsing, slug derivation, unknown-host rejection, and public service-origin construction in src/auth_portal/security/proxy_host.py
-- [ ] T010 [P] Implement fixed-destination URL joining, DNS resolution, trusted-address enforcement, rebinding checks, and HTTP-to-WebSocket scheme conversion in src/auth_portal/security/proxy_destination.py
-- [ ] T011 Extend signed-cookie helpers with a reserved host-only service proxy credential bound to session, service, version, and bounded expiry in src/auth_portal/security/cookies.py
-- [ ] T012 Implement launch-ticket issue, digest lookup, atomic one-time consumption, and per-request session/user/service/access-rule revalidation in src/auth_portal/services/proxy_authorization_service.py
-- [ ] T013 [P] Implement request/response hop-by-hop filtering, reserved credential removal, forwarding context, cookie parsing, and multi-value header preservation in src/auth_portal/services/proxy_header_policy.py
-- [ ] T014 Extend non-sensitive audit reason/event coverage for proxy launch, denial, redirect, upstream, WebSocket, and compatibility decisions in src/auth_portal/services/audit_service.py
-- [ ] T015 Seed a proxy-enabled demo service and compatibility defaults without emitting credentials, tickets, cookies, or destinations in src/auth_portal/cli.py
+- [X] T005 [P] Add proxy-enabled, WebSocket-enabled, redirect-policy, and compatibility fields with validation defaults to ServiceEntry in src/auth_portal/models/service_entry.py
+- [X] T006 [P] Create the one-time ProxyLaunchTicket model with digest uniqueness, expiry, consumption, session, service, and allowlisted context fields in src/auth_portal/models/proxy_launch_ticket.py
+- [X] T007 Register ProxyLaunchTicket and its relationships in src/auth_portal/models/__init__.py
+- [X] T008 Implement an idempotent schema upgrade for existing ServiceEntry rows plus proxy launch-ticket table creation in src/auth_portal/repositories/schema.py
+- [X] T009 [P] Implement strict portal/service Host parsing, slug derivation, unknown-host rejection, and public service-origin construction in src/auth_portal/security/proxy_host.py
+- [X] T010 [P] Implement fixed-destination URL joining, DNS resolution, trusted-address enforcement, rebinding checks, and HTTP-to-WebSocket scheme conversion in src/auth_portal/security/proxy_destination.py
+- [X] T011 Extend signed-cookie helpers with a reserved host-only service proxy credential bound to session, service, version, and bounded expiry in src/auth_portal/security/cookies.py
+- [X] T012 Implement launch-ticket issue, digest lookup, atomic one-time consumption, and per-request session/user/service/access-rule revalidation in src/auth_portal/services/proxy_authorization_service.py
+- [X] T013 [P] Implement request/response hop-by-hop filtering, reserved credential removal, forwarding context, cookie parsing, and multi-value header preservation in src/auth_portal/services/proxy_header_policy.py
+- [X] T014 Extend non-sensitive audit reason/event coverage for proxy launch, denial, redirect, upstream, WebSocket, and compatibility decisions in src/auth_portal/services/audit_service.py
+- [X] T015 Seed a proxy-enabled demo service and compatibility defaults without emitting credentials, tickets, cookies, or destinations in src/auth_portal/cli.py
 
 **Checkpoint**: Host routing, persistence, authorization, destination validation,
 credential isolation, header policy, and fixtures are ready.
@@ -67,22 +67,22 @@ service host.
 
 ### Tests for User Story 1 (write first and verify they fail)
 
-- [ ] T016 [P] [US1] Add host launch, bootstrap, direct-host, reserved-path, and unknown-host contract tests from contracts/host-routing.md in tests/contract/test_proxy_host_contract.py
-- [ ] T017 [P] [US1] Add integration tests for relative/root-relative CSS, JavaScript, image, font, document, nested route, refresh, HEAD, 404, and content-type behavior in tests/integration/test_proxy_assets.py
-- [ ] T018 [P] [US1] Add security tests for missing/expired/replayed/mismatched tickets, malformed hosts and paths, arbitrary destination input, DNS rebinding, and internal-detail disclosure in tests/security/test_proxy_authorization.py
-- [ ] T019 [P] [US1] Add a Playwright journey for portal launch, ticket removal, complete rendering, nested navigation, refresh, and new-tab access in tests/e2e/test_full_web_app_proxy.py
+- [X] T016 [P] [US1] Add host launch, bootstrap, direct-host, reserved-path, and unknown-host contract tests from contracts/host-routing.md in tests/contract/test_proxy_host_contract.py
+- [X] T017 [P] [US1] Add integration tests for relative/root-relative CSS, JavaScript, image, font, document, nested route, refresh, HEAD, 404, and content-type behavior in tests/integration/test_proxy_assets.py
+- [X] T018 [P] [US1] Add security tests for missing/expired/replayed/mismatched tickets, malformed hosts and paths, arbitrary destination input, DNS rebinding, and internal-detail disclosure in tests/security/test_proxy_authorization.py
+- [X] T019 [P] [US1] Add a Playwright journey for portal launch, ticket removal, complete rendering, nested navigation, refresh, and new-tab access in tests/e2e/test_full_web_app_proxy.py
 
 ### Implementation for User Story 1
 
-- [ ] T020 [P] [US1] Implement service-host bootstrap, local proxy-cookie creation/clearing, direct-access recovery, and reserved-path denial in src/auth_portal/web/routes/proxy.py
-- [ ] T021 [P] [US1] Replace buffered single-page fetching with pooled streaming GET/HEAD forwarding, path/query mapping, and guaranteed upstream closure in src/auth_portal/services/proxy_http_service.py
-- [ ] T022 [P] [US1] Implement non-mutating destination reachability, asset/reference, redirect, cookie, and WebSocket capability checks with reason codes in src/auth_portal/services/service_compatibility_service.py
-- [ ] T023 [US1] Update the portal `/services/{slug}` route to authorize, issue a 60-second one-time launch ticket, and redirect to the derived service host in src/auth_portal/web/routes/services.py
-- [ ] T024 [US1] Add service-host catch-all GET/HEAD dispatch with authorization, safe error mapping, and allowed-entry/upstream audit events in src/auth_portal/web/routes/proxy.py
-- [ ] T025 [US1] Apply safe response status, content type/encoding, validator/cache, and internal redirect rewriting for rendered resources in src/auth_portal/services/proxy_http_service.py
-- [ ] T026 [US1] Add administrator compatibility-check action and proxy-policy validation to service management routes in src/auth_portal/web/routes/admin_services.py
-- [ ] T027 [US1] Add proxy/WebSocket controls, derived service host, compatibility status, check action, and operator guidance to src/auth_portal/web/templates/admin/services.html
-- [ ] T028 [US1] Register host-aware proxy HTTP routing and shared HTTPX client startup/shutdown without changing portal-host behavior in src/auth_portal/main.py
+- [X] T020 [P] [US1] Implement service-host bootstrap, local proxy-cookie creation/clearing, direct-access recovery, and reserved-path denial in src/auth_portal/web/routes/proxy.py
+- [X] T021 [P] [US1] Replace buffered single-page fetching with pooled streaming GET/HEAD forwarding, path/query mapping, and guaranteed upstream closure in src/auth_portal/services/proxy_http_service.py
+- [X] T022 [P] [US1] Implement non-mutating destination reachability, asset/reference, redirect, cookie, and WebSocket capability checks with reason codes in src/auth_portal/services/service_compatibility_service.py
+- [X] T023 [US1] Update the portal `/services/{slug}` route to authorize, issue a 60-second one-time launch ticket, and redirect to the derived service host in src/auth_portal/web/routes/services.py
+- [X] T024 [US1] Add service-host catch-all GET/HEAD dispatch with authorization, safe error mapping, and allowed-entry/upstream audit events in src/auth_portal/web/routes/proxy.py
+- [X] T025 [US1] Apply safe response status, content type/encoding, validator/cache, and internal redirect rewriting for rendered resources in src/auth_portal/services/proxy_http_service.py
+- [X] T026 [US1] Add administrator compatibility-check action and proxy-policy validation to service management routes in src/auth_portal/web/routes/admin_services.py
+- [X] T027 [US1] Add proxy/WebSocket controls, derived service host, compatibility status, check action, and operator guidance to src/auth_portal/web/templates/admin/services.html
+- [X] T028 [US1] Register host-aware proxy HTTP routing and shared HTTPX client startup/shutdown without changing portal-host behavior in src/auth_portal/main.py
 
 **Checkpoint**: User Story 1 independently renders a complete protected browser
 application and is the deployable MVP.
@@ -101,19 +101,19 @@ another service does not collide or replace the portal credential.
 
 ### Tests for User Story 2 (write first and verify they fail)
 
-- [ ] T029 [P] [US2] Add method, raw-query, streaming-body, response-header, cookie, redirect, range, upload, download, cancellation, and timeout contract tests from contracts/http-forwarding.md in tests/contract/test_proxy_http_contract.py
-- [ ] T030 [P] [US2] Add integration tests for forms, JSON actions, repeated query values, 50 MB streaming uploads, 100 MB downloads, checksums, filenames, ranges, caching, and internal redirects in tests/integration/test_proxy_interactions.py
-- [ ] T031 [P] [US2] Add security tests for portal/proxy cookie stripping, reserved-cookie replacement, cross-service state collision, redirect escape, credential-bearing URLs, payload redaction, and authorization changes during later requests in tests/security/test_proxy_state_isolation.py
-- [ ] T032 [P] [US2] Extend the Playwright compatibility journey with JavaScript data calls, form submission, upload/download, application state, two-service isolation, and redirect behavior in tests/e2e/test_full_web_app_proxy.py
+- [X] T029 [P] [US2] Add method, raw-query, streaming-body, response-header, cookie, redirect, range, upload, download, cancellation, and timeout contract tests from contracts/http-forwarding.md in tests/contract/test_proxy_http_contract.py
+- [X] T030 [P] [US2] Add integration tests for forms, JSON actions, repeated query values, 50 MB streaming uploads, 100 MB downloads, checksums, filenames, ranges, caching, and internal redirects in tests/integration/test_proxy_interactions.py
+- [X] T031 [P] [US2] Add security tests for portal/proxy cookie stripping, reserved-cookie replacement, cross-service state collision, redirect escape, credential-bearing URLs, payload redaction, and authorization changes during later requests in tests/security/test_proxy_state_isolation.py
+- [X] T032 [P] [US2] Extend the Playwright compatibility journey with JavaScript data calls, form submission, upload/download, application state, two-service isolation, and redirect behavior in tests/e2e/test_full_web_app_proxy.py
 
 ### Implementation for User Story 2
 
-- [ ] T033 [US2] Extend proxy forwarding to GET, HEAD, POST, PUT, PATCH, DELETE, and OPTIONS with raw query preservation and asynchronous request-body streaming in src/auth_portal/services/proxy_http_service.py
-- [ ] T034 [US2] Implement downstream Cookie forwarding plus separate Set-Cookie parsing, internal Domain removal, Path preservation, and reserved-name rejection in src/auth_portal/services/proxy_header_policy.py
-- [ ] T035 [US2] Implement relative and fixed-destination redirect preservation plus safe denial of external, cross-service, credential-bearing, malformed, and unsupported targets in src/auth_portal/services/proxy_http_service.py
-- [ ] T036 [US2] Preserve content disposition, multiple cookies, cache validators, byte ranges, partial status, raw encoding, and valid content length in streamed responses in src/auth_portal/services/proxy_http_service.py
-- [ ] T037 [US2] Enforce configured request/transfer limits, distinguish connect/read timeout outcomes, cancel upstream work on browser disconnect, and prohibit automatic action retries in src/auth_portal/services/proxy_http_service.py
-- [ ] T038 [US2] Extend service-host catch-all routing to all supported methods with interaction denial, timeout, interruption, and unsafe-redirect responses/audits in src/auth_portal/web/routes/proxy.py
+- [X] T033 [US2] Extend proxy forwarding to GET, HEAD, POST, PUT, PATCH, DELETE, and OPTIONS with raw query preservation and asynchronous request-body streaming in src/auth_portal/services/proxy_http_service.py
+- [X] T034 [US2] Implement downstream Cookie forwarding plus separate Set-Cookie parsing, internal Domain removal, Path preservation, and reserved-name rejection in src/auth_portal/services/proxy_header_policy.py
+- [X] T035 [US2] Implement relative and fixed-destination redirect preservation plus safe denial of external, cross-service, credential-bearing, malformed, and unsupported targets in src/auth_portal/services/proxy_http_service.py
+- [X] T036 [US2] Preserve content disposition, multiple cookies, cache validators, byte ranges, partial status, raw encoding, and valid content length in streamed responses in src/auth_portal/services/proxy_http_service.py
+- [X] T037 [US2] Enforce configured request/transfer limits, distinguish connect/read timeout outcomes, cancel upstream work on browser disconnect, and prohibit automatic action retries in src/auth_portal/services/proxy_http_service.py
+- [X] T038 [US2] Extend service-host catch-all routing to all supported methods with interaction denial, timeout, interruption, and unsafe-redirect responses/audits in src/auth_portal/web/routes/proxy.py
 
 **Checkpoint**: User Story 2 independently proves normal interactive and stateful
 web-app behavior through the protected service origin.
@@ -133,18 +133,18 @@ closure without leaking frame content or destination details.
 
 ### Tests for User Story 3 (write first and verify they fail)
 
-- [ ] T039 [P] [US3] Add handshake, query, cookie, origin, subprotocol, text/binary frame, close, and lifetime contract tests from contracts/websocket-forwarding.md in tests/contract/test_proxy_websocket_contract.py
-- [ ] T040 [P] [US3] Add integration tests for bidirectional text/binary relay, reconnect authorization, subprotocol negotiation, downstream disconnect, cancellation, and maximum lifetime in tests/integration/test_proxy_websocket.py
-- [ ] T041 [P] [US3] Add security tests for signed-out/expired/revoked/disabled handshakes, WebSocket-disabled services, unsafe resolution, reserved credentials, cross-service hosts, and frame redaction in tests/security/test_proxy_websocket_security.py
-- [ ] T042 [P] [US3] Extend the Playwright journey with real-time updates, reconnect denial after permission removal, and safe disconnected-service recovery in tests/e2e/test_full_web_app_proxy.py
+- [X] T039 [P] [US3] Add handshake, query, cookie, origin, subprotocol, text/binary frame, close, and lifetime contract tests from contracts/websocket-forwarding.md in tests/contract/test_proxy_websocket_contract.py
+- [X] T040 [P] [US3] Add integration tests for bidirectional text/binary relay, reconnect authorization, subprotocol negotiation, downstream disconnect, cancellation, and maximum lifetime in tests/integration/test_proxy_websocket.py
+- [X] T041 [P] [US3] Add security tests for signed-out/expired/revoked/disabled handshakes, WebSocket-disabled services, unsafe resolution, reserved credentials, cross-service hosts, and frame redaction in tests/security/test_proxy_websocket_security.py
+- [X] T042 [P] [US3] Extend the Playwright journey with real-time updates, reconnect denial after permission removal, and safe disconnected-service recovery in tests/e2e/test_full_web_app_proxy.py
 
 ### Implementation for User Story 3
 
-- [ ] T043 [US3] Implement validated downstream WebSocket connection setup, allowed cookie/origin/subprotocol forwarding, and text/binary bidirectional frame relay in src/auth_portal/services/proxy_websocket_service.py
-- [ ] T044 [US3] Add service-host WebSocket catch-all routing with pre-accept authorization and safe unknown/disabled/malformed handshake denial in src/auth_portal/web/routes/proxy.py
-- [ ] T045 [US3] Supervise both relay directions, preserve safe close codes, cancel peer work on disconnect, and enforce central-session/configured maximum lifetime in src/auth_portal/services/proxy_websocket_service.py
-- [ ] T046 [US3] Add non-sensitive WebSocket start/end diagnostics and denied/expired/upstream-failure audit reason codes without frame, query, cookie, or destination data in src/auth_portal/services/audit_service.py
-- [ ] T047 [US3] Register WebSocket host routing and ensure application shutdown closes active upstream HTTP and WebSocket resources in src/auth_portal/main.py
+- [X] T043 [US3] Implement validated downstream WebSocket connection setup, allowed cookie/origin/subprotocol forwarding, and text/binary bidirectional frame relay in src/auth_portal/services/proxy_websocket_service.py
+- [X] T044 [US3] Add service-host WebSocket catch-all routing with pre-accept authorization and safe unknown/disabled/malformed handshake denial in src/auth_portal/web/routes/proxy.py
+- [X] T045 [US3] Supervise both relay directions, preserve safe close codes, cancel peer work on disconnect, and enforce central-session/configured maximum lifetime in src/auth_portal/services/proxy_websocket_service.py
+- [X] T046 [US3] Add non-sensitive WebSocket start/end diagnostics and denied/expired/upstream-failure audit reason codes without frame, query, cookie, or destination data in src/auth_portal/services/audit_service.py
+- [X] T047 [US3] Register WebSocket host routing and ensure application shutdown closes active upstream HTTP and WebSocket resources in src/auth_portal/main.py
 
 **Checkpoint**: All three user stories are independently functional and the full
 standards-based browser compatibility target is covered.
@@ -156,13 +156,13 @@ standards-based browser compatibility target is covered.
 **Purpose**: Validate security, deployment, performance, compatibility,
 documentation, and regressions across all stories.
 
-- [ ] T048 [P] Add focused unit coverage for Host parsing, path joining, DNS/IP classification, cookie filtering, header filtering, redirects, ticket digests, and expiry boundaries in tests/unit/test_proxy_security_helpers.py
-- [ ] T049 [P] Document wildcard DNS/TLS, trusted proxy/network settings, cookie requirements, limits, compatibility boundaries, and production rollout/rollback in README.md
-- [ ] T050 Verify p95 proxy overhead, constant-memory 50 MB upload, constant-memory 100 MB download, connection pooling, and cancellation cleanup in tests/integration/test_proxy_performance.py
-- [ ] T051 Verify proxy logs/audits exclude credentials, tickets, sessions, cookies, destinations, queries, filenames, bodies, frames, and unnecessary personal data in tests/security/test_proxy_redaction.py
-- [ ] T052 Validate 98% rendering, 95% interaction, 100% denial/boundary, administrator compatibility, and actionable-failure criteria in tests/e2e/test_full_web_app_proxy.py
-- [ ] T053 Execute every deployment, rendering, interaction, authorization, WebSocket, failure, and automated-check scenario and record results in specs/002-full-web-app-proxy/quickstart.md
-- [ ] T054 Run the complete existing and new test suite with coverage and resolve all regressions in tests/
+- [X] T048 [P] Add focused unit coverage for Host parsing, path joining, DNS/IP classification, cookie filtering, header filtering, redirects, ticket digests, and expiry boundaries in tests/unit/test_proxy_security_helpers.py
+- [X] T049 [P] Document wildcard DNS/TLS, trusted proxy/network settings, cookie requirements, limits, compatibility boundaries, and production rollout/rollback in README.md
+- [X] T050 Verify p95 proxy overhead, constant-memory 50 MB upload, constant-memory 100 MB download, connection pooling, and cancellation cleanup in tests/integration/test_proxy_performance.py
+- [X] T051 Verify proxy logs/audits exclude credentials, tickets, sessions, cookies, destinations, queries, filenames, bodies, frames, and unnecessary personal data in tests/security/test_proxy_redaction.py
+- [X] T052 Validate 98% rendering, 95% interaction, 100% denial/boundary, administrator compatibility, and actionable-failure criteria in tests/e2e/test_full_web_app_proxy.py
+- [X] T053 Execute every deployment, rendering, interaction, authorization, WebSocket, failure, and automated-check scenario and record results in specs/002-full-web-app-proxy/quickstart.md
+- [X] T054 Run the complete existing and new test suite with coverage and resolve all regressions in tests/
 
 ---
 

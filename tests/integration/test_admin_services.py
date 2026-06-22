@@ -48,3 +48,26 @@ def test_existing_service_form_prefills_assigned_groups(client, csrf):
     assert response.status_code == 200
     demo_form = response.text.split('action="/admin/services/demo"', 1)[1].split("</form>", 1)[0]
     assert 'name="group_names" value="staff"' in demo_form
+
+
+def test_admin_can_enable_proxy_and_run_compatibility_check(client, csrf, downstream_server, db_factory):
+    sign_in(client, csrf, email="admin@example.test")
+    response = client.post(
+        "/admin/services",
+        data=payload(
+            csrf,
+            slug="proxy-app",
+            display_name="Proxy App",
+            destination=downstream_server,
+            proxy_enabled="true",
+            websocket_enabled="false",
+        ),
+    )
+    assert response.status_code == 201
+    check = client.post("/admin/services/proxy-app/compatibility", data={"csrf": csrf})
+    assert check.status_code == 200
+    assert "Compatibility: compatible" in check.text
+    with db_factory() as db:
+        service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == "proxy-app"))
+        assert service.proxy_enabled is True
+        assert service.compatibility_status == "compatible"

@@ -10,7 +10,9 @@ from fastapi.staticfiles import StaticFiles
 
 from auth_portal.repositories.schema import create_schema
 from auth_portal.services.downstream_service import close_clients
+from auth_portal.services.proxy_websocket_service import close_websockets
 from auth_portal.web.routes import admin_audit, admin_services, auth, portal, services
+from auth_portal.web.routes.proxy import ProxyDispatchMiddleware
 from auth_portal.web.web import WEB_ROOT
 
 logger = logging.getLogger("auth_portal")
@@ -41,12 +43,21 @@ def configure_logging() -> None:
 async def lifespan(app: FastAPI):
     create_schema()
     yield
+    await close_websockets()
     await close_clients()
 
 
-def create_app(*, initialize_schema: bool = True) -> FastAPI:
+def create_app(*, initialize_schema: bool = True, proxy_settings=None, proxy_session_factory=None) -> FastAPI:
     configure_logging()
     app = FastAPI(title="Auth Entry Portal", lifespan=lifespan if initialize_schema else None)
+    from auth_portal.config import get_settings
+    from auth_portal.repositories.database import SessionLocal
+
+    app.add_middleware(
+        ProxyDispatchMiddleware,
+        settings=proxy_settings or get_settings(),
+        session_factory=proxy_session_factory or SessionLocal,
+    )
     app.mount("/static", StaticFiles(directory=WEB_ROOT / "static"), name="static")
     app.include_router(auth.router)
     app.include_router(portal.router)

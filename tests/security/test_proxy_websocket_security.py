@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import select
 from starlette.websockets import WebSocketDisconnect
 
-from auth_portal.models import AccessRule, PortalSession, ServiceEntry
+from auth_entry_portal.models import AccessRule, PortalSession, ServiceEntry
 from tests.conftest import launch_proxy
 
 

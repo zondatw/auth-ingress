@@ -28,10 +28,10 @@ test = [
 ]
 
 [project.scripts]
-auth-portal = "auth_portal.cli:main"
+auth-portal = "auth_entry_portal.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/auth_portal"]
+packages = ["src/auth_entry_portal"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

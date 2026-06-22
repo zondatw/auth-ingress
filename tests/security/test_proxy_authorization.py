@@ -3,10 +3,10 @@ from datetime import datetime, timedelta, timezone
 import pytest
 from sqlalchemy import select
 
-from auth_portal.config import Settings
-from auth_portal.models import ProxyLaunchTicket
-from auth_portal.security.proxy_destination import UnsafeDestination, join_destination, resolve_destination
-from auth_portal.security.proxy_host import service_slug_from_host
+from auth_entry_portal.config import Settings
+from auth_entry_portal.models import ProxyLaunchTicket
+from auth_entry_portal.security.proxy_destination import UnsafeDestination, join_destination, resolve_destination
+from auth_entry_portal.security.proxy_host import service_slug_from_host
 from tests.conftest import sign_in
 
 

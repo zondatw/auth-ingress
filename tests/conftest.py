@@ -13,13 +13,13 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from auth_portal.config import Settings, get_settings
-from auth_portal.main import create_app
-from auth_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
-from auth_portal.repositories.database import Base, get_db
-from auth_portal.security.csrf import csrf_token
-from auth_portal.security.passwords import hash_password
-from auth_portal.web.routes.auth import _limiters
+from auth_entry_portal.config import Settings, get_settings
+from auth_entry_portal.main import create_app
+from auth_entry_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
+from auth_entry_portal.repositories.database import Base, get_db
+from auth_entry_portal.security.csrf import csrf_token
+from auth_entry_portal.security.passwords import hash_password
+from auth_entry_portal.web.routes.auth import _limiters
 from tests.fixtures.downstream_app import create_downstream_app
 
 

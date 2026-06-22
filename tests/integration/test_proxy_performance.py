@@ -6,8 +6,8 @@ import tracemalloc
 
 import httpx
 
-from auth_portal.services.downstream_service import _clients
-from auth_portal.services.proxy_http_service import limited_request_stream, limited_response_stream
+from auth_entry_portal.services.downstream_service import _clients
+from auth_entry_portal.services.proxy_http_service import limited_request_stream, limited_response_stream
 from tests.conftest import launch_proxy
 
 

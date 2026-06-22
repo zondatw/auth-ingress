@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from auth_portal.models import AccessRule, Group, ServiceEntry
+from auth_entry_portal.models import AccessRule, Group, ServiceEntry
 from tests.conftest import launch_proxy
 
 

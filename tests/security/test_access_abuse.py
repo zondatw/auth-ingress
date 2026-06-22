@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
-from auth_portal.models import AuditEvent
-from auth_portal.services.audit_service import sanitized_context
+from auth_entry_portal.models import AuditEvent
+from auth_entry_portal.services.audit_service import sanitized_context
 from tests.conftest import sign_in
 
 

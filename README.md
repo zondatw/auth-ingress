@@ -41,7 +41,7 @@ Configuration uses these environment variables:
 - `AUTH_PORTAL_DOWNSTREAM_TIMEOUT`
 
 Demo accounts use the addresses shown by the seed implementation with local-only
-passwords in `src/auth_portal/cli.py`. Change or remove all demo accounts before
+passwords in `src/auth_entry_portal/cli.py`. Change or remove all demo accounts before
 deployment. The CLI deliberately does not print credentials.
 
 ## Audit and recovery

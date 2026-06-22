@@ -98,6 +98,14 @@
 - **FR-006**: System MUST authenticate users via [NEEDS CLARIFICATION: auth method not specified - email/password, SSO, OAuth?]
 - **FR-007**: System MUST retain user data for [NEEDS CLARIFICATION: retention period not specified]
 
+### Security & Privacy Requirements *(mandatory for identity/access features)*
+
+- **SPR-001**: System MUST protect [identity asset, credential, token, session, or user data affected]
+- **SPR-002**: System MUST authorize [action/resource] according to [rule or role/policy]
+- **SPR-003**: System MUST reject and audit [denied, expired, malformed, replayed, or abusive scenario]
+- **SPR-004**: System MUST NOT log or expose [credentials, tokens, secrets, or unnecessary personal data]
+- **SPR-005**: System MUST retain [audit/user data] for [NEEDS CLARIFICATION: retention period not specified]
+
 ### Key Entities *(include if feature involves data)*
 
 - **[Entity 1]**: [What it represents, key attributes without implementation]

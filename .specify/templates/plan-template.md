@@ -40,7 +40,21 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Secure Identity Boundaries**: Trust boundaries, identity assets, secrets,
+  sessions/tokens, authorization decisions, and sensitive data handling are
+  documented for this feature.
+- **User-Centered Authentication Flows**: Success, denial, timeout, invalid
+  input, dependency failure, retry, and recovery behavior are specified where
+  applicable.
+- **Testable Security Behavior**: Positive, denied, expired/invalid credential,
+  malformed input, and relevant regression cases have planned tests for every
+  security-sensitive story.
+- **Observable and Auditable Operations**: Required audit/diagnostic events are
+  identified, and no event payload includes credentials, tokens, secrets, or
+  unnecessary personal data.
+- **Simple, Explicit Architecture**: External providers, cryptographic choices,
+  storage, jobs, and cross-service dependencies are named with ownership,
+  failure behavior, and justification.
 
 ## Project Structure
 

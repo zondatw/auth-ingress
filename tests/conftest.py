@@ -1,0 +1,125 @@
+from __future__ import annotations
+
+import socket
+import threading
+import time
+
+import pytest
+import uvicorn
+from fastapi.testclient import TestClient
+from playwright.sync_api import sync_playwright
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
+
+from auth_portal.config import Settings, get_settings
+from auth_portal.main import create_app
+from auth_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
+from auth_portal.repositories.database import Base, get_db
+from auth_portal.security.csrf import csrf_token
+from auth_portal.security.passwords import hash_password
+from auth_portal.web.routes.auth import _limiters
+
+
+@pytest.fixture
+def settings() -> Settings:
+    return Settings(database_url="sqlite://", secret_key="test-secret-with-sufficient-entropy", session_ttl_seconds=3600, rate_limit_attempts=3)
+
+
+@pytest.fixture
+def db_factory():
+    engine = create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    Base.metadata.create_all(engine)
+    factory = sessionmaker(bind=engine, expire_on_commit=False)
+    yield factory
+    Base.metadata.drop_all(engine)
+    engine.dispose()
+
+
+@pytest.fixture
+def db(db_factory) -> Session:
+    with db_factory() as session:
+        staff = Group(name="staff", description="Staff")
+        admins = Group(name="admins", description="Administrators")
+        member = User(email="member@example.test", display_name="Member", password_hash=hash_password("correct-password"))
+        outsider = User(email="outsider@example.test", display_name="Outsider", password_hash=hash_password("correct-password"))
+        admin = User(email="admin@example.test", display_name="Admin", password_hash=hash_password("correct-password"), is_admin=True)
+        disabled = User(email="disabled@example.test", display_name="Disabled", password_hash=hash_password("correct-password"), status="disabled")
+        session.add_all([staff, admins, member, outsider, admin, disabled])
+        session.flush()
+        session.add_all([
+            GroupMembership(user_id=member.id, group_id=staff.id),
+            GroupMembership(user_id=admin.id, group_id=admins.id),
+        ])
+        demo = ServiceEntry(slug="demo", display_name="Demo Service", description="Protected demo", destination="mock://demo")
+        disabled_service = ServiceEntry(slug="offline", display_name="Offline", destination="mock://offline", status="disabled")
+        broken = ServiceEntry(slug="broken", display_name="Broken", destination="http://127.0.0.1:1")
+        session.add_all([demo, disabled_service, broken])
+        session.flush()
+        session.add_all([
+            AccessRule(service_entry_id=demo.id, group_id=staff.id),
+            AccessRule(service_entry_id=disabled_service.id, group_id=staff.id),
+            AccessRule(service_entry_id=broken.id, group_id=staff.id),
+        ])
+        session.commit()
+        yield session
+
+
+@pytest.fixture
+def client(db_factory, db, settings):
+    _limiters.clear()
+    app = create_app(initialize_schema=False)
+
+    def override_db():
+        with db_factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[get_settings] = lambda: settings
+    with TestClient(app) as test_client:
+        yield test_client
+    _limiters.clear()
+
+
+@pytest.fixture
+def csrf(settings):
+    return csrf_token(settings)
+
+
+@pytest.fixture
+def live_server(db_factory, db, settings):
+    app = create_app(initialize_schema=False)
+
+    def override_db():
+        with db_factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[get_settings] = lambda: settings
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    for _ in range(100):
+        if server.started:
+            break
+        time.sleep(0.02)
+    if not server.started:
+        raise RuntimeError("test server did not start")
+    yield f"http://127.0.0.1:{port}"
+    server.should_exit = True
+    thread.join(timeout=5)
+
+
+@pytest.fixture(scope="session")
+def browser():
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        yield browser
+        browser.close()
+
+
+def sign_in(client: TestClient, csrf: str, email: str = "member@example.test", password: str = "correct-password", return_to: str = "/"):
+    return client.post("/sign-in", data={"email": email, "password": password, "return_to": return_to, "csrf": csrf}, follow_redirects=False)

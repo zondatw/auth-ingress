@@ -1,0 +1,169 @@
+openapi: 3.1.0
+info:
+  title: Auth Entry Portal Contract
+  version: 0.1.0
+  description: >
+    HTTP contract for the mini auth portal. HTML routes serve users and
+    administrators; JSON endpoints support form submission and validation where
+    useful. Contracts describe behavior, not implementation internals.
+paths:
+  /:
+    get:
+      summary: Show portal service list
+      description: Shows allowed services for signed-in users or redirects signed-out users to sign in.
+      responses:
+        "200":
+          description: Signed-in user sees allowed services or empty state.
+        "302":
+          description: Signed-out user is sent to sign in.
+  /sign-in:
+    get:
+      summary: Show sign-in form
+      responses:
+        "200":
+          description: Sign-in form is displayed.
+    post:
+      summary: Submit sign-in credentials
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                return_to:
+                  type: string
+                  description: Optional originally requested portal service path.
+      responses:
+        "302":
+          description: Sign-in succeeds and user is sent to requested service or portal home.
+        "400":
+          description: Malformed sign-in request.
+        "401":
+          description: Sign-in fails without revealing which credential was wrong.
+        "429":
+          description: Too many failed attempts; user is asked to wait before retrying.
+  /sign-out:
+    post:
+      summary: End portal session
+      responses:
+        "302":
+          description: Session is revoked and user is sent to sign-in or signed-out confirmation.
+  /services/{service_slug}:
+    get:
+      summary: Enter a protected service
+      parameters:
+        - name: service_slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Service content is served through the portal or an authorized entry is initiated.
+        "302":
+          description: Signed-out user is sent to sign in with return path preserved.
+        "403":
+          description: Signed-in user is not authorized for this service.
+        "404":
+          description: Service entry does not exist or is not visible to the user.
+        "503":
+          description: Service is disabled or downstream service is unavailable.
+  /admin/services:
+    get:
+      summary: List service entries
+      responses:
+        "200":
+          description: Administrator sees configured service entries.
+        "403":
+          description: Non-admin user is denied.
+    post:
+      summary: Create service entry
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ServiceEntryInput"
+      responses:
+        "201":
+          description: Service entry is created and audited.
+        "400":
+          description: Input is invalid.
+        "403":
+          description: Non-admin user is denied.
+  /admin/services/{service_slug}:
+    post:
+      summary: Update or disable service entry
+      parameters:
+        - name: service_slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ServiceEntryInput"
+      responses:
+        "200":
+          description: Service entry is updated and audited.
+        "400":
+          description: Input is invalid.
+        "403":
+          description: Non-admin user is denied.
+        "404":
+          description: Service entry does not exist.
+  /admin/audit:
+    get:
+      summary: Review audit events
+      responses:
+        "200":
+          description: Administrator sees non-sensitive audit events.
+        "403":
+          description: Non-admin user is denied.
+components:
+  schemas:
+    ServiceEntryInput:
+      type: object
+      required: [slug, display_name, destination, status, group_names]
+      properties:
+        slug:
+          type: string
+          pattern: "^[a-z0-9-]+$"
+        display_name:
+          type: string
+        description:
+          type: string
+        destination:
+          type: string
+          description: Internal downstream destination or launch target; must not include secrets.
+        status:
+          type: string
+          enum: [enabled, disabled]
+        group_names:
+          type: array
+          items:
+            type: string
+    ServiceSummary:
+      type: object
+      required: [slug, display_name, status]
+      properties:
+        slug:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [enabled, disabled]

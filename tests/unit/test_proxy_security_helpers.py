@@ -2,12 +2,12 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from auth_portal.config import Settings
-from auth_portal.security.cookies import decode_proxy_credential, encode_proxy_credential
-from auth_portal.security.proxy_destination import UnsafeDestination, join_destination, resolve_destination, websocket_destination
-from auth_portal.security.proxy_host import service_origin, service_slug_from_host
-from auth_portal.services.proxy_authorization_service import ticket_digest
-from auth_portal.services.proxy_header_policy import UnsafeRedirect, filter_cookie_header, filter_request_headers, rewrite_location, rewrite_set_cookie
+from auth_entry_portal.config import Settings
+from auth_entry_portal.security.cookies import decode_proxy_credential, encode_proxy_credential
+from auth_entry_portal.security.proxy_destination import UnsafeDestination, join_destination, resolve_destination, websocket_destination
+from auth_entry_portal.security.proxy_host import service_origin, service_slug_from_host
+from auth_entry_portal.services.proxy_authorization_service import ticket_digest
+from auth_entry_portal.services.proxy_header_policy import UnsafeRedirect, filter_cookie_header, filter_request_headers, rewrite_location, rewrite_set_cookie
 
 
 def test_host_origin_and_path_helpers():

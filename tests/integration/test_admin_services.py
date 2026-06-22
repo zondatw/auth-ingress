@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from auth_portal.models import AuditEvent, ServiceEntry
+from auth_entry_portal.models import AuditEvent, ServiceEntry
 from tests.conftest import sign_in
 
 

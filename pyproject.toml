@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling==1.30.1"]
 build-backend = "hatchling.build"
 
 [project]
@@ -8,6 +8,24 @@ version = "0.1.0"
 description = "A small authenticated entry portal for internal services"
 readme = "README.md"
 requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "zondatw" }]
+maintainers = [{ name = "zondatw" }]
+keywords = ["authentication", "authorization", "portal", "reverse-proxy"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Web Environment",
+  "Intended Audience :: System Administrators",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+  "Topic :: Security",
+]
+import-names = ["auth_entry_portal"]
 dependencies = [
   "argon2-cffi>=23.1",
   "fastapi>=0.115",
@@ -22,16 +40,38 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+  "packaging>=24.2",
   "playwright>=1.55",
   "pytest>=8.3",
   "pytest-cov>=6.0",
+  "pyyaml>=6.0",
 ]
 
 [project.scripts]
-auth-portal = "auth_portal.cli:main"
+auth-portal = "auth_entry_portal.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/zondatw/auth-entry-portal"
+Documentation = "https://github.com/zondatw/auth-entry-portal#readme"
+Source = "https://github.com/zondatw/auth-entry-portal"
+Issues = "https://github.com/zondatw/auth-entry-portal/issues"
+Changelog = "https://github.com/zondatw/auth-entry-portal/blob/main/CHANGELOG.md"
+Security = "https://github.com/zondatw/auth-entry-portal/security/policy"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/auth_portal"]
+packages = ["src/auth_entry_portal"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/src",
+  "/CHANGELOG.md",
+  "/LICENSE",
+  "/README.md",
+  "/SECURITY.md",
+  "/pyproject.toml",
+  "/uv.lock",
+]
+exclude = [".gitignore"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

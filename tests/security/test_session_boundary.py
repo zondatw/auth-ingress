@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 
-from auth_portal.models import PortalSession, User
+from auth_entry_portal.models import PortalSession, User
 from tests.conftest import sign_in
 
 

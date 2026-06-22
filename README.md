@@ -59,6 +59,33 @@ use the response correlation ID and audit events to investigate. Revoke access b
 disabling a user, removing group membership, disabling a service, or revoking its
 active sessions; authorization is re-evaluated on every protected request.
 
+## Full web-app proxy deployment
+
+Full proxy mode gives every service an isolated browser origin. Production
+deployments require:
+
+- A dedicated portal host configured with `AUTH_PORTAL_HOST`.
+- Wildcard DNS and TLS for `*.AUTH_PORTAL_PROXY_BASE_DOMAIN`.
+- `AUTH_PORTAL_PROXY_SCHEME=https` and secure cookies.
+- Private network routing from the portal to every downstream destination;
+  downstream services must remain unreachable from user networks.
+- A narrow comma-separated `AUTH_PORTAL_TRUSTED_DOWNSTREAM_NETWORKS` value.
+- Explicit request/response byte limits, launch-ticket lifetime, upstream
+  timeout, and WebSocket maximum lifetime appropriate to the deployment.
+
+Relevant settings are `AUTH_PORTAL_PROXY_BASE_DOMAIN`,
+`AUTH_PORTAL_PROXY_SCHEME`, `AUTH_PORTAL_PROXY_COOKIE`,
+`AUTH_PORTAL_PROXY_LAUNCH_TTL`, `AUTH_PORTAL_PROXY_MAX_REQUEST_BYTES`,
+`AUTH_PORTAL_PROXY_MAX_RESPONSE_BYTES`,
+`AUTH_PORTAL_PROXY_WEBSOCKET_LIFETIME`, and
+`AUTH_PORTAL_TRUSTED_DOWNSTREAM_NETWORKS`.
+
+Enable proxy mode per service only after its compatibility check succeeds.
+Applications should use relative or root-relative URLs, or be configured with
+their public service origin. Fixed private origins embedded in JavaScript are not
+rewritten. Roll back by disabling proxy mode for the service; the legacy simple
+entry flow remains available for non-proxy service entries.
+
 ## Validation
 
 ```bash
@@ -66,4 +93,4 @@ uv run pytest
 ```
 
 The full manual journey is documented in
-`specs/001-auth-entry-portal/quickstart.md`.
+`specs/002-full-web-app-proxy/quickstart.md`.

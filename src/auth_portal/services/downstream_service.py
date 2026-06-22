@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import httpx
 
 
@@ -7,14 +8,15 @@ class DownstreamUnavailable(Exception):
     pass
 
 
-_clients: dict[float, httpx.AsyncClient] = {}
+_clients: dict[tuple[float, int], httpx.AsyncClient] = {}
 
 
 def pooled_client(timeout_seconds: float) -> httpx.AsyncClient:
-    client = _clients.get(timeout_seconds)
+    key = (timeout_seconds, id(asyncio.get_running_loop()))
+    client = _clients.get(key)
     if client is None or client.is_closed:
         client = httpx.AsyncClient(timeout=httpx.Timeout(timeout_seconds), follow_redirects=False)
-        _clients[timeout_seconds] = client
+        _clients[key] = client
     return client
 
 

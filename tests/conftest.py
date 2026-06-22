@@ -3,6 +3,7 @@ from __future__ import annotations
 import socket
 import threading
 import time
+from dataclasses import replace
 
 import pytest
 import uvicorn
@@ -19,11 +20,20 @@ from auth_portal.repositories.database import Base, get_db
 from auth_portal.security.csrf import csrf_token
 from auth_portal.security.passwords import hash_password
 from auth_portal.web.routes.auth import _limiters
+from tests.fixtures.downstream_app import create_downstream_app
 
 
 @pytest.fixture
 def settings() -> Settings:
-    return Settings(database_url="sqlite://", secret_key="test-secret-with-sufficient-entropy", session_ttl_seconds=3600, rate_limit_attempts=3)
+    return Settings(
+        database_url="sqlite://",
+        secret_key="test-secret-with-sufficient-entropy",
+        session_ttl_seconds=3600,
+        rate_limit_attempts=3,
+        portal_host="testserver",
+        proxy_base_domain="apps.test",
+        proxy_scheme="http",
+    )
 
 
 @pytest.fixture
@@ -68,7 +78,7 @@ def db(db_factory) -> Session:
 @pytest.fixture
 def client(db_factory, db, settings):
     _limiters.clear()
-    app = create_app(initialize_schema=False)
+    app = create_app(initialize_schema=False, proxy_settings=settings, proxy_session_factory=db_factory)
 
     def override_db():
         with db_factory() as session:
@@ -88,14 +98,35 @@ def csrf(settings):
 
 @pytest.fixture
 def live_server(db_factory, db, settings):
-    app = create_app(initialize_schema=False)
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+    live_settings = replace(settings, portal_host=f"127.0.0.1:{port}", proxy_base_domain=f"localhost:{port}")
+    app = create_app(initialize_schema=False, proxy_settings=live_settings, proxy_session_factory=db_factory)
 
     def override_db():
         with db_factory() as session:
             yield session
 
     app.dependency_overrides[get_db] = override_db
-    app.dependency_overrides[get_settings] = lambda: settings
+    app.dependency_overrides[get_settings] = lambda: live_settings
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    for _ in range(100):
+        if server.started:
+            break
+        time.sleep(0.02)
+    if not server.started:
+        raise RuntimeError("test server did not start")
+    yield f"http://127.0.0.1:{port}"
+    server.should_exit = True
+    thread.join(timeout=5)
+
+
+@pytest.fixture
+def downstream_server():
+    app = create_downstream_app()
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
@@ -107,7 +138,52 @@ def live_server(db_factory, db, settings):
             break
         time.sleep(0.02)
     if not server.started:
-        raise RuntimeError("test server did not start")
+        raise RuntimeError("downstream test server did not start")
+    yield f"http://127.0.0.1:{port}"
+    server.should_exit = True
+    thread.join(timeout=5)
+
+
+@pytest.fixture
+def proxy_service(db_factory, db, downstream_server):
+    with db_factory() as session:
+        service = session.query(ServiceEntry).filter_by(slug="demo").one()
+        service.destination = downstream_server
+        service.proxy_enabled = True
+        service.websocket_enabled = True
+        session.commit()
+    return downstream_server
+
+
+@pytest.fixture
+def proxy_live_server(db_factory, db, downstream_server, settings):
+    with db_factory() as session:
+        service = session.query(ServiceEntry).filter_by(slug="demo").one()
+        service.destination = downstream_server
+        service.proxy_enabled = True
+        service.websocket_enabled = True
+        session.commit()
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        port = sock.getsockname()[1]
+    live_settings = replace(settings, portal_host=f"127.0.0.1:{port}", proxy_base_domain=f"localhost:{port}")
+    app = create_app(initialize_schema=False, proxy_settings=live_settings, proxy_session_factory=db_factory)
+
+    def override_db():
+        with db_factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db] = override_db
+    app.dependency_overrides[get_settings] = lambda: live_settings
+    server = uvicorn.Server(uvicorn.Config(app, host="0.0.0.0", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    for _ in range(100):
+        if server.started:
+            break
+        time.sleep(0.02)
+    if not server.started:
+        raise RuntimeError("proxy browser test server did not start")
     yield f"http://127.0.0.1:{port}"
     server.should_exit = True
     thread.join(timeout=5)
@@ -123,3 +199,13 @@ def browser():
 
 def sign_in(client: TestClient, csrf: str, email: str = "member@example.test", password: str = "correct-password", return_to: str = "/"):
     return client.post("/sign-in", data={"email": email, "password": password, "return_to": return_to, "csrf": csrf}, follow_redirects=False)
+
+
+def launch_proxy(client: TestClient, csrf: str, email: str = "member@example.test") -> str:
+    sign_in(client, csrf, email=email)
+    launch = client.get("/services/demo", follow_redirects=False)
+    assert launch.status_code == 302
+    bootstrap = client.get(launch.headers["location"], follow_redirects=False)
+    assert bootstrap.status_code == 302
+    assert bootstrap.headers["location"] == "/"
+    return launch.headers["location"].split("/__portal/", 1)[0]

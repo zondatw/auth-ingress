@@ -23,10 +23,29 @@ def seed_demo() -> None:
         db.add_all([staff, admin, member, outsider])
         db.flush()
         db.add_all([GroupMembership(user_id=admin.id, group_id=staff.id), GroupMembership(user_id=member.id, group_id=staff.id)])
-        service = ServiceEntry(slug="demo", display_name="Demo Service", description="Seeded service", destination="mock://demo")
+        service = ServiceEntry(
+            slug="demo",
+            display_name="Demo Service",
+            description="Seeded service",
+            destination="mock://demo",
+            proxy_enabled=False,
+            websocket_enabled=False,
+        )
         db.add(service)
         db.flush()
         db.add(AccessRule(service_entry_id=service.id, group_id=staff.id))
+        web_demo = ServiceEntry(
+            slug="web-demo",
+            display_name="Full Web-App Demo",
+            description="Enable after starting the compatibility fixture on port 9001",
+            destination="http://127.0.0.1:9001",
+            status="disabled",
+            proxy_enabled=True,
+            websocket_enabled=True,
+        )
+        db.add(web_demo)
+        db.flush()
+        db.add(AccessRule(service_entry_id=web_demo.id, group_id=staff.id))
         db.commit()
 
 

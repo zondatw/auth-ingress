@@ -45,6 +45,8 @@ def save_service(
     destination: str,
     status: str,
     group_names: list[str],
+    proxy_enabled: bool = False,
+    websocket_enabled: bool = False,
 ) -> tuple[ServiceEntry, str]:
     slug = slug.strip()
     if not SLUG.fullmatch(slug):
@@ -53,6 +55,8 @@ def save_service(
         raise ServiceValidationError("Display name is required")
     if status not in {"enabled", "disabled"}:
         raise ServiceValidationError("Invalid status")
+    if websocket_enabled and not proxy_enabled:
+        raise ServiceValidationError("WebSockets require full proxy mode")
     destination = validate_destination(destination)
     names = sorted({name.strip() for name in group_names if name.strip()})
     if status == "enabled" and not names:
@@ -70,11 +74,23 @@ def save_service(
     elif slug != original_slug and db.scalar(select(ServiceEntry).where(ServiceEntry.slug == slug)):
         raise ServiceValidationError("Slug already exists")
     previous_status = service.status
+    proxy_policy_changed = (
+        service.destination != destination
+        or service.proxy_enabled != proxy_enabled
+        or service.websocket_enabled != websocket_enabled
+    )
     service.slug = slug
     service.display_name = display_name.strip()
     service.description = description.strip() or None
     service.destination = destination
     service.status = status
+    if proxy_policy_changed:
+        service.compatibility_status = "unchecked"
+        service.compatibility_checked_at = None
+        service.compatibility_summary = None
+    service.proxy_enabled = proxy_enabled
+    service.websocket_enabled = websocket_enabled
+    service.external_redirect_policy = "deny"
     db.flush()
     db.execute(delete(AccessRule).where(AccessRule.service_entry_id == service.id))
     db.add_all(AccessRule(service_entry_id=service.id, group_id=group.id) for group in groups)
@@ -82,4 +98,3 @@ def save_service(
     if previous_status == "enabled" and status == "disabled":
         action = "disabled"
     return service, action
-

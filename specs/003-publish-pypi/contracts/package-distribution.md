@@ -37,8 +37,10 @@ Both artifacts MUST include:
 - package metadata, README, changelog, and owner-approved license file;
 - the `auth-portal` entry point and complete runtime dependency metadata.
 
-Tests, local databases, caches, coverage files, `.env` files, repository metadata,
-CI configuration, and credentials MUST NOT be installed as runtime package data.
+Tests, local databases, caches, coverage files, `.env` files, VCS history, CI
+configuration, and credentials MUST NOT be installed as runtime package data. A
+generic root `.gitignore` added by the build backend is permitted in the source
+archive but is never installed by the wheel.
 
 ## Public Metadata Contract
 

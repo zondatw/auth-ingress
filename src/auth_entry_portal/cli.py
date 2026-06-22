@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+from getpass import getpass
+import os
 
 import uvicorn
 from sqlalchemy import select
@@ -11,15 +13,28 @@ from auth_entry_portal.repositories.schema import create_schema
 from auth_entry_portal.security.passwords import hash_password
 
 
+def _demo_password(account: str) -> str:
+    variable = f"AUTH_PORTAL_DEMO_{account.upper()}_PASSWORD"
+    value = os.getenv(variable)
+    if value is None:
+        value = getpass(f"Password for demo {account}: ")
+    if len(value) < 12:
+        raise SystemExit(f"{variable} must contain at least 12 characters")
+    return value
+
+
 def seed_demo() -> None:
     create_schema()
     with SessionLocal() as db:
         if db.scalar(select(User).limit(1)):
             return
+        admin_password = _demo_password("admin")
+        member_password = _demo_password("member")
+        outsider_password = _demo_password("outsider")
         staff = Group(name="staff", description="Demo staff group")
-        admin = User(email="admin@example.test", display_name="Demo Admin", password_hash=hash_password("demo-admin-password"), is_admin=True)
-        member = User(email="member@example.test", display_name="Demo Member", password_hash=hash_password("demo-member-password"))
-        outsider = User(email="outsider@example.test", display_name="Demo Outsider", password_hash=hash_password("demo-outsider-password"))
+        admin = User(email="admin@example.test", display_name="Demo Admin", password_hash=hash_password(admin_password), is_admin=True)
+        member = User(email="member@example.test", display_name="Demo Member", password_hash=hash_password(member_password))
+        outsider = User(email="outsider@example.test", display_name="Demo Outsider", password_hash=hash_password(outsider_password))
         db.add_all([staff, admin, member, outsider])
         db.flush()
         db.add_all([GroupMembership(user_id=admin.id, group_id=staff.id), GroupMembership(user_id=member.id, group_id=staff.id)])

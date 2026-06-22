@@ -4,6 +4,49 @@ A small server-rendered FastAPI portal that authenticates internal users before
 allowing them to enter downstream services that do not implement their own login
 flow.
 
+## Install from PyPI
+
+Auth Entry Portal requires Python 3.12 or newer. Install a stable release in a
+virtual environment and pin the version in managed deployments:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install "auth-entry-portal==0.1.0"
+auth-portal --help
+```
+
+The distribution name is `auth-entry-portal`, the Python import namespace is
+`auth_entry_portal`, and the command remains `auth-portal`:
+
+```python
+from auth_entry_portal.main import create_app
+```
+
+Before first use, configure a high-entropy secret and an explicit database URL,
+then initialize the schema:
+
+```bash
+export AUTH_PORTAL_SECRET_KEY="replace-with-a-high-entropy-secret"
+export AUTH_PORTAL_DATABASE_URL="sqlite:////absolute/path/auth_portal.db"
+auth-portal init-db
+auth-portal serve --host 127.0.0.1 --port 8000
+```
+
+Upgrade only after reviewing [CHANGELOG.md](CHANGELOG.md), then install the exact
+new version and rerun application smoke checks:
+
+```bash
+python -m pip install --upgrade "auth-entry-portal==<new-version>"
+auth-portal --help
+```
+
+Verify the installed version with
+`python -m pip show auth-entry-portal`. Remove the package with
+`python -m pip uninstall auth-entry-portal`; database files and external
+configuration are intentionally retained and must be removed separately if no
+longer needed.
+
 ## Trust boundary
 
 The portal is an access-control boundary only when downstream services are
@@ -40,9 +83,12 @@ Configuration uses these environment variables:
 - `AUTH_PORTAL_AUDIT_RETENTION_DAYS` (minimum/default: 90)
 - `AUTH_PORTAL_DOWNSTREAM_TIMEOUT`
 
-Demo accounts use the addresses shown by the seed implementation with local-only
-passwords in `src/auth_entry_portal/cli.py`. Change or remove all demo accounts before
-deployment. The CLI deliberately does not print credentials.
+Demo accounts use the addresses shown by the seed implementation. `seed-demo`
+prompts for each password, or reads the local-only
+`AUTH_PORTAL_DEMO_ADMIN_PASSWORD`, `AUTH_PORTAL_DEMO_MEMBER_PASSWORD`, and
+`AUTH_PORTAL_DEMO_OUTSIDER_PASSWORD` values. Each must contain at least 12
+characters. The CLI deliberately does not print credentials. Remove all demo
+accounts and unset these variables before deployment.
 
 ## Audit and recovery
 

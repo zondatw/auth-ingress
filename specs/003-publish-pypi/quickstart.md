@@ -144,3 +144,58 @@ version:
 Expected outcome: every invalid or unauthorized case stops before public upload,
 no upload is retried blindly, and workflow evidence contains only safe version,
 revision, hash, outcome, and reason-code data.
+
+## Local Validation Record — 2026-06-22
+
+- Foundation metadata: MIT license, canonical project URLs, static version,
+  `auth_entry_portal` import declaration, and constrained Hatch build passed.
+- Package tests: 7 passed in 1.37 seconds.
+- Clean build and isolated wheel/source smoke checks: passed in 7.7 seconds.
+- Wheel: `auth_entry_portal-0.1.0-py3-none-any.whl`
+  (`7e2f0d5dd31d0fb6775e66a1df808189eea609bc77fb6550e553084606511583`).
+- Source archive: `auth_entry_portal-0.1.0.tar.gz`
+  (`0f2ec128c5ab3f22ac428f0477381b6485f9a052235b3a603d13bc2fd7413239`).
+- Both artifacts imported the package, resolved templates/static assets, exposed
+  CLI help, and initialized a disposable database without repository imports.
+- The source archive contains the build backend's generic root `.gitignore`; it
+  excludes tests, VCS history, GitHub/Spec Kit configuration, memory files,
+  environment data, databases, caches, credentials, and application secrets.
+
+## Failure and Recovery Rehearsal — 2026-06-22
+
+| Scenario | Method | Outcome |
+|----------|--------|---------|
+| Invalid event, tag, version, release type, target, or dirty input | Release validation unit tests | Denied with an allowlisted reason before build |
+| Missing/malformed package metadata | Contract and unit tests | Denied before artifact creation |
+| Missing runtime asset or forbidden archive content | Artifact integration tests | Denied before staging |
+| Propagation timeout | Bounded fake-clock index test | Timed out after read-only polling; no upload retry |
+| Duplicate with matching hashes | Index state-machine test | Classified `completed`; verification-only recovery |
+| Duplicate with mismatched identity/hash | Index state-machine test | Classified `collision`; publication stopped |
+| Rejected production approval | Workflow dependency/tabletop review | `publish-pypi` remains blocked after TestPyPI verification |
+| Defective release | Recovery runbook contract | Yank with public reason; correction uses a new version |
+| Publisher compromise | Recovery runbook contract | Cancel jobs, revoke Trusted Publishers, investigate, notify, then re-establish |
+
+US2 workflow contract/security tests: 15 passed. US3 index/recovery/redaction
+tests: 8 passed. Diagnostics contain only version, revision, outcome, reason, and
+artifact SHA-256 values.
+
+## Cross-Version and Artifact Validation — 2026-06-22
+
+- Python 3.12.10: 102 non-browser tests passed; the built universal wheel was
+  reinstalled over the locked environment and passed CLI/database/assets smoke.
+- Python 3.13.6: 102 non-browser tests passed; the built universal wheel was
+  reinstalled over the locked environment and passed CLI/database/assets smoke.
+- Python 3.14.5: 111 browser-inclusive tests passed with 87% line coverage; both
+  wheel and source archive passed clean isolated smoke checks.
+- The source archive built a universal wheel from its own contents, and the
+  application source suite passed on all three supported Python versions.
+- Final local wheel hash:
+  `7e2f0d5dd31d0fb6775e66a1df808189eea609bc77fb6550e553084606511583`.
+- Final local source hash:
+  `0f2ec128c5ab3f22ac428f0477381b6485f9a052235b3a603d13bc2fd7413239`.
+- Wheel/source sensitive-value scans passed after removing literal demo
+  passwords; archive path scans found no VCS history, GitHub/Spec Kit files,
+  tests, memory files, environment data, databases, or caches.
+- Workflow contract tests confirm every action uses a 40-character reviewed SHA;
+  actionlint/zizmor downloads were attempted but blocked by registry/network
+  timeouts, so their task remains open pending CI or restored tool access.

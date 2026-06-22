@@ -24,11 +24,11 @@ validated as an independent increment.
 **Purpose**: Establish release tooling, test structure, and dependency automation
 without changing runtime behavior.
 
-- [ ] T001 Add explicit release-validation test dependencies for metadata and GitHub workflow parsing to pyproject.toml and refresh uv.lock
-- [ ] T002 [P] Configure weekly reviewed full-SHA GitHub Action update proposals in .github/dependabot.yml
-- [ ] T003 [P] Create the importable release-tool package scaffold in scripts/release/__init__.py
-- [ ] T004 [P] Create the isolated installed-package smoke-test package scaffold in tests/smoke/__init__.py
-- [ ] T005 [P] Add shared wheel, source-archive, version, and hash fixtures in tests/release_helpers.py
+- [X] T001 Add explicit release-validation test dependencies for metadata and GitHub workflow parsing to pyproject.toml and refresh uv.lock
+- [X] T002 [P] Configure weekly reviewed full-SHA GitHub Action update proposals in .github/dependabot.yml
+- [X] T003 [P] Create the importable release-tool package scaffold in scripts/release/__init__.py
+- [X] T004 [P] Create the isolated installed-package smoke-test package scaffold in tests/smoke/__init__.py
+- [X] T005 [P] Add shared wheel, source-archive, version, and hash fixtures in tests/release_helpers.py
 
 ---
 
@@ -40,12 +40,12 @@ validation primitives required by every user story.
 **⚠️ CRITICAL**: No user story work begins until these package and trust-boundary
 prerequisites are complete.
 
-- [ ] T006 Obtain and add the owner-approved license text in LICENSE and its SPDX expression/license-file declaration in pyproject.toml
-- [ ] T007 [P] Add Keep-a-Changelog-compatible initial release history and upgrade notes in CHANGELOG.md
-- [ ] T008 [P] Add vulnerability reporting, supported-version, disclosure, and release-compromise contacts in SECURITY.md
-- [ ] T009 Complete authors/maintainers, classifiers, keywords, `auth_entry_portal` import declaration, canonical zondatw/auth-entry-portal project URLs, and Hatch wheel/source inclusion rules in pyproject.toml
-- [ ] T010 Implement shared static package name, version, tag, release type, required metadata, and canonical repository validation in scripts/release/package_metadata.py
-- [ ] T011 Document and verify the renamed origin, default branch, required CI checks, protected environments, and no-token policy in .github/RELEASE_SETUP.md
+- [X] T006 Obtain and add the owner-approved license text in LICENSE and its SPDX expression/license-file declaration in pyproject.toml
+- [X] T007 [P] Add Keep-a-Changelog-compatible initial release history and upgrade notes in CHANGELOG.md
+- [X] T008 [P] Add vulnerability reporting, supported-version, disclosure, and release-compromise contacts in SECURITY.md
+- [X] T009 Complete authors/maintainers, classifiers, keywords, `auth_entry_portal` import declaration, canonical zondatw/auth-entry-portal project URLs, and Hatch wheel/source inclusion rules in pyproject.toml
+- [X] T010 Implement shared static package name, version, tag, release type, required metadata, and canonical repository validation in scripts/release/package_metadata.py
+- [X] T011 Document and verify the renamed origin, default branch, required CI checks, protected environments, and no-token policy in .github/RELEASE_SETUP.md
 
 **Checkpoint**: Public metadata and immutable artifact boundaries are defined;
 story-specific package and workflow work can proceed.
@@ -67,16 +67,16 @@ resource within five minutes.
 > Write these tests first and confirm they expose missing metadata, forbidden
 > files, or absent runtime resources before completing the artifact implementation.
 
-- [ ] T012 [P] [US1] Add distribution/import/CLI/version/metadata and legacy `auth_portal` import-absence contract tests in tests/contract/test_package_contract.py
-- [ ] T013 [P] [US1] Add wheel/source filename, count, contents, exclusions, metadata, dependency, and hash integration tests in tests/integration/test_distribution_artifacts.py
-- [ ] T014 [P] [US1] Add isolated import, CLI help, disposable database, application startup, template, static resource, and five-minute checks in tests/smoke/test_installed_package.py
+- [X] T012 [P] [US1] Add distribution/import/CLI/version/metadata and legacy `auth_portal` import-absence contract tests in tests/contract/test_package_contract.py
+- [X] T013 [P] [US1] Add wheel/source filename, count, contents, exclusions, metadata, dependency, and hash integration tests in tests/integration/test_distribution_artifacts.py
+- [X] T014 [P] [US1] Add isolated import, CLI help, disposable database, application startup, template, static resource, and five-minute checks in tests/smoke/test_installed_package.py
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Implement deterministic wheel/source discovery, SHA-256 manifest generation, required-content checks, forbidden-content checks, and metadata checks in scripts/release/check_artifacts.py
-- [ ] T016 [US1] Implement the clean build, metadata check, artifact inspection, and separate wheel/source smoke-test orchestration in scripts/release/build_and_check.py
-- [ ] T017 [US1] Add PyPI installation, exact version pinning, upgrade, configuration prerequisites, verification, and removal guidance using `auth_entry_portal` examples in README.md
-- [ ] T018 [US1] Execute the local artifact and installed-package scenarios and record filenames, hashes, durations, and outcomes in specs/003-publish-pypi/quickstart.md
+- [X] T015 [US1] Implement deterministic wheel/source discovery, SHA-256 manifest generation, required-content checks, forbidden-content checks, and metadata checks in scripts/release/check_artifacts.py
+- [X] T016 [US1] Implement the clean build, metadata check, artifact inspection, and separate wheel/source smoke-test orchestration in scripts/release/build_and_check.py
+- [X] T017 [US1] Add PyPI installation, exact version pinning, upgrade, configuration prerequisites, verification, and removal guidance using `auth_entry_portal` examples in README.md
+- [X] T018 [US1] Execute the local artifact and installed-package scenarios and record filenames, hashes, durations, and outcomes in specs/003-publish-pypi/quickstart.md
 
 **Checkpoint**: Both local distribution formats are independently installable and
 complete. This is the MVP artifact slice even before automated public promotion.
@@ -99,19 +99,19 @@ authority.
 > actions, version mismatches, and failed gates are rejected before workflows are
 > completed.
 
-- [ ] T019 [P] [US2] Add CI/release trigger, dependency graph, concurrency, immutable artifact handoff, environment, action-pin, and permission contract tests in tests/contract/test_github_workflows.py
-- [ ] T020 [P] [US2] Add package name, tag/version, release type, required metadata, dirty input, and missing approval validation tests in tests/unit/test_release_validation.py
-- [ ] T021 [P] [US2] Add tests proving pull-request/build/verification jobs lack OIDC, publish jobs execute no repository code, public duplicates fail, and workflow output excludes secrets in tests/security/test_release_workflow_security.py
+- [X] T019 [P] [US2] Add CI/release trigger, dependency graph, concurrency, immutable artifact handoff, environment, action-pin, and permission contract tests in tests/contract/test_github_workflows.py
+- [X] T020 [P] [US2] Add package name, tag/version, release type, required metadata, dirty input, and missing approval validation tests in tests/unit/test_release_validation.py
+- [X] T021 [P] [US2] Add tests proving pull-request/build/verification jobs lack OIDC, publish jobs execute no repository code, public duplicates fail, and workflow output excludes secrets in tests/security/test_release_workflow_security.py
 
 ### Implementation for User Story 2
 
-- [ ] T022 [US2] Implement GitHub Release event, tag/version, pre-release/stable, clean input, package metadata, and prerequisite gate validation in scripts/release/validate_release.py
-- [ ] T023 [US2] Add locked Python 3.12/3.13/3.14 tests, newest-version Chromium/coverage, and artifact build/smoke jobs with read-only permissions and full-SHA action pins in .github/workflows/ci.yml
-- [ ] T024 [US2] Add published-release validation and one-time no-OIDC build jobs that upload only the wheel, source archive, and hash manifest in .github/workflows/release.yml
-- [ ] T025 [US2] Add a separate `testpypi` environment job using job-scoped OIDC and one official PyPI action invocation in .github/workflows/release.yml
-- [ ] T026 [US2] Implement bounded TestPyPI propagation polling, exact-version isolated installation, dependency-index separation, and staged smoke validation in scripts/release/verify_staged_release.py
-- [ ] T027 [US2] Add the non-OIDC TestPyPI verification gate and protected `pypi` environment promotion of the unchanged hash-verified artifacts in .github/workflows/release.yml
-- [ ] T028 [US2] Document exact PyPI/TestPyPI pending-publisher claims, GitHub environment protections, required reviewers, tag restrictions, and prohibited token secrets in .github/RELEASE_SETUP.md
+- [X] T022 [US2] Implement GitHub Release event, tag/version, pre-release/stable, clean input, package metadata, and prerequisite gate validation in scripts/release/validate_release.py
+- [X] T023 [US2] Add locked Python 3.12/3.13/3.14 tests, newest-version Chromium/coverage, and artifact build/smoke jobs with read-only permissions and full-SHA action pins in .github/workflows/ci.yml
+- [X] T024 [US2] Add published-release validation and one-time no-OIDC build jobs that upload only the wheel, source archive, and hash manifest in .github/workflows/release.yml
+- [X] T025 [US2] Add a separate `testpypi` environment job using job-scoped OIDC and one official PyPI action invocation in .github/workflows/release.yml
+- [X] T026 [US2] Implement bounded TestPyPI propagation polling, exact-version isolated installation, dependency-index separation, and staged smoke validation in scripts/release/verify_staged_release.py
+- [X] T027 [US2] Add the non-OIDC TestPyPI verification gate and protected `pypi` environment promotion of the unchanged hash-verified artifacts in .github/workflows/release.yml
+- [X] T028 [US2] Document exact PyPI/TestPyPI pending-publisher claims, GitHub environment protections, required reviewers, tag restrictions, and prohibited token secrets in .github/RELEASE_SETUP.md
 - [ ] T029 [US2] Configure the `testpypi` and `pypi` GitHub environments plus matching PyPI/TestPyPI Trusted Publishers and record non-sensitive configuration evidence in .github/RELEASE_SETUP.md
 - [ ] T030 [US2] Run a staged pre-release rehearsal through TestPyPI, reject public approval, and record exact artifacts, hashes, job permissions, timing, and smoke outcomes in specs/003-publish-pypi/quickstart.md
 
@@ -136,18 +136,18 @@ Trusted Publisher revocation using only documented non-sensitive evidence.
 > unsafe deletion/reuse guidance, unbounded polling, and sensitive diagnostics are
 > rejected.
 
-- [ ] T031 [P] [US3] Add absent/present/mismatched version, bounded retry, exact filename/hash, duplicate, and ambiguous timeout tests in tests/unit/test_index_verification.py
-- [ ] T032 [P] [US3] Add release runbook contract tests for immutable versions, yank reasons, new replacement versions, publisher revocation, notification, and 90-day evidence retention in tests/contract/test_release_operations_contract.py
-- [ ] T033 [P] [US3] Add diagnostic and workflow-summary redaction tests for OIDC/API tokens, application secrets, sessions, databases, demo passwords, and personal data in tests/security/test_release_redaction.py
+- [X] T031 [P] [US3] Add absent/present/mismatched version, bounded retry, exact filename/hash, duplicate, and ambiguous timeout tests in tests/unit/test_index_verification.py
+- [X] T032 [P] [US3] Add release runbook contract tests for immutable versions, yank reasons, new replacement versions, publisher revocation, notification, and 90-day evidence retention in tests/contract/test_release_operations_contract.py
+- [X] T033 [P] [US3] Add diagnostic and workflow-summary redaction tests for OIDC/API tokens, application secrets, sessions, databases, demo passwords, and personal data in tests/security/test_release_redaction.py
 
 ### Implementation for User Story 3
 
-- [ ] T034 [US3] Implement read-only PyPI/TestPyPI version lookup, bounded propagation retry, exact artifact/hash comparison, and absent/completed/collision outcomes in scripts/release/verify_index.py
-- [ ] T035 [US3] Add read-only public metadata, hash, source revision, and attestation verification plus allowlisted workflow summaries in .github/workflows/release.yml
-- [ ] T036 [US3] Document normal versioning, GitHub Release publication, approval, verification, duplicate diagnosis, and immutable evidence procedures in docs/releasing.md
-- [ ] T037 [US3] Document defective-release yanking, operator notification, new-version replacement, workflow cancellation, Trusted Publisher revocation, investigation, and re-establishment in docs/release-recovery.md
-- [ ] T038 [US3] Rehearse failed validation, propagation timeout, duplicate, mismatched hash, rejected approval, yank, and publisher-revocation paths and record safe outcomes in specs/003-publish-pypi/quickstart.md
-- [ ] T039 [US3] Verify GitHub and package-index release, deployment, approval, hash, upload, yank, and revocation evidence retention for at least 90 days and record policy links in .github/RELEASE_SETUP.md
+- [X] T034 [US3] Implement read-only PyPI/TestPyPI version lookup, bounded propagation retry, exact artifact/hash comparison, and absent/completed/collision outcomes in scripts/release/verify_index.py
+- [X] T035 [US3] Add read-only public metadata, hash, source revision, and attestation verification plus allowlisted workflow summaries in .github/workflows/release.yml
+- [X] T036 [US3] Document normal versioning, GitHub Release publication, approval, verification, duplicate diagnosis, and immutable evidence procedures in docs/releasing.md
+- [X] T037 [US3] Document defective-release yanking, operator notification, new-version replacement, workflow cancellation, Trusted Publisher revocation, investigation, and re-establishment in docs/release-recovery.md
+- [X] T038 [US3] Rehearse failed validation, propagation timeout, duplicate, mismatched hash, rejected approval, yank, and publisher-revocation paths and record safe outcomes in specs/003-publish-pypi/quickstart.md
+- [X] T039 [US3] Verify GitHub and package-index release, deployment, approval, hash, upload, yank, and revocation evidence retention for at least 90 days and record policy links in .github/RELEASE_SETUP.md
 
 **Checkpoint**: Published releases are traceable and maintainers can begin a safe
 defect or compromise response within the specified 15-minute target.
@@ -159,9 +159,9 @@ defect or compromise response within the specified 15-minute target.
 **Purpose**: Validate the complete release surface and remove cross-story gaps.
 
 - [ ] T040 [P] Run actionlint and a GitHub Actions security scan, resolve all actionable findings, and record tool versions/results in specs/003-publish-pypi/quickstart.md
-- [ ] T041 [P] Scan wheel/source contents and workflow logs for credentials, databases, repository tooling, tests, caches, environment files, sessions, and demo passwords and record results in specs/003-publish-pypi/quickstart.md
-- [ ] T042 Verify every third-party action and uv reference is pinned to a reviewed immutable version and document update ownership in .github/RELEASE_SETUP.md
-- [ ] T043 Run the complete pytest suite with coverage plus clean wheel/source builds and isolated smoke tests on every supported Python version and record results in specs/003-publish-pypi/quickstart.md
+- [X] T041 [P] Scan wheel/source contents and workflow logs for credentials, databases, repository tooling, tests, caches, environment files, sessions, and demo passwords and record results in specs/003-publish-pypi/quickstart.md
+- [X] T042 Verify every third-party action and uv reference is pinned to a reviewed immutable version and document update ownership in .github/RELEASE_SETUP.md
+- [X] T043 Run the complete pytest suite with coverage plus clean wheel/source builds and isolated smoke tests on every supported Python version and record results in specs/003-publish-pypi/quickstart.md
 - [ ] T044 Recheck `auth-entry-portal` availability, canonical repository/project links, license/security prerequisites, TestPyPI metadata, and trusted-publisher claims immediately before public registration in .github/RELEASE_SETUP.md
 - [ ] T045 Execute the approved stable release, verify identical TestPyPI/PyPI artifacts and public provenance, and record the final release URL, version, hashes, timings, and outcomes in specs/003-publish-pypi/quickstart.md
 

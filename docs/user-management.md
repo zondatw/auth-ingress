@@ -33,10 +33,12 @@ protected SMTP credentials where required. Password reset uses single-use links
 over SMTP. If delivery fails, no reset secret is displayed; correct SMTP
 configuration and send a new reset, which invalidates older links.
 
-Disabling a user, completing a reset, or demoting an administrator revokes active
-sessions. Memberships remain attached to disabled users but grant no currently
-usable service. Self-disable, self-demotion, and changes that would remove the
-last active administrator are rejected.
+Deactivating a user is the reversible soft-delete path: active sessions are
+revoked, memberships remain attached, and no service is currently usable until
+reactivation. Permanent removal is the hard-delete path: the user row,
+memberships, sessions, and reset requests are removed, while groups, services,
+access rules, and audit events remain. Self-disable, self-demotion, self-removal,
+and changes that would remove the last active administrator are rejected.
 
 ## Incident recovery
 

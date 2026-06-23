@@ -6,7 +6,7 @@ from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
-from auth_entry_portal.models import Group, GroupMembership, User
+from auth_entry_portal.models import AuditEvent, Group, GroupMembership, PasswordResetRequest, PortalSession, User
 from auth_entry_portal.services.access_service import effective_access_for_user
 from auth_entry_portal.services.audit_service import record_event
 from auth_entry_portal.security.passwords import hash_password
@@ -175,3 +175,34 @@ def set_user_status(db: Session, actor: User, target_id: int, expected_revision:
     record_event(db, "user_disabled" if status == "disabled" else "user_reactivated", "changed", status, actor_user_id=actor.id, target_user_id=target.id, context={"client_category": "management"}, change_summary={"revision": target.revision, "status": status}, commit=False)
     db.commit()
     return OperationResult("user_status", OutcomeCode.SUCCESS, target.id, target.revision, changes={"status": status}, message=f"Account {status}")
+
+
+def delete_user(db: Session, actor: User, target_id: int, expected_revision: int, *, apply: bool) -> OperationResult:
+    actor, target = _target_for_change(db, actor, target_id, expected_revision)
+    _protect_admin_change(db, actor, target, removing_admin=target.is_admin, disabling=target.status == "active")
+    changes = {"field_names": ["deleted"], "email": target.email, "status": target.status, "is_admin": target.is_admin}
+    if not apply:
+        return OperationResult("user_delete", OutcomeCode.SUCCESS, target.id, target.revision, changes=changes, message="Preview user removal")
+
+    user_id = target.id
+    record_event(
+        db,
+        "user_deleted",
+        "changed",
+        "hard_delete",
+        actor_user_id=actor.id,
+        target_user_id=user_id,
+        context={"client_category": "management"},
+        change_summary={"revision": target.revision, "field_names": ["deleted"]},
+        commit=False,
+    )
+    db.flush()
+    db.execute(delete(GroupMembership).where(GroupMembership.user_id == user_id))
+    db.execute(delete(PortalSession).where(PortalSession.user_id == user_id))
+    db.execute(delete(PasswordResetRequest).where(PasswordResetRequest.user_id == user_id))
+    db.execute(update(PasswordResetRequest).where(PasswordResetRequest.requested_by_user_id == user_id).values(requested_by_user_id=None))
+    db.execute(update(AuditEvent).where(AuditEvent.actor_user_id == user_id).values(actor_user_id=None))
+    db.execute(update(AuditEvent).where(AuditEvent.target_user_id == user_id).values(target_user_id=None))
+    db.delete(target)
+    db.commit()
+    return OperationResult("user_delete", OutcomeCode.SUCCESS, user_id, changes=changes, message="User removed")

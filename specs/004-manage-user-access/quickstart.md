@@ -110,7 +110,8 @@ Expected:
 
 Through both page and CLI, exercise create, temporary-password first sign-in,
 self password change, profile update, disable, reactivate, admin demotion, and
-password-reset initiation.
+password-reset initiation. On the page, verify the temporary password copy
+button and permanent user-removal preview/confirm flow.
 
 Expected:
 
@@ -120,6 +121,11 @@ Expected:
   service, and admin access is blocked until the user chooses a new password.
 - Completing first-sign-in password change activates credentials and invalidates
   the temporary password.
+- The temporary password copy button writes the displayed one-time password to
+  the clipboard when browser clipboard permissions allow it, and provides a
+  manual-copy fallback message otherwise.
+- Deactivation is reversible soft delete; permanent removal deletes the user
+  account and authentication state while retaining audit history.
 - Disable, password reset completion, and admin demotion revoke all target
   sessions immediately.
 - Memberships remain while disabled and become usable again after reactivation.
@@ -149,6 +155,7 @@ Required coverage includes:
 - Last-admin/self-operation safeguards and immediate session revocation.
 - Reset expiry, replay, supersession, delivery failure, and secret redaction.
 - Search behavior over at least 10,000 generated identities.
+- Permanent user removal with self/last-admin denial and retained audit history.
 - Installed wheel and source-archive smoke tests containing the new templates and
   CLI commands without repository-file dependence.
 
@@ -170,7 +177,7 @@ none before the feature is accepted.
 
 - Python 3.12.10: 137 non-browser tests passed.
 - Python 3.13.6: 137 non-browser tests passed.
-- Python 3.14.5: 148 browser-inclusive tests passed; coverage run passed with
+- Python 3.14.5: 150 browser-inclusive tests passed; coverage run passed with
   87% line coverage.
 - Accessibility and responsive checks passed for `/admin/users`: keyboard focus
   moved off the document body, narrow viewport rendered the user table, status
@@ -179,9 +186,9 @@ none before the feature is accepted.
 - Release artifact validation passed with forced isolated reinstallation of the
   local artifact to avoid stale package-cache entry points.
 - Wheel: `auth_entry_portal-0.1.0-py3-none-any.whl`
-  (`39c18c96215ba7b196d08d9364092d9aa5aa49601d46d50b7e3558c2a83beddb`).
+  (`b66c14da58ba28830cb71762415fcb94007beb3305340ee3b2e8989bedcbc1ee`).
 - Source archive: `auth_entry_portal-0.1.0.tar.gz`
-  (`e2af76f1b2e81e77b2e8524f046b40bcff72107d323b7921f53343d557e19750`).
+  (`24eaddf397637175500f73e543dbdffe482a41344fcf427d635145580b736f86`).
 - Artifact content scan passed for known demo credentials and release-token
   sentinel values; wheel/source smoke tests verified new templates and CLI
   commands from installed artifacts.

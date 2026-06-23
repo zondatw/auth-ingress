@@ -120,7 +120,9 @@ groups granting each service. Page and CLI mutations preview first and reject a
 stale user revision. Creating a user generates a one-time temporary password
 that is shown only in the create response; the user must change it immediately
 after first sign-in. Later password resets can still use configured SMTP links;
-reset secrets are stored only as digests and never shown to an operator. See
+reset secrets are stored only as digests and never shown to an operator.
+Deactivation is the reversible soft-delete path; permanent removal deletes the
+user account and authentication state while retaining audit history. See
 [docs/user-management.md](docs/user-management.md) for commands, exit codes,
 conflict recovery, lifecycle controls, and delivery troubleshooting.
 

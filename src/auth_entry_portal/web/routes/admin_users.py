@@ -12,7 +12,7 @@ from auth_entry_portal.security.dependencies import Identity, require_admin
 from auth_entry_portal.security.rate_limit import ManagementRequestLimiter
 from auth_entry_portal.services.password_reset_service import initiate_reset
 from auth_entry_portal.services.recovery_delivery import SMTPRecoveryDelivery
-from auth_entry_portal.services.user_admin_service import change_memberships, create_user, search_users, set_user_status, update_user, user_detail
+from auth_entry_portal.services.user_admin_service import change_memberships, create_user, delete_user, search_users, set_user_status, update_user, user_detail
 from auth_entry_portal.services.user_management_types import ManagementError, OutcomeCode
 from auth_entry_portal.web.web import template
 
@@ -105,6 +105,16 @@ def status_change(user_id: int, request: Request, expected_revision: int = Form(
     try: result = set_user_status(db, identity.user, user_id, expected_revision, status, apply=confirm)
     except ManagementError as exc: return detail_page(request, db, settings, identity, user_id, error=str(exc), status_code=403 if exc.code == OutcomeCode.DENIED else 409 if exc.code == OutcomeCode.CONFLICT else 400)
     return detail_page(request, db, settings, identity, user_id, preview=result if not confirm else None, message=result.message if confirm else None)
+
+
+@router.post("/{user_id}/delete")
+def delete_account(user_id: int, request: Request, expected_revision: int = Form(...), confirm: bool = Form(False), csrf: str = Form(...), identity: Identity = Depends(require_admin), db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
+    if not valid_csrf(csrf, settings): return detail_page(request, db, settings, identity, user_id, error="The form expired. Please try again.", status_code=400)
+    try: result = delete_user(db, identity.user, user_id, expected_revision, apply=confirm)
+    except ManagementError as exc: return detail_page(request, db, settings, identity, user_id, error=str(exc), status_code=403 if exc.code == OutcomeCode.DENIED else 409 if exc.code == OutcomeCode.CONFLICT else 400)
+    if confirm:
+        return _list_after_create(request, db, settings, identity, message=result.message)
+    return detail_page(request, db, settings, identity, user_id, preview=result)
 
 
 @router.post("/{user_id}/reset-password")

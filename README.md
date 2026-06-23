@@ -64,6 +64,24 @@ file at the operating-system level.
 
 ## Setup and operation
 
+For a production-style first installation, create the first administrator with
+the one-time local bootstrap command. It prompts twice without echoing or
+accepting the password as an argument:
+
+```bash
+uv run auth-portal bootstrap-admin \
+  --email admin@example.com \
+  --display-name "Administrator"
+uv run auth-portal serve --host 127.0.0.1 --port 8000
+```
+
+Before bootstrap, sign-in displays local setup guidance and never exposes a
+registration form. Repeating the command after any identity exists makes no
+change. If setup fails before completion, correct the reported non-secret input
+or storage problem and safely retry the same command.
+
+For disposable development data only:
+
 ```bash
 uv sync --extra test
 uv run auth-portal init-db
@@ -81,6 +99,12 @@ Configuration uses these environment variables:
 - `AUTH_PORTAL_RATE_LIMIT_ATTEMPTS`
 - `AUTH_PORTAL_RATE_LIMIT_WINDOW`
 - `AUTH_PORTAL_AUDIT_RETENTION_DAYS` (minimum/default: 90)
+- `AUTH_PORTAL_PASSWORD_RESET_TTL` (minimum: 300 seconds; default: 1800)
+- `AUTH_PORTAL_SMTP_HOST`, `AUTH_PORTAL_SMTP_PORT`, `AUTH_PORTAL_SMTP_SENDER`
+- `AUTH_PORTAL_SMTP_USERNAME`, `AUTH_PORTAL_SMTP_PASSWORD`, `AUTH_PORTAL_SMTP_STARTTLS`
+- `AUTH_PORTAL_SMTP_TIMEOUT`
+- `AUTH_PORTAL_USER_PAGE_SIZE` (10–100; default: 50)
+- `AUTH_PORTAL_MANAGEMENT_RATE_LIMIT_ATTEMPTS`, `AUTH_PORTAL_MANAGEMENT_RATE_LIMIT_WINDOW`
 - `AUTH_PORTAL_DOWNSTREAM_TIMEOUT`
 
 Demo accounts use the addresses shown by the seed implementation. `seed-demo`
@@ -89,6 +113,14 @@ prompts for each password, or reads the local-only
 `AUTH_PORTAL_DEMO_OUTSIDER_PASSWORD` values. Each must contain at least 12
 characters. The CLI deliberately does not print credentials. Remove all demo
 accounts and unset these variables before deployment.
+
+Administrators manage users at `/admin/users` or with `auth-portal users`.
+Memberships remain the only per-user access-list input; user detail explains all
+groups granting each service. Page and CLI mutations preview first and reject a
+stale user revision. Creating a user sends a single-use password setup link over
+configured SMTP; reset secrets are stored only as digests and never shown to an
+operator. See [docs/user-management.md](docs/user-management.md) for commands,
+exit codes, conflict recovery, lifecycle controls, and delivery troubleshooting.
 
 ## Audit and recovery
 

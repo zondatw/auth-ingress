@@ -160,3 +160,30 @@ artifacts for passwords, password hashes, reset secrets/digests, sessions,
 cookies, authorization values, demo credentials, environment secrets, database
 contents, and personal data beyond the authorized UI contract. The scan must find
 none before the feature is accepted.
+
+## Validation Record — 2026-06-23
+
+- Python 3.12.10: 137 non-browser tests passed.
+- Python 3.13.6: 137 non-browser tests passed.
+- Python 3.14.5: 147 browser-inclusive tests passed; coverage run passed with
+  87% line coverage.
+- Accessibility and responsive checks passed for `/admin/users`: keyboard focus
+  moved off the document body, narrow viewport rendered the user table, status
+  text did not rely on color alone, and empty search state rendered a clear
+  heading.
+- Release artifact validation passed with forced isolated reinstallation of the
+  local artifact to avoid stale package-cache entry points.
+- Wheel: `auth_entry_portal-0.1.0-py3-none-any.whl`
+  (`8b5f3c8a4674e084cb6af091d3043f8a4ba018f4562e6e79f5106ce21a9e8ab2`).
+- Source archive: `auth_entry_portal-0.1.0.tar.gz`
+  (`f8941151015f1738d39e3f395572d55c757e2a9518b0df71d65980e67da41946`).
+- Artifact content scan passed for known demo credentials and release-token
+  sentinel values; wheel/source smoke tests verified new templates and CLI
+  commands from installed artifacts.
+- Evidence coverage: FR-001–FR-026, SPR-001–SPR-012, SC-001–SC-010, and the
+  management, CLI, and UI contracts are covered by contract, unit, integration,
+  security, smoke, and browser tests added for this feature.
+- Dependency-failure and recovery behavior covered: SMTP delivery failure leaves
+  no exposed reset secret, reset requests are digest-only and single-use, replay
+  and expiry are denied generically, stale revisions are rejected, and interrupted
+  CLI recovery is handled by reading current state before retry.

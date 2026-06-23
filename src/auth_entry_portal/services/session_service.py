@@ -3,6 +3,7 @@ from __future__ import annotations
 import secrets
 from datetime import datetime, timedelta, timezone
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from auth_entry_portal.models import PortalSession, User
@@ -49,3 +50,13 @@ def revoke_session(db: Session, portal_session: PortalSession | None) -> None:
     if portal_session and portal_session.revoked_at is None:
         portal_session.revoked_at = utcnow()
         db.commit()
+
+
+def revoke_user_sessions(db: Session, user_id: int, *, commit: bool = False) -> int:
+    now = utcnow()
+    sessions = list(db.scalars(select(PortalSession).where(PortalSession.user_id == user_id, PortalSession.revoked_at.is_(None))).all())
+    for portal_session in sessions:
+        portal_session.revoked_at = now
+    if commit:
+        db.commit()
+    return len(sessions)

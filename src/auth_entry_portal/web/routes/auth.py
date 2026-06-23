@@ -13,6 +13,7 @@ from auth_entry_portal.security.csrf import valid_csrf
 from auth_entry_portal.security.rate_limit import FailedSignInLimiter
 from auth_entry_portal.services.audit_service import record_event
 from auth_entry_portal.services.authentication_service import authenticate, normalize_email
+from auth_entry_portal.services.bootstrap_service import is_bootstrap_required
 from auth_entry_portal.services.session_service import create_session, revoke_session, validate_session
 from auth_entry_portal.web.web import template
 
@@ -41,7 +42,9 @@ def context(request: Request) -> dict:
 
 
 @router.get("/sign-in")
-def sign_in_form(request: Request, return_to: str | None = None, settings: Settings = Depends(get_settings)):
+def sign_in_form(request: Request, return_to: str | None = None, db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
+    if is_bootstrap_required(db):
+        return template(request, "auth/setup_required.html", settings, status_code=503)
     return template(request, "auth/sign_in.html", settings, return_to=safe_return_to(return_to), error=None)
 
 
@@ -55,6 +58,8 @@ def sign_in(
     db: Session = Depends(get_db),
     settings: Settings = Depends(get_settings),
 ):
+    if is_bootstrap_required(db):
+        return template(request, "auth/setup_required.html", settings, status_code=503)
     if not valid_csrf(csrf, settings):
         return template(request, "auth/sign_in.html", settings, return_to="/", error="The form expired. Please try again.", status_code=400)
     email_key = f"account:{normalize_email(email)}"
@@ -94,4 +99,3 @@ def sign_out(
     response = RedirectResponse("/sign-in?signed_out=1", status_code=302)
     response.delete_cookie(settings.session_cookie, path="/")
     return response
-

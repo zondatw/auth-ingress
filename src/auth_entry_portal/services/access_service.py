@@ -1,7 +1,9 @@
+from collections import defaultdict
+
 from sqlalchemy import exists, select
 from sqlalchemy.orm import Session
 
-from auth_entry_portal.models import AccessRule, GroupMembership, ServiceEntry, User
+from auth_entry_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
 
 
 def permitted_service_query(user: User):
@@ -37,3 +39,23 @@ def may_enter(db: Session, user: User, service: ServiceEntry) -> bool:
         )
     )
 
+
+def effective_access_for_user(db: Session, user: User) -> list[dict]:
+    grants: dict[int, list[str]] = defaultdict(list)
+    rows = db.execute(
+        select(AccessRule.service_entry_id, Group.name)
+        .join(Group, Group.id == AccessRule.group_id)
+        .join(GroupMembership, GroupMembership.group_id == AccessRule.group_id)
+        .where(GroupMembership.user_id == user.id)
+        .order_by(Group.name)
+    )
+    for service_id, group_name in rows:
+        grants[service_id].append(group_name)
+    results = []
+    for service in db.scalars(select(ServiceEntry).order_by(ServiceEntry.display_name, ServiceEntry.id)):
+        groups = sorted(set(grants.get(service.id, [])))
+        policy_granted = bool(groups)
+        usable = policy_granted and user.status == "active" and service.status == "enabled"
+        reason = None if usable else "user_disabled" if user.status != "active" else "service_disabled" if service.status != "enabled" else "no_matching_group"
+        results.append({"service_id": service.id, "service_slug": service.slug, "display_name": service.display_name, "service_status": service.status, "granting_groups": groups, "policy_granted": policy_granted, "currently_usable": usable, "denial_reason": reason})
+    return results

@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from auth_entry_portal.repositories.schema import create_schema
 from auth_entry_portal.services.downstream_service import close_clients
 from auth_entry_portal.services.proxy_websocket_service import close_websockets
-from auth_entry_portal.web.routes import admin_audit, admin_services, auth, portal, services
+from auth_entry_portal.web.routes import admin_audit, admin_services, admin_users, auth, password_reset, portal, services
 from auth_entry_portal.web.routes.proxy import ProxyDispatchMiddleware
 from auth_entry_portal.web.web import WEB_ROOT
 
@@ -60,10 +60,13 @@ def create_app(*, initialize_schema: bool = True, proxy_settings=None, proxy_ses
     )
     app.mount("/static", StaticFiles(directory=WEB_ROOT / "static"), name="static")
     app.include_router(auth.router)
+    app.include_router(password_reset.router)
     app.include_router(portal.router)
     app.include_router(services.router)
     app.include_router(admin_services.router)
     app.include_router(admin_audit.router)
+    app.include_router(admin_users.creation_router)
+    app.include_router(admin_users.router)
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):
@@ -73,7 +76,7 @@ def create_app(*, initialize_schema: bool = True, proxy_settings=None, proxy_ses
         response.headers["X-Correlation-ID"] = correlation_id
         response.headers.setdefault("Cache-Control", "no-store")
         response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["Referrer-Policy"] = "same-origin"
+        response.headers.setdefault("Referrer-Policy", "same-origin")
         logger.info("request_completed method=%s path=%s status=%s correlation_id=%s", request.method, request.url.path, response.status_code, correlation_id)
         return response
 

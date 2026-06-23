@@ -49,12 +49,22 @@ def db_factory():
 @pytest.fixture
 def db(db_factory) -> Session:
     with db_factory() as session:
+        def make_user(email: str, display_name: str, *, admin: bool = False, status: str = "active") -> User:
+            return User(
+                email=email,
+                display_name=display_name,
+                password_hash=hash_password("correct-password"),
+                status=status,
+                credential_status="active",
+                is_admin=admin,
+            )
+
         staff = Group(name="staff", description="Staff")
         admins = Group(name="admins", description="Administrators")
-        member = User(email="member@example.test", display_name="Member", password_hash=hash_password("correct-password"))
-        outsider = User(email="outsider@example.test", display_name="Outsider", password_hash=hash_password("correct-password"))
-        admin = User(email="admin@example.test", display_name="Admin", password_hash=hash_password("correct-password"), is_admin=True)
-        disabled = User(email="disabled@example.test", display_name="Disabled", password_hash=hash_password("correct-password"), status="disabled")
+        member = make_user("member@example.test", "Member")
+        outsider = make_user("outsider@example.test", "Outsider")
+        admin = make_user("admin@example.test", "Admin", admin=True)
+        disabled = make_user("disabled@example.test", "Disabled", status="disabled")
         session.add_all([staff, admins, member, outsider, admin, disabled])
         session.flush()
         session.add_all([

@@ -16,7 +16,10 @@ def test_distribution_import_and_cli_names_are_stable():
     project = project_metadata()
     assert project["name"] == EXPECTED_DISTRIBUTION
     assert project["import-names"] == [EXPECTED_IMPORT]
-    assert project["scripts"] == {"auth-portal": "auth_entry_portal.cli:main"}
+    assert project["scripts"] == {
+        "auth-ingress": "auth_entry_portal.cli:main",
+        "auth-portal": "auth_entry_portal.cli:main",
+    }
     assert (ROOT / "src" / EXPECTED_IMPORT).is_dir()
     assert not (ROOT / "src" / "auth_portal").exists()
     assert find_spec(EXPECTED_IMPORT) is not None

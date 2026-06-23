@@ -16,8 +16,8 @@ from tests.release_helpers import (
 
 def test_artifact_names_counts_hashes_and_metadata(built_artifacts: BuiltArtifacts):
     version = project_metadata()["version"]
-    assert built_artifacts.wheel.name == f"auth_entry_portal-{version}-py3-none-any.whl"
-    assert built_artifacts.source.name == f"auth_entry_portal-{version}.tar.gz"
+    assert built_artifacts.wheel.name == f"auth_ingress-{version}-py3-none-any.whl"
+    assert built_artifacts.source.name == f"auth_ingress-{version}.tar.gz"
     assert all(len(artifact_sha256(path)) == 64 for path in built_artifacts.all)
     report = inspect_artifacts(built_artifacts.all)
     assert report.version == version
@@ -32,7 +32,7 @@ def test_wheel_contains_runtime_assets_and_public_metadata(built_artifacts: Buil
     assert "auth_entry_portal/__init__.py" in names
     assert "auth_entry_portal/web/static/portal.css" in names
     assert "auth_entry_portal/web/templates/base.html" in names
-    assert metadata["Name"] == "auth-entry-portal"
+    assert metadata["Name"] == "auth-ingress"
     assert metadata["License-Expression"] == "MIT"
     assert "LICENSE" in metadata.get_all("License-File", [])
 
@@ -40,7 +40,7 @@ def test_wheel_contains_runtime_assets_and_public_metadata(built_artifacts: Buil
 def test_source_archive_is_minimal_and_complete(built_artifacts: BuiltArtifacts):
     with tarfile.open(built_artifacts.source, "r:gz") as archive:
         names = {PurePosixPath(name) for name in archive.getnames()}
-    root = PurePosixPath(f"auth_entry_portal-{project_metadata()['version']}")
+    root = PurePosixPath(f"auth_ingress-{project_metadata()['version']}")
     assert root / "src/auth_entry_portal/__init__.py" in names
     assert root / "src/auth_entry_portal/web/templates/base.html" in names
     assert root / "src/auth_entry_portal/web/static/portal.css" in names

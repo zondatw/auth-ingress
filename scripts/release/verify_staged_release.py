@@ -10,14 +10,16 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
+from scripts.release.package_metadata import EXPECTED_DISTRIBUTION
+
 
 INDEXES = {
     "testpypi": {
-        "json": "https://test.pypi.org/pypi/auth-entry-portal/{version}/json",
+        "json": f"https://test.pypi.org/pypi/{EXPECTED_DISTRIBUTION}/{{version}}/json",
         "simple": "https://test.pypi.org/simple",
     },
     "pypi": {
-        "json": "https://pypi.org/pypi/auth-entry-portal/{version}/json",
+        "json": f"https://pypi.org/pypi/{EXPECTED_DISTRIBUTION}/{{version}}/json",
         "simple": "https://pypi.org/simple",
     },
 }
@@ -67,7 +69,7 @@ def verify_index_hashes(payload: dict[str, object], expected: dict[str, str]) ->
 
 
 def install_and_smoke(index: str, version: str, smoke_script: Path) -> None:
-    with tempfile.TemporaryDirectory(prefix="auth-entry-portal-index-") as directory:
+    with tempfile.TemporaryDirectory(prefix="auth-ingress-index-") as directory:
         subprocess.run(
             [
                 "uv",
@@ -79,7 +81,7 @@ def install_and_smoke(index: str, version: str, smoke_script: Path) -> None:
                 "--default-index",
                 "https://pypi.org/simple",
                 "--with",
-                f"auth-entry-portal=={version}",
+                f"{EXPECTED_DISTRIBUTION}=={version}",
                 "python",
                 str(smoke_script),
             ],

@@ -7,7 +7,7 @@ import subprocess
 import tempfile
 
 from scripts.release.check_artifacts import inspect_artifacts, write_hash_manifest
-from scripts.release.package_metadata import PROJECT_ROOT, load_and_validate
+from scripts.release.package_metadata import EXPECTED_DISTRIBUTION, PROJECT_ROOT, load_and_validate
 
 
 def build_and_check(output: Path, *, smoke: bool = True) -> None:
@@ -25,7 +25,7 @@ def build_and_check(output: Path, *, smoke: bool = True) -> None:
     if smoke:
         smoke_script = PROJECT_ROOT / "tests" / "smoke" / "test_installed_package.py"
         for artifact in artifacts:
-            with tempfile.TemporaryDirectory(prefix="auth-entry-portal-installed-") as directory:
+            with tempfile.TemporaryDirectory(prefix="auth-ingress-installed-") as directory:
                 subprocess.run(
                     [
                         "uv",
@@ -33,7 +33,7 @@ def build_and_check(output: Path, *, smoke: bool = True) -> None:
                         "--isolated",
                         "--no-project",
                         "--reinstall-package",
-                        "auth-entry-portal",
+                        EXPECTED_DISTRIBUTION,
                         "--with",
                         str(artifact),
                         "python",

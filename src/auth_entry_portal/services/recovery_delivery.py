@@ -24,7 +24,7 @@ class SMTPRecoveryDelivery:
         if not self.settings.smtp_host or not self.settings.smtp_sender:
             raise RecoveryDeliveryError("Recovery delivery is not configured")
         message = EmailMessage()
-        message["Subject"] = "Auth Portal password setup"
+        message["Subject"] = "auth-ingress password setup"
         message["From"] = self.settings.smtp_sender
         message["To"] = recipient
         message.set_content(f"Open this single-use link before it expires:\n\n{link}\n")

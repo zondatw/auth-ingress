@@ -114,3 +114,107 @@ Expected:
 - Existing security, contract, integration, smoke, and browser tests pass.
 - Auth, sessions, password reset, first install, service proxy, and user
   management behavior remain unchanged except for visible product naming.
+
+## Validation Evidence
+
+Recorded on 2026-06-24 from branch `005-rename-auth-ingress`.
+
+### Preferred and compatibility identity
+
+- `pyproject.toml` exposes `auth-ingress` as the preferred console command and
+  keeps `auth-portal` as a compatibility command pointing to the same CLI entry.
+- Runtime configuration prefers `AUTH_INGRESS_*` and falls back to
+  `AUTH_PORTAL_*` when the new variable is absent.
+- Python import namespace remains `auth_entry_portal`.
+- Security-stable cookie, CSRF, password-reset, proxy-header, and historical
+  labels that still contain old names are classified as intentional historical
+  or compatibility references.
+
+### Name availability
+
+Checked exact package endpoints on 2026-06-24:
+
+- `https://pypi.org/pypi/auth-ingress/json` returned `404`.
+- `https://test.pypi.org/pypi/auth-ingress/json` returned `404`.
+
+### Old-name classification
+
+The implementation scan covered `README.md`, `docs/`, `.github/`, `src/`,
+`tests/`, `scripts/`, `pyproject.toml`, and historical specs for publish,
+user-management, and this rename feature.
+
+Result:
+
+- Zero unclassified old-name references.
+- Remaining references are classified as compatibility aliases, historical
+  references, or security-stable identifiers in
+  `tests/fixtures/rename_inventory.py`.
+
+### Regression and coverage
+
+Commands:
+
+```bash
+uv run pytest -q
+uv run pytest --cov=auth_entry_portal --cov-report=term-missing
+```
+
+Results:
+
+- `uv run pytest -q`: `168 passed, 15 warnings`.
+- Coverage run: `168 passed, 21 warnings`, total coverage `87%`.
+
+### Python validation matrix
+
+Commands:
+
+```bash
+uv run --python 3.12 --extra test pytest -q
+uv run --python 3.13 --extra test pytest -q
+uv run --python 3.14 --extra test pytest -q
+```
+
+Results:
+
+- Python 3.12.10: `168 passed, 15 warnings`.
+- Python 3.13.6: `168 passed, 15 warnings`.
+- Python 3.14.5: `168 passed, 15 warnings`.
+
+### Browser/UI identity evidence
+
+The automated browser/UI identity checks passed through
+`tests/e2e/test_rename_identity.py` as part of the full regression suite. The
+covered pages include sign-in, setup-required, portal home, admin users,
+admin services, admin audit, reset password, change password, and access denied.
+
+### Release artifact evidence
+
+Command:
+
+```bash
+uv run python -m scripts.release.build_and_check
+```
+
+Result:
+
+- Built `dist/auth_ingress-0.1.0.tar.gz`.
+- Built `dist/auth_ingress-0.1.0-py3-none-any.whl`.
+- Installed artifact smoke checks passed for the renamed distribution.
+
+Artifact hashes from `dist/SHA256SUMS`:
+
+- `5ca5586b2ad145c594703503a72974d1a1b9e6581f95672120b71178a09181d2  auth_ingress-0.1.0-py3-none-any.whl`
+- `87b658faabdecdc6f4c95f501e8fd65073d2f9e812b4a5c8deb65a157280d088  auth_ingress-0.1.0.tar.gz`
+
+### Requirement and contract mapping
+
+- FR-001–FR-004, SC-001, SC-002, and SC-005: verified by docs, CLI, UI,
+  package, installed artifact, and smoke tests.
+- FR-005–FR-008 and SPR-001–SPR-005: verified by compatibility CLI/config
+  tests, migration docs tests, admin-boundary tests, and old-name security
+  classification tests.
+- FR-009 and SC-004: verified by the comprehensive old-name scan with zero
+  unclassified findings.
+- FR-010: verified by the 2026-06-24 PyPI/TestPyPI exact endpoint checks.
+- Release, migration, UI, CLI, package, and staged-index contracts all have
+  passing automated coverage in the regression suite.

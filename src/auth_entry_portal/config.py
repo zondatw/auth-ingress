@@ -4,6 +4,14 @@ import os
 from dataclasses import dataclass
 from functools import lru_cache
 
+PRODUCT_NAME = "auth-ingress"
+DISPLAY_NAME = "auth-ingress"
+PREFERRED_COMMAND = "auth-ingress"
+COMPATIBILITY_COMMAND = "auth-portal"
+PREFERRED_CONFIG_PREFIX = "AUTH_INGRESS"
+LEGACY_CONFIG_PREFIX = "AUTH_PORTAL"
+REPOSITORY_URL = "https://github.com/zondatw/auth-ingress"
+
 
 @dataclass(frozen=True, slots=True)
 class Settings:
@@ -45,42 +53,51 @@ class Settings:
     )
 
 
+def env_value(name: str, default: str) -> str:
+    preferred = f"{PREFERRED_CONFIG_PREFIX}_{name}"
+    legacy = f"{LEGACY_CONFIG_PREFIX}_{name}"
+    value = os.getenv(preferred)
+    if value is not None:
+        return value
+    return os.getenv(legacy, default)
+
+
 @lru_cache
 def get_settings() -> Settings:
     defaults = Settings()
     return Settings(
-        database_url=os.getenv("AUTH_PORTAL_DATABASE_URL", defaults.database_url),
-        secret_key=os.getenv("AUTH_PORTAL_SECRET_KEY", defaults.secret_key),
-        session_cookie=os.getenv("AUTH_PORTAL_SESSION_COOKIE", defaults.session_cookie),
-        session_ttl_seconds=int(os.getenv("AUTH_PORTAL_SESSION_TTL", defaults.session_ttl_seconds)),
-        secure_cookies=os.getenv("AUTH_PORTAL_SECURE_COOKIES", "false").lower() == "true",
-        rate_limit_attempts=int(os.getenv("AUTH_PORTAL_RATE_LIMIT_ATTEMPTS", defaults.rate_limit_attempts)),
-        rate_limit_window_seconds=int(os.getenv("AUTH_PORTAL_RATE_LIMIT_WINDOW", defaults.rate_limit_window_seconds)),
-        audit_retention_days=max(90, int(os.getenv("AUTH_PORTAL_AUDIT_RETENTION_DAYS", defaults.audit_retention_days))),
-        password_reset_ttl_seconds=max(300, int(os.getenv("AUTH_PORTAL_PASSWORD_RESET_TTL", defaults.password_reset_ttl_seconds))),
-        reset_cookie=os.getenv("AUTH_PORTAL_RESET_COOKIE", defaults.reset_cookie),
-        smtp_host=os.getenv("AUTH_PORTAL_SMTP_HOST", defaults.smtp_host),
-        smtp_port=int(os.getenv("AUTH_PORTAL_SMTP_PORT", defaults.smtp_port)),
-        smtp_sender=os.getenv("AUTH_PORTAL_SMTP_SENDER", defaults.smtp_sender),
-        smtp_username=os.getenv("AUTH_PORTAL_SMTP_USERNAME", defaults.smtp_username),
-        smtp_password=os.getenv("AUTH_PORTAL_SMTP_PASSWORD", defaults.smtp_password),
-        smtp_starttls=os.getenv("AUTH_PORTAL_SMTP_STARTTLS", "true").lower() == "true",
-        smtp_timeout_seconds=max(1.0, float(os.getenv("AUTH_PORTAL_SMTP_TIMEOUT", defaults.smtp_timeout_seconds))),
-        user_search_page_size=min(100, max(10, int(os.getenv("AUTH_PORTAL_USER_PAGE_SIZE", defaults.user_search_page_size)))),
-        management_rate_limit_attempts=max(5, int(os.getenv("AUTH_PORTAL_MANAGEMENT_RATE_LIMIT_ATTEMPTS", defaults.management_rate_limit_attempts))),
-        management_rate_limit_window_seconds=max(10, int(os.getenv("AUTH_PORTAL_MANAGEMENT_RATE_LIMIT_WINDOW", defaults.management_rate_limit_window_seconds))),
-        downstream_timeout_seconds=float(os.getenv("AUTH_PORTAL_DOWNSTREAM_TIMEOUT", defaults.downstream_timeout_seconds)),
-        portal_host=os.getenv("AUTH_PORTAL_HOST", defaults.portal_host),
-        proxy_base_domain=os.getenv("AUTH_PORTAL_PROXY_BASE_DOMAIN", defaults.proxy_base_domain),
-        proxy_scheme=os.getenv("AUTH_PORTAL_PROXY_SCHEME", defaults.proxy_scheme),
-        proxy_cookie_name=os.getenv("AUTH_PORTAL_PROXY_COOKIE", defaults.proxy_cookie_name),
-        proxy_launch_ttl_seconds=max(10, int(os.getenv("AUTH_PORTAL_PROXY_LAUNCH_TTL", defaults.proxy_launch_ttl_seconds))),
-        proxy_max_request_bytes=max(1, int(os.getenv("AUTH_PORTAL_PROXY_MAX_REQUEST_BYTES", defaults.proxy_max_request_bytes))),
-        proxy_max_response_bytes=max(1, int(os.getenv("AUTH_PORTAL_PROXY_MAX_RESPONSE_BYTES", defaults.proxy_max_response_bytes))),
-        proxy_websocket_lifetime_seconds=max(1, int(os.getenv("AUTH_PORTAL_PROXY_WEBSOCKET_LIFETIME", defaults.proxy_websocket_lifetime_seconds))),
+        database_url=env_value("DATABASE_URL", defaults.database_url),
+        secret_key=env_value("SECRET_KEY", defaults.secret_key),
+        session_cookie=env_value("SESSION_COOKIE", defaults.session_cookie),
+        session_ttl_seconds=int(env_value("SESSION_TTL", str(defaults.session_ttl_seconds))),
+        secure_cookies=env_value("SECURE_COOKIES", "false").lower() == "true",
+        rate_limit_attempts=int(env_value("RATE_LIMIT_ATTEMPTS", str(defaults.rate_limit_attempts))),
+        rate_limit_window_seconds=int(env_value("RATE_LIMIT_WINDOW", str(defaults.rate_limit_window_seconds))),
+        audit_retention_days=max(90, int(env_value("AUDIT_RETENTION_DAYS", str(defaults.audit_retention_days)))),
+        password_reset_ttl_seconds=max(300, int(env_value("PASSWORD_RESET_TTL", str(defaults.password_reset_ttl_seconds)))),
+        reset_cookie=env_value("RESET_COOKIE", defaults.reset_cookie),
+        smtp_host=env_value("SMTP_HOST", defaults.smtp_host),
+        smtp_port=int(env_value("SMTP_PORT", str(defaults.smtp_port))),
+        smtp_sender=env_value("SMTP_SENDER", defaults.smtp_sender),
+        smtp_username=env_value("SMTP_USERNAME", defaults.smtp_username),
+        smtp_password=env_value("SMTP_PASSWORD", defaults.smtp_password),
+        smtp_starttls=env_value("SMTP_STARTTLS", "true").lower() == "true",
+        smtp_timeout_seconds=max(1.0, float(env_value("SMTP_TIMEOUT", str(defaults.smtp_timeout_seconds)))),
+        user_search_page_size=min(100, max(10, int(env_value("USER_PAGE_SIZE", str(defaults.user_search_page_size))))),
+        management_rate_limit_attempts=max(5, int(env_value("MANAGEMENT_RATE_LIMIT_ATTEMPTS", str(defaults.management_rate_limit_attempts)))),
+        management_rate_limit_window_seconds=max(10, int(env_value("MANAGEMENT_RATE_LIMIT_WINDOW", str(defaults.management_rate_limit_window_seconds)))),
+        downstream_timeout_seconds=float(env_value("DOWNSTREAM_TIMEOUT", str(defaults.downstream_timeout_seconds))),
+        portal_host=env_value("HOST", defaults.portal_host),
+        proxy_base_domain=env_value("PROXY_BASE_DOMAIN", defaults.proxy_base_domain),
+        proxy_scheme=env_value("PROXY_SCHEME", defaults.proxy_scheme),
+        proxy_cookie_name=env_value("PROXY_COOKIE", defaults.proxy_cookie_name),
+        proxy_launch_ttl_seconds=max(10, int(env_value("PROXY_LAUNCH_TTL", str(defaults.proxy_launch_ttl_seconds)))),
+        proxy_max_request_bytes=max(1, int(env_value("PROXY_MAX_REQUEST_BYTES", str(defaults.proxy_max_request_bytes)))),
+        proxy_max_response_bytes=max(1, int(env_value("PROXY_MAX_RESPONSE_BYTES", str(defaults.proxy_max_response_bytes)))),
+        proxy_websocket_lifetime_seconds=max(1, int(env_value("PROXY_WEBSOCKET_LIFETIME", str(defaults.proxy_websocket_lifetime_seconds)))),
         trusted_downstream_networks=tuple(
             value.strip()
-            for value in os.getenv("AUTH_PORTAL_TRUSTED_DOWNSTREAM_NETWORKS", ",".join(defaults.trusted_downstream_networks)).split(",")
+            for value in env_value("TRUSTED_DOWNSTREAM_NETWORKS", ",".join(defaults.trusted_downstream_networks)).split(",")
             if value.strip()
         ),
     )

@@ -17,5 +17,5 @@ def test_first_install_page_is_actionable_and_non_sensitive(db_factory, settings
     with TestClient(app) as client:
         response = client.get("/sign-in")
     assert response.status_code == 503
-    assert "auth-portal bootstrap-admin" in response.text
-    assert "AUTH_PORTAL_DATABASE_URL" not in response.text
+    assert "auth-ingress bootstrap-admin" in response.text
+    assert "AUTH_INGRESS_DATABASE_URL" not in response.text

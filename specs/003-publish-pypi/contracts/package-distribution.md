@@ -4,13 +4,13 @@
 
 | Surface | Required value |
 |---------|----------------|
-| PyPI/TestPyPI distribution | `auth-entry-portal` |
+| PyPI/TestPyPI distribution | `auth-ingress` |
 | Python import namespace | `auth_entry_portal` |
-| Command-line executable | `auth-portal` |
-| Configuration prefix | `AUTH_PORTAL_` |
+| Command-line executable | `auth-ingress` |
+| Configuration prefix | `AUTH_INGRESS_` |
 | Wheel compatibility | `py3-none-any` |
 
-The occupied PyPI name `auth-portal` is not used as the distribution identity.
+The occupied PyPI name `auth-ingress` is not used as the distribution identity.
 Hyphens in the public distribution do not require a Python namespace rename.
 
 ## Version Contract
@@ -25,8 +25,8 @@ Hyphens in the public distribution do not require a Python namespace rename.
 
 Every release produces exactly:
 
-1. One source archive named for `auth-entry-portal` and the release version.
-2. One universal wheel named for `auth-entry-portal`, the release version, and
+1. One source archive named for `auth-ingress` and the release version.
+2. One universal wheel named for `auth-ingress`, the release version, and
    `py3-none-any` compatibility.
 
 Both artifacts MUST include:
@@ -35,7 +35,7 @@ Both artifacts MUST include:
 - all templates under `auth_entry_portal/web/templates/`;
 - all static resources under `auth_entry_portal/web/static/`;
 - package metadata, README, changelog, and owner-approved license file;
-- the `auth-portal` entry point and complete runtime dependency metadata.
+- the `auth-ingress` entry point and complete runtime dependency metadata.
 
 Tests, local databases, caches, coverage files, `.env` files, VCS history, CI
 configuration, and credentials MUST NOT be installed as runtime package data. A
@@ -53,7 +53,7 @@ The public metadata includes:
   links using recognized project URL labels;
 - declared `auth_entry_portal` import name and all runtime/optional dependencies.
 
-Metadata links resolve to the canonical `zondatw/auth-entry-portal` repository.
+Metadata links resolve to the canonical `zondatw/auth-ingress` repository.
 Publication stops if required owner/legal/security content is missing or any
 public link still identifies the former repository name.
 
@@ -63,8 +63,8 @@ The wheel and source archive are tested separately in clean isolated environment
 without access to the repository checkout. Each test MUST prove:
 
 1. `import auth_entry_portal` succeeds.
-2. `auth-portal --help` exits successfully and lists supported subcommands.
-3. `auth-portal init-db` creates a disposable schema using an isolated path.
+2. `auth-ingress --help` exits successfully and lists supported subcommands.
+3. `auth-ingress init-db` creates a disposable schema using an isolated path.
 4. The application can be created and resolves every required template/static
    resource from the installed distribution.
 5. Runtime imports do not depend on test or development extras.

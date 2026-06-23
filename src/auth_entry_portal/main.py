@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
 
 def create_app(*, initialize_schema: bool = True, proxy_settings=None, proxy_session_factory=None) -> FastAPI:
     configure_logging()
-    app = FastAPI(title="Auth Entry Portal", lifespan=lifespan if initialize_schema else None)
+    app = FastAPI(title="auth-ingress", lifespan=lifespan if initialize_schema else None)
     from auth_entry_portal.config import get_settings
     from auth_entry_portal.repositories.database import SessionLocal
 

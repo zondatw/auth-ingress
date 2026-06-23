@@ -8,10 +8,10 @@ import subprocess
 
 def run_cli(database: Path, *args: str, input_text: str = "") -> subprocess.CompletedProcess[str]:
     environment = os.environ.copy()
-    environment["AUTH_PORTAL_DATABASE_URL"] = f"sqlite:///{database}"
-    environment["AUTH_PORTAL_SECRET_KEY"] = "test-cli-secret-with-sufficient-entropy"
+    environment["AUTH_INGRESS_DATABASE_URL"] = f"sqlite:///{database}"
+    environment["AUTH_INGRESS_SECRET_KEY"] = "test-cli-secret-with-sufficient-entropy"
     return subprocess.run(
-        ["auth-portal", *args],
+        ["auth-ingress", *args],
         input=input_text,
         text=True,
         capture_output=True,

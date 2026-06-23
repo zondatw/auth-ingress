@@ -13,8 +13,8 @@ identities or credentials.
   must not forward messages to real recipients.
 
 Set a strong application secret and point the portal at a fresh disposable
-database using the existing `AUTH_PORTAL_SECRET_KEY` and
-`AUTH_PORTAL_DATABASE_URL` settings. Configure the recovery adapter with the
+database using the existing `AUTH_INGRESS_SECRET_KEY` and
+`AUTH_INGRESS_DATABASE_URL` settings. Configure the recovery adapter with the
 planned SMTP host, port, sender, transport-security, and optional authentication
 settings. Secret values must come from protected deployment configuration and
 must not be pasted into recorded test output.
@@ -24,7 +24,7 @@ must not be pasted into recorded test output.
 Start from a database path that does not exist, then run:
 
 ```bash
-uv run auth-portal bootstrap-admin \
+uv run auth-ingress bootstrap-admin \
   --email admin@example.test \
   --display-name "Initial Administrator"
 ```
@@ -76,20 +76,20 @@ Expected:
 Use an active admin actor and hidden password prompt:
 
 ```bash
-uv run auth-portal users list \
+uv run auth-ingress users list \
   --actor-email admin@example.test \
   --format json
 
-uv run auth-portal users show 2 \
+uv run auth-ingress users show 2 \
   --actor-email admin@example.test \
   --format json
 
-uv run auth-portal users memberships add 2 staff \
+uv run auth-ingress users memberships add 2 staff \
   --actor-email admin@example.test \
   --expected-revision 1 \
   --format json
 
-uv run auth-portal users memberships add 2 staff \
+uv run auth-ingress users memberships add 2 staff \
   --actor-email admin@example.test \
   --expected-revision 1 \
   --apply \

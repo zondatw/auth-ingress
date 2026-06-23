@@ -7,7 +7,7 @@ import os
 import uvicorn
 from sqlalchemy import select
 
-from auth_entry_portal.config import get_settings
+from auth_entry_portal.config import COMPATIBILITY_COMMAND, PREFERRED_COMMAND, get_settings
 from auth_entry_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
 from auth_entry_portal.repositories.database import SessionLocal
 from auth_entry_portal.repositories.schema import create_schema
@@ -22,9 +22,10 @@ from auth_entry_portal.services.user_management_types import ManagementError, Op
 
 
 def _demo_password(account: str) -> str:
-    variable = f"AUTH_PORTAL_DEMO_{account.upper()}_PASSWORD"
-    value = os.getenv(variable)
-    if value is None: value = getpass(f"Password for demo {account}: ")
+    variable = f"AUTH_INGRESS_DEMO_{account.upper()}_PASSWORD"
+    legacy_variable = f"AUTH_PORTAL_DEMO_{account.upper()}_PASSWORD"
+    value = os.getenv(variable, os.getenv(legacy_variable, ""))
+    if not value: value = getpass(f"Password for demo {account}: ")
     if len(value) < 12: raise SystemExit(f"{variable} must contain at least 12 characters")
     return value
 
@@ -61,7 +62,10 @@ def _mutation_parser(*, revision: bool = True) -> argparse.ArgumentParser:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="auth-portal")
+    parser = argparse.ArgumentParser(
+        prog=PREFERRED_COMMAND,
+        epilog=f"`{COMPATIBILITY_COMMAND}` remains available as a compatibility alias for this release.",
+    )
     subcommands = parser.add_subparsers(dest="command", required=True)
     subcommands.add_parser("init-db"); subcommands.add_parser("seed-demo")
     bootstrap = subcommands.add_parser("bootstrap-admin", help="Create the first administrator on an empty installation")

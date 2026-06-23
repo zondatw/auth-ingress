@@ -2,10 +2,10 @@
 
 ## One-Time Setup
 
-1. Verify `zondatw/auth-entry-portal` is the canonical GitHub repository and that
+1. Verify `zondatw/auth-ingress` is the canonical GitHub repository and that
    local clone remotes, default branch, protections, issues, and source links use
    it.
-2. Recheck that `auth-entry-portal` can be registered on PyPI and TestPyPI.
+2. Recheck that `auth-ingress` can be registered on PyPI and TestPyPI.
 3. Obtain owner approval for the license, license file, maintainer identity,
    security contact, and all public project links.
 4. Create pending Trusted Publishers on both indexes using the exact repository,

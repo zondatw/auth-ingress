@@ -3,16 +3,16 @@ requires = ["hatchling==1.30.1"]
 build-backend = "hatchling.build"
 
 [project]
-name = "auth-entry-portal"
+name = "auth-ingress"
 version = "0.1.0"
-description = "A small authenticated entry portal for internal services"
+description = "A small authenticated ingress portal for internal services"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{ name = "zondatw" }]
 maintainers = [{ name = "zondatw" }]
-keywords = ["authentication", "authorization", "portal", "reverse-proxy"]
+keywords = ["authentication", "authorization", "ingress", "portal", "reverse-proxy"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Web Environment",
@@ -48,15 +48,16 @@ test = [
 ]
 
 [project.scripts]
+auth-ingress = "auth_entry_portal.cli:main"
 auth-portal = "auth_entry_portal.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/zondatw/auth-entry-portal"
-Documentation = "https://github.com/zondatw/auth-entry-portal#readme"
-Source = "https://github.com/zondatw/auth-entry-portal"
-Issues = "https://github.com/zondatw/auth-entry-portal/issues"
-Changelog = "https://github.com/zondatw/auth-entry-portal/blob/main/CHANGELOG.md"
-Security = "https://github.com/zondatw/auth-entry-portal/security/policy"
+Homepage = "https://github.com/zondatw/auth-ingress"
+Documentation = "https://github.com/zondatw/auth-ingress#readme"
+Source = "https://github.com/zondatw/auth-ingress"
+Issues = "https://github.com/zondatw/auth-ingress/issues"
+Changelog = "https://github.com/zondatw/auth-ingress/blob/main/CHANGELOG.md"
+Security = "https://github.com/zondatw/auth-ingress/security/policy"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/auth_entry_portal"]

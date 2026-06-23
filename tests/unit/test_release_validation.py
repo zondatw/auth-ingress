@@ -43,7 +43,7 @@ def test_invalid_release_context_fails_with_safe_reason(changes, reason):
 
 def test_wrong_package_name_and_missing_metadata_fail():
     document = deepcopy(load_pyproject())
-    document["project"]["name"] = "auth-portal"
+    document["project"]["name"] = "auth-entry-portal"
     with pytest.raises(ValueError, match="unexpected-distribution-name"):
         validate_release(valid_context(), document)
 

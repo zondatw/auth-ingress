@@ -10,7 +10,7 @@ active admin through the shared dependency and operation service.
 
 - When installation state is `needs_bootstrap`, return a setup-required page.
 - The page says that a trusted local operator must run
-  `auth-portal bootstrap-admin`; it contains no registration form, database path,
+  `auth-ingress bootstrap-admin`; it contains no registration form, database path,
   environment value, stack trace, or host detail.
 - Normal credential submission remains denied until state is `initialized`.
 - After bootstrap, the standard sign-in form is available immediately.

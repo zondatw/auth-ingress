@@ -40,3 +40,10 @@ class FailedSignInLimiter:
             for key in keys:
                 self._events.pop(key, None)
 
+
+class ManagementRequestLimiter(FailedSignInLimiter):
+    def allow(self, key: str, *, now: datetime | None = None) -> bool:
+        if self.blocked(key, now=now):
+            return False
+        self.failure(key, now=now)
+        return True

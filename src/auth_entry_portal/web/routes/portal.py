@@ -20,5 +20,6 @@ def home(
 ):
     if not identity:
         return RedirectResponse("/sign-in", status_code=302)
+    if identity.user.credential_status == "temporary":
+        return RedirectResponse("/change-password", status_code=302)
     return template(request, "portal/index.html", settings, user=identity.user, services=list_permitted_services(db, identity.user))
-

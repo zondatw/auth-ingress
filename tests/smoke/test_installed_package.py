@@ -25,7 +25,7 @@ def run_smoke() -> None:
         [str(command), "--help"], capture_output=True, text=True, check=False
     )
     assert help_result.returncode == 0
-    assert all(command in help_result.stdout for command in ("init-db", "seed-demo", "serve"))
+    assert all(command in help_result.stdout for command in ("init-db", "seed-demo", "bootstrap-admin", "users", "serve"))
 
     with tempfile.TemporaryDirectory(prefix="auth-entry-portal-smoke-") as directory:
         database = Path(directory) / "smoke.db"

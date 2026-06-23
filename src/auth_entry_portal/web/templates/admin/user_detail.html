@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}{{ managed.display_name }} · Users · Auth Portal{% endblock %}
+{% block content %}
+<p><a href="/admin/users">← Users</a></p>
+<div class="title-row">
+  <div>
+    <p class="eyebrow">User management</p>
+    <h1>{{ managed.display_name }}</h1>
+    <p>{{ managed.email }} · <span class="status status-{{ managed.status }}">{{ managed.status }}</span>{% if managed.is_admin %} · Administrator{% endif %}</p>
+  </div>
+</div>
+{% if error %}<div class="alert" role="alert" tabindex="-1">{{ error }}</div>{% endif %}
+{% if message %}<div class="notice" role="status" tabindex="-1">{{ message }}</div>{% endif %}
+
+{% if preview %}
+<section class="panel confirmation">
+  <h2>Preview changes</h2>
+  <p>{{ preview.message }}</p>
+  {% if preview.operation == 'membership_set' %}
+  <p>Groups added: {{ preview.changes.groups_added|join(', ') or 'None' }}. Groups removed: {{ preview.changes.groups_removed|join(', ') or 'None' }}.</p>
+  <form method="post" action="/admin/users/{{ managed.id }}/memberships">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    {% for group in groups %}{% if group.id in preview.changes.groups_added or (group.id in memberships|map(attribute='id')|list and group.id not in preview.changes.groups_removed) %}<input type="hidden" name="group_ids" value="{{ group.id }}">{% endif %}{% endfor %}
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit">Confirm access changes</button>
+  </form>
+  {% elif preview.operation == 'user_update' %}
+  <form method="post" action="/admin/users/{{ managed.id }}/profile">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="email" value="{{ preview.changes.email }}">
+    <input type="hidden" name="display_name" value="{{ preview.changes.display_name }}">
+    {% if preview.changes.is_admin %}<input type="hidden" name="is_admin" value="true">{% endif %}
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit">Confirm profile changes</button>
+  </form>
+  {% elif preview.operation == 'user_status' %}
+  <form method="post" action="/admin/users/{{ managed.id }}/status">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="status" value="{{ preview.changes.status }}">
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit">Confirm status change</button>
+  </form>
+  {% elif preview.operation == 'user_delete' %}
+  <p>This permanently removes the user account. Audit history is retained, but the user will not be able to sign in again.</p>
+  <form method="post" action="/admin/users/{{ managed.id }}/delete">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit" class="danger">Confirm permanent removal</button>
+  </form>
+  {% elif preview.operation == 'password_reset' %}
+  <form method="post" action="/admin/users/{{ managed.id }}/reset-password">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit">Confirm password reset</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="management-grid">
+  <section class="panel">
+    <h2>Group memberships</h2>
+    <form method="post" action="/admin/users/{{ managed.id }}/memberships">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+      {% for group in groups %}<label class="check"><input type="checkbox" name="group_ids" value="{{ group.id }}" {% if group.id in memberships|map(attribute='id')|list %}checked{% endif %}>{{ group.name }}</label>{% endfor %}
+      <button type="submit">Preview access changes</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Effective service access</h2>
+    {% for access in effective_access %}
+    <article class="access-row">
+      <h3>{{ access.display_name }}</h3>
+      <p>{% if access.currently_usable %}<span class="status status-active">Usable</span>{% else %}<span class="status status-disabled">Not usable</span>{% endif %} · Groups: {{ access.granting_groups|join(', ') or 'None' }}</p>
+    </article>
+    {% else %}<p>No services configured.</p>{% endfor %}
+  </section>
+</div>
+
+<div class="management-grid">
+  <section class="panel">
+    <h2>Update profile</h2>
+    <form method="post" action="/admin/users/{{ managed.id }}/profile">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+      <label>Email<input type="email" name="email" value="{{ managed.email }}" required></label>
+      <label>Display name<input name="display_name" value="{{ managed.display_name }}" required></label>
+      <label class="check"><input type="checkbox" name="is_admin" value="true" {% if managed.is_admin %}checked{% endif %}> Administrator</label>
+      <button type="submit">Preview profile changes</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>Account lifecycle</h2>
+    <p>Deactivate is the reversible disable account path. Permanent removal hard-deletes the user account.</p>
+    <form method="post" action="/admin/users/{{ managed.id }}/status">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+      <input type="hidden" name="status" value="{{ 'active' if managed.status == 'disabled' else 'disabled' }}">
+      <button type="submit">Preview {{ 'reactivation' if managed.status == 'disabled' else 'deactivation' }}</button>
+    </form>
+    <form method="post" action="/admin/users/{{ managed.id }}/reset-password">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+      <button type="submit" class="secondary">Preview password reset</button>
+    </form>
+    <form method="post" action="/admin/users/{{ managed.id }}/delete">
+      <input type="hidden" name="csrf" value="{{ csrf_token }}">
+      <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+      <button type="submit" class="danger">Preview permanent removal</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Setup required · Auth Portal{% endblock %}
+{% block content %}
+<section class="panel narrow">
+  <p class="eyebrow">First installation</p>
+  <h1>Local setup required</h1>
+  <p>A trusted local operator must create the first administrator before sign-in is available.</p>
+  <p><code>auth-portal bootstrap-admin --email you@example.test --display-name "Administrator"</code></p>
+  <p>After the command succeeds, return here and sign in.</p>
+</section>
+{% endblock %}

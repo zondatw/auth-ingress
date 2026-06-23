@@ -15,6 +15,18 @@ class Settings:
     rate_limit_attempts: int = 5
     rate_limit_window_seconds: int = 300
     audit_retention_days: int = 90
+    password_reset_ttl_seconds: int = 1800
+    reset_cookie: str = "auth_portal_reset"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_sender: str = ""
+    smtp_username: str = ""
+    smtp_password: str = ""
+    smtp_starttls: bool = True
+    smtp_timeout_seconds: float = 5.0
+    user_search_page_size: int = 50
+    management_rate_limit_attempts: int = 60
+    management_rate_limit_window_seconds: int = 60
     downstream_timeout_seconds: float = 5.0
     portal_host: str = "127.0.0.1:8000"
     proxy_base_domain: str = "localhost:8000"
@@ -45,6 +57,18 @@ def get_settings() -> Settings:
         rate_limit_attempts=int(os.getenv("AUTH_PORTAL_RATE_LIMIT_ATTEMPTS", defaults.rate_limit_attempts)),
         rate_limit_window_seconds=int(os.getenv("AUTH_PORTAL_RATE_LIMIT_WINDOW", defaults.rate_limit_window_seconds)),
         audit_retention_days=max(90, int(os.getenv("AUTH_PORTAL_AUDIT_RETENTION_DAYS", defaults.audit_retention_days))),
+        password_reset_ttl_seconds=max(300, int(os.getenv("AUTH_PORTAL_PASSWORD_RESET_TTL", defaults.password_reset_ttl_seconds))),
+        reset_cookie=os.getenv("AUTH_PORTAL_RESET_COOKIE", defaults.reset_cookie),
+        smtp_host=os.getenv("AUTH_PORTAL_SMTP_HOST", defaults.smtp_host),
+        smtp_port=int(os.getenv("AUTH_PORTAL_SMTP_PORT", defaults.smtp_port)),
+        smtp_sender=os.getenv("AUTH_PORTAL_SMTP_SENDER", defaults.smtp_sender),
+        smtp_username=os.getenv("AUTH_PORTAL_SMTP_USERNAME", defaults.smtp_username),
+        smtp_password=os.getenv("AUTH_PORTAL_SMTP_PASSWORD", defaults.smtp_password),
+        smtp_starttls=os.getenv("AUTH_PORTAL_SMTP_STARTTLS", "true").lower() == "true",
+        smtp_timeout_seconds=max(1.0, float(os.getenv("AUTH_PORTAL_SMTP_TIMEOUT", defaults.smtp_timeout_seconds))),
+        user_search_page_size=min(100, max(10, int(os.getenv("AUTH_PORTAL_USER_PAGE_SIZE", defaults.user_search_page_size)))),
+        management_rate_limit_attempts=max(5, int(os.getenv("AUTH_PORTAL_MANAGEMENT_RATE_LIMIT_ATTEMPTS", defaults.management_rate_limit_attempts))),
+        management_rate_limit_window_seconds=max(10, int(os.getenv("AUTH_PORTAL_MANAGEMENT_RATE_LIMIT_WINDOW", defaults.management_rate_limit_window_seconds))),
         downstream_timeout_seconds=float(os.getenv("AUTH_PORTAL_DOWNSTREAM_TIMEOUT", defaults.downstream_timeout_seconds)),
         portal_host=os.getenv("AUTH_PORTAL_HOST", defaults.portal_host),
         proxy_base_domain=os.getenv("AUTH_PORTAL_PROXY_BASE_DOMAIN", defaults.proxy_base_domain),

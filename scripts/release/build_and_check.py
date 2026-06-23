@@ -32,6 +32,8 @@ def build_and_check(output: Path, *, smoke: bool = True) -> None:
                         "run",
                         "--isolated",
                         "--no-project",
+                        "--reinstall-package",
+                        "auth-entry-portal",
                         "--with",
                         str(artifact),
                         "python",

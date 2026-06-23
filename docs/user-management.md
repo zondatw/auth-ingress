@@ -19,13 +19,19 @@ conflict, and 6 dependency failure. Never pass passwords or reset secrets in
 arguments or environment variables. Resolve an interrupted command with `users
 show`; do not blindly repeat a stale mutation.
 
-## Recovery delivery
+## Temporary passwords and recovery delivery
+
+New user creation generates a one-time temporary password. The password is shown
+only in the create response on the admin page or CLI output, is stored only as a
+hash, and places the account in `temporary` credential state. The user can sign
+in with that value only to reach `/change-password`; normal portal, service, and
+admin access is blocked until the user chooses a new password.
 
 Configure `AUTH_PORTAL_SMTP_HOST`, `AUTH_PORTAL_SMTP_PORT`, and
 `AUTH_PORTAL_SMTP_SENDER`. Production delivery should enable STARTTLS and use
-protected SMTP credentials where required. A new user remains `setup_required`
-until the single-use link is consumed. If delivery fails, no secret is displayed;
-correct SMTP configuration and send a new reset, which invalidates older links.
+protected SMTP credentials where required. Password reset uses single-use links
+over SMTP. If delivery fails, no reset secret is displayed; correct SMTP
+configuration and send a new reset, which invalidates older links.
 
 Disabling a user, completing a reset, or demoting an administrator revokes active
 sessions. Memberships remain attached to disabled users but grant no currently

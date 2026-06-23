@@ -10,7 +10,6 @@ from auth_entry_portal.models import Group, GroupMembership, User
 from auth_entry_portal.services.access_service import effective_access_for_user
 from auth_entry_portal.services.audit_service import record_event
 from auth_entry_portal.security.passwords import hash_password
-from auth_entry_portal.services.password_reset_service import initiate_reset
 from auth_entry_portal.services.recovery_delivery import RecoveryDelivery
 from auth_entry_portal.services.session_service import revoke_user_sessions
 from auth_entry_portal.services.user_management_types import ManagementError, OperationResult, OutcomeCode
@@ -18,7 +17,7 @@ from auth_entry_portal.services.user_management_types import ManagementError, Op
 
 def require_admin_actor(db: Session, actor: User) -> User:
     current = db.scalar(select(User).where(User.id == actor.id).execution_options(populate_existing=True))
-    if current is None or current.status != "active" or not current.is_admin:
+    if current is None or current.status != "active" or current.credential_status != "active" or not current.is_admin:
         raise ManagementError(OutcomeCode.DENIED, "Administrator access required")
     return current
 
@@ -87,6 +86,7 @@ def change_memberships(db: Session, actor: User, target_user_id: int, desired_gr
 
 def create_user(db: Session, actor: User, email: str, display_name: str, status: str, is_admin: bool, group_ids: set[int], *, apply: bool, settings=None, delivery: RecoveryDelivery | None = None, base_url: str = "") -> OperationResult:
     actor = require_admin_actor(db, actor)
+    _ = (settings, delivery, base_url)
     canonical_email, canonical_name = email.strip(), display_name.strip()
     if not canonical_name or "@" not in canonical_email or status not in {"active", "disabled"}:
         raise ManagementError(OutcomeCode.INVALID_INPUT, "Valid email, display name, and status are required")
@@ -98,8 +98,9 @@ def create_user(db: Session, actor: User, email: str, display_name: str, status:
     changes = {"field_names": ["email", "display_name", "status", "is_admin"], "groups_added": sorted(group_ids)}
     if not apply:
         return OperationResult("user_create", OutcomeCode.SUCCESS, changes=changes, message="Preview user creation")
+    temporary_password = secrets.token_urlsafe(18)
     try:
-        user = User(email=canonical_email, display_name=canonical_name, password_hash=hash_password(secrets.token_urlsafe(32)), status=status, credential_status="setup_required", is_admin=is_admin)
+        user = User(email=canonical_email, display_name=canonical_name, password_hash=hash_password(temporary_password), status=status, credential_status="temporary", is_admin=is_admin)
         db.add(user); db.flush()
         db.add_all(GroupMembership(user_id=user.id, group_id=group_id) for group_id in sorted(group_ids))
         record_event(db, "user_created", "changed", "created", actor_user_id=actor.id, target_user_id=user.id, context={"client_category": "management"}, change_summary={"revision": user.revision, **changes}, commit=False)
@@ -107,14 +108,7 @@ def create_user(db: Session, actor: User, email: str, display_name: str, status:
     except IntegrityError as error:
         db.rollback()
         raise ManagementError(OutcomeCode.CONFLICT, "User identity changed concurrently") from error
-    message = "User created"
-    if settings is not None and delivery is not None:
-        try:
-            initiate_reset(db, actor, user, settings, delivery, base_url)
-            message = "User created; setup link sent"
-        except ManagementError:
-            message = "User created; setup delivery failed and can be retried"
-    return OperationResult("user_create", OutcomeCode.SUCCESS, user.id, user.revision, changes=changes, message=message)
+    return OperationResult("user_create", OutcomeCode.SUCCESS, user.id, user.revision, changes=changes, message="User created; temporary password generated", temporary_password=temporary_password)
 
 
 def _target_for_change(db: Session, actor: User, target_id: int, expected_revision: int) -> tuple[User, User]:

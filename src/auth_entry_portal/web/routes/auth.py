@@ -10,6 +10,8 @@ from auth_entry_portal.config import Settings, get_settings
 from auth_entry_portal.repositories.database import get_db
 from auth_entry_portal.security.cookies import cookie_options, decode_session_id, encode_session_id
 from auth_entry_portal.security.csrf import valid_csrf
+from auth_entry_portal.security.dependencies import Identity, require_identity
+from auth_entry_portal.security.passwords import hash_password
 from auth_entry_portal.security.rate_limit import FailedSignInLimiter
 from auth_entry_portal.services.audit_service import record_event
 from auth_entry_portal.services.authentication_service import authenticate, normalize_email
@@ -76,9 +78,42 @@ def sign_in(
     gate.success(email_key, client_key)
     portal_session = create_session(db, user, settings.session_ttl_seconds)
     record_event(db, "sign_in_success", "allowed", "credentials_valid", actor_user_id=user.id, context=context(request))
-    response = RedirectResponse(safe_return_to(return_to), status_code=302)
+    destination = "/change-password" if user.credential_status == "temporary" else safe_return_to(return_to)
+    response = RedirectResponse(destination, status_code=302)
     response.set_cookie(settings.session_cookie, encode_session_id(portal_session.id, settings), **cookie_options(settings))
     return response
+
+
+@router.get("/change-password")
+def change_password_form(request: Request, identity: Identity = Depends(require_identity), settings: Settings = Depends(get_settings)):
+    if identity.user.credential_status != "temporary":
+        return RedirectResponse("/", status_code=302)
+    return template(request, "auth/change_password.html", settings, user=identity.user, error=None)
+
+
+@router.post("/change-password")
+def change_password(
+    request: Request,
+    password: str = Form(...),
+    password_confirm: str = Form(...),
+    csrf: str = Form(...),
+    identity: Identity = Depends(require_identity),
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+):
+    if identity.user.credential_status != "temporary":
+        return RedirectResponse("/", status_code=302)
+    if not valid_csrf(csrf, settings) or password != password_confirm:
+        return template(request, "auth/change_password.html", settings, user=identity.user, error="The form expired or passwords did not match.", status_code=400)
+    try:
+        identity.user.password_hash = hash_password(password)
+    except ValueError:
+        return template(request, "auth/change_password.html", settings, user=identity.user, error="Password must contain at least 10 characters.", status_code=400)
+    identity.user.credential_status = "active"
+    identity.user.revision += 1
+    record_event(db, "password_changed", "changed", "temporary_password_replaced", actor_user_id=identity.user.id, target_user_id=identity.user.id, context=context(request), change_summary={"revision": identity.user.revision, "field_names": ["credential_status"]}, commit=False)
+    db.commit()
+    return RedirectResponse("/", status_code=303)
 
 
 @router.post("/sign-out")

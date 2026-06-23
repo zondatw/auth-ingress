@@ -27,6 +27,7 @@ def render_result(result: OperationResult, output_format: str) -> str:
     if result.target_user_id is not None: parts.append(f"user={result.target_user_id}")
     if result.revision is not None: parts.append(f"revision={result.revision}")
     if result.message: parts.append(result.message)
+    if result.temporary_password: parts.append(f"temporary_password={result.temporary_password}")
     return " | ".join(parts)
 
 

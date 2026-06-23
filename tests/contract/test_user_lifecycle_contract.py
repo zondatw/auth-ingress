@@ -10,6 +10,7 @@ def test_lifecycle_and_recovery_routes_are_registered():
     assert "post" in paths["/admin/users/{user_id}/status"]
     assert "post" in paths["/admin/users/{user_id}/reset-password"]
     assert {"get", "post"} <= paths["/reset-password"].keys()
+    assert {"get", "post"} <= paths["/change-password"].keys()
 
 
 def test_create_and_status_forms_preview_before_commit(client, csrf, db_factory, db):

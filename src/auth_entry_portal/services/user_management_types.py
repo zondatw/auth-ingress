@@ -24,6 +24,7 @@ class OperationResult:
     changes: dict[str, Any] = field(default_factory=dict)
     effective_access_changes: list[dict[str, Any]] = field(default_factory=list)
     message: str = ""
+    temporary_password: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         result: dict[str, Any] = {"schema_version": 1, "operation": self.operation, "outcome": self.outcome.value}
@@ -37,6 +38,8 @@ class OperationResult:
             result["effective_access_changes"] = self.effective_access_changes
         if self.message:
             result["message"] = self.message
+        if self.temporary_password:
+            result["temporary_password"] = self.temporary_password
         return result
 
 

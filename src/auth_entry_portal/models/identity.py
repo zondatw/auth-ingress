@@ -44,7 +44,7 @@ class User(Base):
 
     @validates("credential_status")
     def validate_credential_status(self, _key: str, value: str) -> str:
-        if value not in {"setup_required", "active"}:
+        if value not in {"setup_required", "temporary", "active"}:
             raise ValueError("invalid credential status")
         return value
 

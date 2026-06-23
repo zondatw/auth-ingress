@@ -35,7 +35,6 @@ def require_identity(identity: Identity | None = Depends(optional_identity)) -> 
 
 
 def require_admin(identity: Identity = Depends(require_identity)) -> Identity:
-    if not identity.user.is_admin:
+    if identity.user.credential_status != "active" or not identity.user.is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Administrator access required")
     return identity
-

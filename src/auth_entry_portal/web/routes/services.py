@@ -31,6 +31,8 @@ async def enter_service(
 ):
     if not identity:
         return RedirectResponse(f"/sign-in?return_to=/services/{service_slug}", status_code=302)
+    if identity.user.credential_status == "temporary":
+        return RedirectResponse("/change-password", status_code=302)
     service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == service_slug))
     if service is None:
         record_event(db, "service_entry_denied", "denied", "unknown_service", actor_user_id=identity.user.id, context=ctx(request))

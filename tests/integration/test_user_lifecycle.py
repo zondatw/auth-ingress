@@ -1,4 +1,5 @@
 from auth_entry_portal.models import PortalSession, User
+from auth_entry_portal.services.authentication_service import authenticate
 from auth_entry_portal.services.user_admin_service import create_user, set_user_status, update_user
 from auth_entry_portal.services.user_management_types import OutcomeCode
 from tests.fixtures.recovery_delivery import CapturingRecoveryDelivery
@@ -11,7 +12,10 @@ def test_create_update_disable_and_reactivate(db, settings):
     assert preview.outcome == OutcomeCode.SUCCESS and db.query(User).filter_by(email="new@example.test").first() is None
     created = create_user(db, actor, "new@example.test", "New User", "active", False, set(), apply=True, settings=settings, delivery=delivery, base_url="https://portal.test")
     target = db.get(User, created.target_user_id)
-    assert target.credential_status == "setup_required" and delivery.messages
+    assert target.credential_status == "temporary"
+    assert created.temporary_password
+    assert not delivery.messages
+    assert authenticate(db, "new@example.test", created.temporary_password) == target
     changed = update_user(db, actor, target.id, target.revision, display_name="Renamed", apply=True)
     assert changed.outcome == OutcomeCode.SUCCESS
     session = PortalSession(id="lifecycle-session", user_id=target.id, expires_at=__import__("datetime").datetime.now(__import__("datetime").timezone.utc) + __import__("datetime").timedelta(hours=1))

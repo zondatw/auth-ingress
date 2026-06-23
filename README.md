@@ -117,10 +117,12 @@ accounts and unset these variables before deployment.
 Administrators manage users at `/admin/users` or with `auth-portal users`.
 Memberships remain the only per-user access-list input; user detail explains all
 groups granting each service. Page and CLI mutations preview first and reject a
-stale user revision. Creating a user sends a single-use password setup link over
-configured SMTP; reset secrets are stored only as digests and never shown to an
-operator. See [docs/user-management.md](docs/user-management.md) for commands,
-exit codes, conflict recovery, lifecycle controls, and delivery troubleshooting.
+stale user revision. Creating a user generates a one-time temporary password
+that is shown only in the create response; the user must change it immediately
+after first sign-in. Later password resets can still use configured SMTP links;
+reset secrets are stored only as digests and never shown to an operator. See
+[docs/user-management.md](docs/user-management.md) for commands, exit codes,
+conflict recovery, lifecycle controls, and delivery troubleshooting.
 
 ## Audit and recovery
 

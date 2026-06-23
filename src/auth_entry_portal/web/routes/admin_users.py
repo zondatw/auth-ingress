@@ -67,8 +67,8 @@ def memberships(user_id: int, request: Request, expected_revision: int = Form(..
     return detail_page(request, db, settings, identity, user_id, preview=None if confirm else result, message=result.message if confirm else None)
 
 
-def _list_after_create(request: Request, db: Session, settings: Settings, identity: Identity, *, preview=None, error=None, message=None, status_code=200):
-    return template(request, "admin/users.html", settings, user=identity.user, users=search_users(db, page_size=settings.user_search_page_size), groups=_groups(db), page=1, filters={"q": "", "status": "", "admin": "", "group": ""}, error=error, create_preview=preview, message=message, status_code=status_code)
+def _list_after_create(request: Request, db: Session, settings: Settings, identity: Identity, *, preview=None, error=None, message=None, temporary_password=None, status_code=200):
+    return template(request, "admin/users.html", settings, user=identity.user, users=search_users(db, page_size=settings.user_search_page_size), groups=_groups(db), page=1, filters={"q": "", "status": "", "admin": "", "group": ""}, error=error, create_preview=preview, message=message, temporary_password=temporary_password, status_code=status_code)
 
 
 async def _create_user(request: Request, email: str, display_name: str, status: str, is_admin: bool, group_ids: list[int], confirm: bool, csrf: str, identity: Identity, db: Session, settings: Settings):
@@ -78,7 +78,7 @@ async def _create_user(request: Request, email: str, display_name: str, status: 
         result = create_user(db, identity.user, email, display_name, status, is_admin, set(group_ids), apply=confirm, settings=settings, delivery=SMTPRecoveryDelivery(settings), base_url=str(request.base_url).rstrip("/"))
     except ManagementError as exc:
         return _list_after_create(request, db, settings, identity, error=str(exc), status_code=400 if exc.code == OutcomeCode.INVALID_INPUT else 409)
-    return _list_after_create(request, db, settings, identity, preview=None if confirm else {"result": result, "email": email, "display_name": display_name, "status": status, "is_admin": is_admin, "group_ids": group_ids}, message=result.message if confirm else None, status_code=201 if confirm else 200)
+    return _list_after_create(request, db, settings, identity, preview=None if confirm else {"result": result, "email": email, "display_name": display_name, "status": status, "is_admin": is_admin, "group_ids": group_ids}, message=result.message if confirm else None, temporary_password=result.temporary_password if confirm else None, status_code=201 if confirm else 200)
 
 
 @creation_router.post("/preview")

@@ -13,7 +13,7 @@ def authenticate_cli_actor(db: Session, email: str, password: str) -> User | Non
     if _limiter.blocked(key):
         return None
     user = authenticate(db, email, password)
-    if user is None or not user.is_admin:
+    if user is None or user.credential_status != "active" or not user.is_admin:
         _limiter.failure(key)
         return None
     _limiter.success(key)

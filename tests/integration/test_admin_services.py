@@ -71,3 +71,35 @@ def test_admin_can_enable_proxy_and_run_compatibility_check(client, csrf, downst
         service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == "proxy-app"))
         assert service.proxy_enabled is True
         assert service.compatibility_status == "compatible"
+
+
+def test_invalid_service_submission_can_be_corrected_without_reentering_values(client, csrf, db_factory):
+    sign_in(client, csrf, email="admin@example.test")
+    invalid = client.post("/admin/services", data=payload(csrf, slug="bad slug", proxy_enabled="true", websocket_enabled="true"))
+    assert invalid.status_code == 400
+    assert 'name="display_name" value="Reports"' in invalid.text
+    assert 'name="proxy_enabled" value="true" checked' in invalid.text
+
+    corrected = client.post("/admin/services", data=payload(csrf, proxy_enabled="true", websocket_enabled="true"))
+
+    assert corrected.status_code == 201
+    with db_factory() as db:
+        service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == "reports"))
+        assert service is not None
+        assert service.display_name == "Reports"
+        assert service.proxy_enabled is True
+        assert service.websocket_enabled is True
+
+
+def test_multiple_service_validation_errors_preserve_submitted_values(client, csrf):
+    sign_in(client, csrf, email="admin@example.test")
+
+    response = client.post(
+        "/admin/services",
+        data=payload(csrf, slug="bad slug", group_names="missing-group", destination="https://public.example"),
+    )
+
+    assert response.status_code == 400
+    assert 'value="bad slug"' in response.text
+    assert 'value="missing-group"' in response.text
+    assert "Slug must contain lowercase letters, numbers, and hyphens" in response.text

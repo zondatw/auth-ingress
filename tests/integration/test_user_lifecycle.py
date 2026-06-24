@@ -2,6 +2,7 @@ from auth_ingress.models import PortalSession, User
 from auth_ingress.services.authentication_service import authenticate
 from auth_ingress.services.user_admin_service import create_user, set_user_status, update_user
 from auth_ingress.services.user_management_types import OutcomeCode
+from tests.conftest import sign_in
 from tests.fixtures.recovery_delivery import CapturingRecoveryDelivery
 
 
@@ -24,3 +25,49 @@ def test_create_update_disable_and_reactivate(db, settings):
     assert disabled.outcome == OutcomeCode.SUCCESS and session.revoked_at is not None
     reactivated = set_user_status(db, actor, target.id, disabled.revision, "active", apply=True)
     assert reactivated.outcome == OutcomeCode.SUCCESS
+
+
+def test_invalid_user_create_can_be_corrected_without_reentering_values(client, csrf, db_factory, db):
+    sign_in(client, csrf, email="admin@example.test")
+    group = db.query(__import__("auth_ingress.models", fromlist=["Group"]).Group).filter_by(name="staff").one()
+    invalid = client.post(
+        "/admin/users/preview",
+        data={
+            "csrf": csrf,
+            "email": "bad-email",
+            "display_name": "New User",
+            "status": "active",
+            "group_ids": str(group.id),
+        },
+    )
+    assert invalid.status_code == 400
+    assert 'name="display_name" value="New User"' in invalid.text
+    assert f'name="group_ids" value="{group.id}" checked' in invalid.text
+    assert "Temporary password" not in invalid.text
+
+    preview = client.post(
+        "/admin/users/preview",
+        data={
+            "csrf": csrf,
+            "email": "new@example.test",
+            "display_name": "New User",
+            "status": "active",
+            "group_ids": str(group.id),
+        },
+    )
+    assert preview.status_code == 200
+    assert "Preview user creation" in preview.text
+    confirm = client.post(
+        "/admin/users/confirm",
+        data={
+            "csrf": csrf,
+            "email": "new@example.test",
+            "display_name": "New User",
+            "status": "active",
+            "group_ids": str(group.id),
+        },
+    )
+    assert confirm.status_code == 201
+    assert "Temporary password" in confirm.text
+    with db_factory() as check:
+        assert check.query(User).filter_by(email="new@example.test").one()

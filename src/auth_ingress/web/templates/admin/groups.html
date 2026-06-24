@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Groups · auth-ingress{% endblock %}
+{% block content %}
+<div class="title-row"><div><p class="eyebrow">Administration</p><h1>Groups</h1></div><a href="/admin/audit">Audit events</a></div>
+{% if error %}<div class="alert" role="alert" tabindex="-1">{{ error }}</div>{% endif %}
+{% if message %}<div class="notice" role="status" tabindex="-1">{{ message }}</div>{% endif %}
+
+<section class="panel">
+  <form method="get" action="/admin/groups" class="form-grid">
+    <label class="wide">Search<input name="q" value="{{ filters.q or '' }}" placeholder="Group name or purpose"></label>
+    <label>Status<select name="status"><option value="">All</option><option value="active" {% if filters.status == 'active' %}selected{% endif %}>Active</option><option value="deactivated" {% if filters.status == 'deactivated' %}selected{% endif %}>Deactivated</option></select></label>
+    <label>Usage<select name="usage"><option value="">All</option><option value="used" {% if filters.usage == 'used' %}selected{% endif %}>Used</option><option value="unused" {% if filters.usage == 'unused' %}selected{% endif %}>Unused</option></select></label>
+    <button type="submit">Filter groups</button>
+  </form>
+</section>
+
+{% set create_state = form_state if form_state.applies_to('group_create') else none %}
+<section class="panel">
+  <h2>Create group</h2>
+  <p class="muted">Use groups to control service access through user memberships and service rules.</p>
+  <form method="post" action="/admin/groups" class="form-grid">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <label>Name
+      <input name="name" value="{{ create_state.value('name') if create_state else '' }}" required>
+      {% if create_state and create_state.error_text('name') %}<span class="field-error">{{ create_state.error_text('name') }}</span>{% endif %}
+    </label>
+    <label class="wide">Description
+      <input name="description" value="{{ create_state.value('description') if create_state else '' }}" placeholder="Purpose or owner">
+    </label>
+    <button type="submit">Create group</button>
+  </form>
+</section>
+
+{% if groups %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Status</th><th>Users</th><th>Services</th><th>Description</th><th></th></tr></thead>
+    <tbody>
+      {% for row in groups %}
+      {% set group = row.group %}
+      <tr>
+        <td>{{ group.name }}</td>
+        <td><span class="status status-{{ group.status }}">{{ group.status }}</span></td>
+        <td>{{ row.user_count }}</td>
+        <td>{{ row.service_count }}</td>
+        <td>{{ group.description or '' }}</td>
+        <td><a href="/admin/groups/{{ group.id }}">Manage</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<section class="empty"><h2>No groups found</h2><p>Adjust the filters or create a group.</p></section>
+{% endif %}
+{% endblock %}

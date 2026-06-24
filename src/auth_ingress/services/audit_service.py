@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from auth_ingress.models import AuditEvent
 
 ALLOWED_CONTEXT_KEYS = {"correlation_id", "client_category"}
-ALLOWED_CHANGE_KEYS = {"revision", "field_names", "group_ids", "groups_added", "groups_removed", "status", "is_admin", "count"}
+ALLOWED_CHANGE_KEYS = {"revision", "field_names", "group_ids", "groups_added", "groups_removed", "status", "is_admin", "count", "user_count", "service_count", "action"}
 
 PROXY_AUDIT_EVENTS = {
     "proxy_launch_created",
@@ -45,6 +45,7 @@ def record_event(
     *,
     actor_user_id: int | None = None,
     target_user_id: int | None = None,
+    target_group_id: int | None = None,
     service_entry_id: int | None = None,
     context: dict | None = None,
     change_summary: dict | None = None,
@@ -56,6 +57,7 @@ def record_event(
         reason=reason[:80],
         actor_user_id=actor_user_id,
         target_user_id=target_user_id,
+        target_group_id=target_group_id,
         service_entry_id=service_entry_id,
         request_context=sanitized_context(context),
         change_summary=sanitized_changes(change_summary),

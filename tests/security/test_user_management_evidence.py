@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
-from auth_entry_portal.models import AuditEvent, User
-from auth_entry_portal.services.audit_service import record_event
+from auth_ingress.models import AuditEvent, User
+from auth_ingress.services.audit_service import record_event
 
 
 def test_management_evidence_has_actor_target_outcome_and_no_secrets(db):

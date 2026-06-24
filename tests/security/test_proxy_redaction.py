@@ -1,6 +1,6 @@
 from sqlalchemy import select
 
-from auth_entry_portal.models import AuditEvent
+from auth_ingress.models import AuditEvent
 from tests.conftest import launch_proxy, sign_in
 
 

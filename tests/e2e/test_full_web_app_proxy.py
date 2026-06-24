@@ -38,7 +38,7 @@ def test_interactive_application_features_in_real_browser(browser, proxy_live_se
 def test_real_time_application_and_reconnect_denial(browser, proxy_live_server, db_factory):
     from sqlalchemy import select
 
-    from auth_entry_portal.models import AccessRule, ServiceEntry
+    from auth_ingress.models import AccessRule, ServiceEntry
 
     context = browser.new_context()
     page = context.new_page()

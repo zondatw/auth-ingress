@@ -1,4 +1,4 @@
-from auth_entry_portal.cli import build_parser
+from auth_ingress.cli import build_parser
 
 
 def test_bootstrap_grammar_has_no_password_argument():

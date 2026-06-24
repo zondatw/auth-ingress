@@ -11,7 +11,7 @@ import zipfile
 
 from packaging.version import Version
 
-from scripts.release.package_metadata import EXPECTED_DISTRIBUTION, EXPECTED_IMPORT
+from scripts.release.package_metadata import EXPECTED_DISTRIBUTION, EXPECTED_IMPORT, EXPECTED_WHEEL_PREFIX
 
 
 FORBIDDEN_SOURCE_ROOTS = {
@@ -106,7 +106,7 @@ def inspect_artifacts(paths: Iterable[Path]) -> ArtifactReport:
     if not version:
         raise ArtifactValidationError("wheel-version-missing")
     Version(version)
-    expected_prefix = f"auth_entry_portal-{version}"
+    expected_prefix = f"{EXPECTED_WHEEL_PREFIX}-{version}"
     if wheel.name != f"{expected_prefix}-py3-none-any.whl":
         raise ArtifactValidationError("wheel-filename-mismatch")
     if source.name != f"{expected_prefix}.tar.gz":

@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 
-from auth_entry_portal.config import get_settings
-from auth_entry_portal.main import create_app
-from auth_entry_portal.repositories.database import get_db
+from auth_ingress.config import get_settings
+from auth_ingress.main import create_app
+from auth_ingress.repositories.database import get_db
 
 
 def test_clean_install_shows_local_setup_without_registration(db_factory, settings):

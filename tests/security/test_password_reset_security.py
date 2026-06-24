@@ -1,5 +1,5 @@
-from auth_entry_portal.models import User
-from auth_entry_portal.services.password_reset_service import initiate_reset
+from auth_ingress.models import User
+from auth_ingress.services.password_reset_service import initiate_reset
 from tests.conftest import sign_in
 from tests.fixtures.recovery_delivery import CapturingRecoveryDelivery
 

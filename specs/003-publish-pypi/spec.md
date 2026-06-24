@@ -158,7 +158,7 @@ without deleting or overwriting the original version.
   instructions, and Trusted Publisher bindings MUST use the canonical
   `zondatw/auth-entry-portal` repository identity.
 - **FR-016**: The Python import namespace MUST be renamed from `auth_portal` to
-  `auth_entry_portal` throughout the packaged source, tests, executable target,
+  `auth_ingress` throughout the packaged source, tests, executable target,
   documentation, and declared package metadata.
 
 ### Security & Privacy Requirements
@@ -227,7 +227,7 @@ without deleting or overwriting the original version.
   project or simple-index entry. Availability will be verified again immediately
   before registration, and publication will stop if PyPI rejects the name.
 - Distribution names and Python import namespaces are distinct. The Python import
-  namespace is renamed to `auth_entry_portal`; the `auth-portal` command and
+  namespace is renamed to `auth_ingress`; the `auth-portal` command and
   `AUTH_PORTAL_*` configuration keys remain unchanged.
 - The GitHub repository is `zondatw/auth-entry-portal`. Existing local clones must
   update their `origin` URL; the local checkout directory does not need to be

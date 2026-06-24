@@ -17,7 +17,7 @@ receive security fixes; older series may be supported when an advisory states so
 Report vulnerabilities privately through the repository's **Security** tab using
 GitHub private vulnerability reporting:
 
-https://github.com/zondatw/auth-entry-portal/security/advisories/new
+https://github.com/zondatw/auth-ingress/security/advisories/new
 
 Do not open a public issue for an unpatched vulnerability. Include the affected
 version or revision, impact, reproduction details, and any suggested mitigation.

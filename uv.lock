@@ -81,7 +81,7 @@ wheels = [
 ]
 
 [[package]]
-name = "auth-entry-portal"
+name = "auth-ingress"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

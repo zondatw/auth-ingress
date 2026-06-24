@@ -13,6 +13,7 @@ from urllib.parse import quote
 from urllib.request import urlopen
 
 from scripts.release.verify_staged_release import INDEXES, read_manifest
+from scripts.release.package_metadata import EXPECTED_DISTRIBUTION
 
 
 class IndexVerificationError(RuntimeError):
@@ -64,7 +65,7 @@ def compare_release(
         if isinstance(digest, str) and _valid_hash(digest)
     }
     matches = (
-        info.get("name") == "auth-entry-portal"
+        info.get("name") == EXPECTED_DISTRIBUTION
         and info.get("version") == version
         and safe_actual == dict(expected)
     )
@@ -113,7 +114,7 @@ def verify_provenance(index: str, version: str, filenames: Mapping[str, str]) ->
     domain = "pypi.org" if index == "pypi" else "test.pypi.org"
     for filename in filenames:
         url = (
-            f"https://{domain}/integrity/auth-entry-portal/"
+            f"https://{domain}/integrity/{EXPECTED_DISTRIBUTION}/"
             f"{quote(version, safe='')}/{quote(filename, safe='')}/provenance"
         )
         try:

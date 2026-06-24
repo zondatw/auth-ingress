@@ -1,7 +1,7 @@
 # Release Infrastructure Setup
 
 This file records the required non-sensitive configuration for publishing
-`auth-entry-portal`. Never record OIDC tokens, API tokens, passwords, environment
+`auth-ingress`. Never record OIDC tokens, API tokens, passwords, environment
 secrets, or application credentials here.
 
 ## Canonical Identity
@@ -9,11 +9,11 @@ secrets, or application credentials here.
 | Setting | Required value | Current evidence |
 |---------|----------------|------------------|
 | GitHub owner | `zondatw` | Repository remote |
-| GitHub repository | `auth-entry-portal` | `git@github.com:zondatw/auth-entry-portal.git` |
+| GitHub repository | `auth-ingress` | `git@github.com:zondatw/auth-ingress.git` |
 | Default branch | `main` | Verified with GitHub repository metadata |
 | Visibility | Public | Verified with GitHub repository metadata |
-| Distribution | `auth-entry-portal` | `pyproject.toml` |
-| Import namespace | `auth_entry_portal` | `src/auth_entry_portal/` |
+| Distribution | `auth-ingress` | `pyproject.toml` |
+| Import namespace | `auth_ingress` | `src/auth_ingress/` |
 | Release workflow | `.github/workflows/release.yml` | Implemented and contract-tested locally |
 
 ## Required CI Checks
@@ -44,9 +44,9 @@ Create separate pending publishers at PyPI and TestPyPI with these exact claims:
 
 | Claim | PyPI | TestPyPI |
 |-------|------|----------|
-| Project | `auth-entry-portal` | `auth-entry-portal` |
+| Project | `auth-ingress` | `auth-ingress` |
 | Owner | `zondatw` | `zondatw` |
-| Repository | `auth-entry-portal` | `auth-entry-portal` |
+| Repository | `auth-ingress` | `auth-ingress` |
 | Workflow | `release.yml` | `release.yml` |
 | Environment | `pypi` | `testpypi` |
 

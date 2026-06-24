@@ -1,6 +1,6 @@
-from auth_entry_portal.models import User
-from auth_entry_portal.services.authentication_service import authenticate
-from auth_entry_portal.services.user_admin_service import create_user
+from auth_ingress.models import User
+from auth_ingress.services.authentication_service import authenticate
+from auth_ingress.services.user_admin_service import create_user
 
 
 def test_temporary_password_login_forces_self_change(client, csrf, db):

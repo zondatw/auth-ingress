@@ -1,8 +1,8 @@
 import pytest
 
-from auth_entry_portal.models import User
-from auth_entry_portal.services.user_admin_service import set_user_status, update_user
-from auth_entry_portal.services.user_management_types import ManagementError, OutcomeCode
+from auth_ingress.models import User
+from auth_ingress.services.user_admin_service import set_user_status, update_user
+from auth_ingress.services.user_management_types import ManagementError, OutcomeCode
 
 
 def test_self_and_last_admin_changes_are_denied(db):

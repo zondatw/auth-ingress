@@ -2,9 +2,9 @@ from datetime import timedelta
 
 import pytest
 
-from auth_entry_portal.models import User
-from auth_entry_portal.services.password_reset_service import complete_reset, encode_reset_cookie, initiate_reset, utcnow
-from auth_entry_portal.services.user_management_types import ManagementError
+from auth_ingress.models import User
+from auth_ingress.services.password_reset_service import complete_reset, encode_reset_cookie, initiate_reset, utcnow
+from auth_ingress.services.user_management_types import ManagementError
 from tests.fixtures.recovery_delivery import CapturingRecoveryDelivery
 
 

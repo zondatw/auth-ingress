@@ -1,6 +1,6 @@
-from auth_entry_portal.cli import build_parser
-from auth_entry_portal.services.cli_user_output import exit_code, render_result
-from auth_entry_portal.services.user_management_types import OperationResult, OutcomeCode
+from auth_ingress.cli import build_parser
+from auth_ingress.services.cli_user_output import exit_code, render_result
+from auth_ingress.services.user_management_types import OperationResult, OutcomeCode
 
 
 def test_users_cli_grammar_and_preview_default():

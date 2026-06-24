@@ -24,7 +24,7 @@ and validated as explicit increments.
 **Purpose**: Add reusable configuration and test support without implementing a
 user story.
 
-- [X] T001 Add validated recovery SMTP, reset TTL/cookie, user-search page-size, and management rate-limit settings in src/auth_entry_portal/config.py
+- [X] T001 Add validated recovery SMTP, reset TTL/cookie, user-search page-size, and management rate-limit settings in src/auth_ingress/config.py
 - [X] T002 [P] Add a local capture/failure recovery-delivery fixture in tests/fixtures/recovery_delivery.py
 - [X] T003 [P] Add subprocess, hidden-input, JSON, and exit-code CLI helpers in tests/cli_helpers.py
 - [X] T004 [P] Add managed-user, group-rule, revision, and session test factories in tests/user_management_helpers.py
@@ -41,13 +41,13 @@ and trust-boundary tasks are complete.
 
 - [X] T005 [P] Add schema/backfill/duplicate-normalization contract tests for existing and clean installations in tests/contract/test_user_management_schema.py
 - [X] T006 [P] Add audit allowlist, target/change-summary, nested-transaction, and secret-redaction tests in tests/security/test_user_management_audit.py
-- [X] T007 Extend User with normalized_email, credential_status, and revision validation in src/auth_entry_portal/models/identity.py
-- [X] T008 [P] Extend AuditEvent with target_user_id and allowlisted change_summary storage in src/auth_entry_portal/models/audit_event.py
-- [X] T009 Export the new and extended identity/audit model surface in src/auth_entry_portal/models/__init__.py
-- [X] T010 Implement portable user/audit column upgrades, normalized-email backfill, duplicate failure, and indexes in src/auth_entry_portal/repositories/schema.py
-- [X] T011 [P] Define shared operation requests, previews, outcomes, error codes, and serialization types in src/auth_entry_portal/services/user_management_types.py
-- [X] T012 Refactor audit recording for caller-owned transactions and strict management change-summary allowlists in src/auth_entry_portal/services/audit_service.py
-- [X] T013 [P] Add bulk user-session revocation without nested commits in src/auth_entry_portal/services/session_service.py
+- [X] T007 Extend User with normalized_email, credential_status, and revision validation in src/auth_ingress/models/identity.py
+- [X] T008 [P] Extend AuditEvent with target_user_id and allowlisted change_summary storage in src/auth_ingress/models/audit_event.py
+- [X] T009 Export the new and extended identity/audit model surface in src/auth_ingress/models/__init__.py
+- [X] T010 Implement portable user/audit column upgrades, normalized-email backfill, duplicate failure, and indexes in src/auth_ingress/repositories/schema.py
+- [X] T011 [P] Define shared operation requests, previews, outcomes, error codes, and serialization types in src/auth_ingress/services/user_management_types.py
+- [X] T012 Refactor audit recording for caller-owned transactions and strict management change-summary allowlists in src/auth_ingress/services/audit_service.py
+- [X] T013 [P] Add bulk user-session revocation without nested commits in src/auth_ingress/services/session_service.py
 - [X] T014 Update database fixtures and existing user constructors for normalized identity, credential state, revision, and transaction-safe audit behavior in tests/conftest.py
 
 **Checkpoint**: Existing installations upgrade safely and all later stories can
@@ -77,12 +77,12 @@ interrupted, remote, and concurrent attempts create no extra or partial user.
 
 ### Implementation for User Story 1
 
-- [X] T020 [P] [US1] Implement singleton InstallationState model and state invariants in src/auth_entry_portal/models/installation.py
-- [X] T021 [US1] Create/backfill serialized installation state for clean and existing databases in src/auth_entry_portal/repositories/schema.py
-- [X] T022 [US1] Implement atomic SQLite bootstrap serialization, first-admin creation, and audit outcomes in src/auth_entry_portal/services/bootstrap_service.py
-- [X] T023 [US1] Add bootstrap-admin parsing, hidden password confirmation, safe outcomes, exit codes, and seed-demo installation-state consistency in src/auth_entry_portal/cli.py
-- [X] T024 [P] [US1] Add the non-sensitive setup-required page in src/auth_entry_portal/web/templates/auth/setup_required.html
-- [X] T025 [US1] Gate sign-in on installation state and render setup guidance without a remote registration path in src/auth_entry_portal/web/routes/auth.py
+- [X] T020 [P] [US1] Implement singleton InstallationState model and state invariants in src/auth_ingress/models/installation.py
+- [X] T021 [US1] Create/backfill serialized installation state for clean and existing databases in src/auth_ingress/repositories/schema.py
+- [X] T022 [US1] Implement atomic SQLite bootstrap serialization, first-admin creation, and audit outcomes in src/auth_ingress/services/bootstrap_service.py
+- [X] T023 [US1] Add bootstrap-admin parsing, hidden password confirmation, safe outcomes, exit codes, and seed-demo installation-state consistency in src/auth_ingress/cli.py
+- [X] T024 [P] [US1] Add the non-sensitive setup-required page in src/auth_ingress/web/templates/auth/setup_required.html
+- [X] T025 [US1] Gate sign-in on installation state and render setup guidance without a remote registration path in src/auth_ingress/web/routes/auth.py
 - [X] T026 [US1] Document first-run prerequisites, bootstrap, verification, retry, and already-initialized behavior in README.md
 
 **Checkpoint**: A first-time installer can create exactly one administrator and
@@ -113,14 +113,14 @@ then prove denied, missing-group, and stale-revision operations change nothing.
 
 ### Implementation for User Story 2
 
-- [X] T033 [P] [US2] Implement group-derived effective access with all granting groups and usable/policy separation in src/auth_entry_portal/services/access_service.py
-- [X] T034 [US2] Implement authorized bounded user search, detail projections, and non-sensitive management-read audit outcomes in src/auth_entry_portal/services/user_admin_service.py
-- [X] T035 [US2] Implement membership preview/commit, expected-revision comparison, idempotency, atomic audit, and effective-access differences in src/auth_entry_portal/services/user_admin_service.py
-- [X] T036 [US2] Implement admin user list/detail and membership preview/confirm routes in src/auth_entry_portal/web/routes/admin_users.py
-- [X] T037 [P] [US2] Build accessible list/filter/empty-state and user access-detail templates in src/auth_entry_portal/web/templates/admin/users.html and src/auth_entry_portal/web/templates/admin/user_detail.html
-- [X] T038 [US2] Add bounded pagination and per-actor management request protections in src/auth_entry_portal/security/rate_limit.py and src/auth_entry_portal/web/routes/admin_users.py
-- [X] T039 [US2] Register user routes and admin navigation in src/auth_entry_portal/main.py, src/auth_entry_portal/web/routes/__init__.py, and src/auth_entry_portal/web/templates/base.html
-- [X] T040 [US2] Add management states, confirmation warnings, focus treatment, and non-color status styling in src/auth_entry_portal/web/static/portal.css
+- [X] T033 [P] [US2] Implement group-derived effective access with all granting groups and usable/policy separation in src/auth_ingress/services/access_service.py
+- [X] T034 [US2] Implement authorized bounded user search, detail projections, and non-sensitive management-read audit outcomes in src/auth_ingress/services/user_admin_service.py
+- [X] T035 [US2] Implement membership preview/commit, expected-revision comparison, idempotency, atomic audit, and effective-access differences in src/auth_ingress/services/user_admin_service.py
+- [X] T036 [US2] Implement admin user list/detail and membership preview/confirm routes in src/auth_ingress/web/routes/admin_users.py
+- [X] T037 [P] [US2] Build accessible list/filter/empty-state and user access-detail templates in src/auth_ingress/web/templates/admin/users.html and src/auth_ingress/web/templates/admin/user_detail.html
+- [X] T038 [US2] Add bounded pagination and per-actor management request protections in src/auth_ingress/security/rate_limit.py and src/auth_ingress/web/routes/admin_users.py
+- [X] T039 [US2] Register user routes and admin navigation in src/auth_ingress/main.py, src/auth_ingress/web/routes/__init__.py, and src/auth_ingress/web/templates/base.html
+- [X] T040 [US2] Add management states, confirmation warnings, focus treatment, and non-color status styling in src/auth_ingress/web/static/portal.css
 
 **Checkpoint**: The practical MVP is complete: a new installation can bootstrap
 an admin who can then manage group-based user access from the page.
@@ -150,17 +150,17 @@ delivery failure, self/last-admin changes, and old sessions are safely rejected.
 
 ### Implementation for User Story 3
 
-- [X] T047 [P] [US3] Implement digest-only PasswordResetRequest model, lifecycle fields, constraints, and relationships in src/auth_entry_portal/models/password_reset.py
-- [X] T048 [US3] Add password-reset tables, credential-state backfill, indexes, and model exports in src/auth_entry_portal/repositories/schema.py and src/auth_entry_portal/models/__init__.py
-- [X] T049 [P] [US3] Implement synchronous SMTP setup/reset delivery with transport security, safe timeouts, and test adapter injection in src/auth_entry_portal/services/recovery_delivery.py
-- [X] T050 [US3] Implement request supersession, digest lookup, rate-limited cookie exchange, expiry, completion, rollback, and safe delivery failure in src/auth_entry_portal/services/password_reset_service.py
-- [X] T051 [US3] Implement create/profile/status/admin preview-commit, normalized uniqueness, self/last-admin protection, and session revocation in src/auth_entry_portal/services/user_admin_service.py
-- [X] T052 [US3] Extend admin user routes with create, profile, status, admin, retry-setup, and reset preview/confirm operations in src/auth_entry_portal/web/routes/admin_users.py
-- [X] T053 [US3] Extend user list/detail templates with lifecycle forms, setup-required state, delivery outcomes, and lockout warnings in src/auth_entry_portal/web/templates/admin/users.html and src/auth_entry_portal/web/templates/admin/user_detail.html
-- [X] T054 [US3] Implement clean-URL reset-cookie exchange and password completion routes in src/auth_entry_portal/web/routes/password_reset.py
-- [X] T055 [P] [US3] Build no-referrer, token-free password setup/reset and generic invalid-request templates in src/auth_entry_portal/web/templates/auth/reset_password.html
-- [X] T056 [US3] Reject setup-required credentials and recheck current account/admin state during authentication in src/auth_entry_portal/services/authentication_service.py and src/auth_entry_portal/security/dependencies.py
-- [X] T057 [US3] Register recovery routes and enforce query/reset-cookie redaction plus recovery security headers in src/auth_entry_portal/main.py and src/auth_entry_portal/web/routes/__init__.py
+- [X] T047 [P] [US3] Implement digest-only PasswordResetRequest model, lifecycle fields, constraints, and relationships in src/auth_ingress/models/password_reset.py
+- [X] T048 [US3] Add password-reset tables, credential-state backfill, indexes, and model exports in src/auth_ingress/repositories/schema.py and src/auth_ingress/models/__init__.py
+- [X] T049 [P] [US3] Implement synchronous SMTP setup/reset delivery with transport security, safe timeouts, and test adapter injection in src/auth_ingress/services/recovery_delivery.py
+- [X] T050 [US3] Implement request supersession, digest lookup, rate-limited cookie exchange, expiry, completion, rollback, and safe delivery failure in src/auth_ingress/services/password_reset_service.py
+- [X] T051 [US3] Implement create/profile/status/admin preview-commit, normalized uniqueness, self/last-admin protection, and session revocation in src/auth_ingress/services/user_admin_service.py
+- [X] T052 [US3] Extend admin user routes with create, profile, status, admin, retry-setup, and reset preview/confirm operations in src/auth_ingress/web/routes/admin_users.py
+- [X] T053 [US3] Extend user list/detail templates with lifecycle forms, setup-required state, delivery outcomes, and lockout warnings in src/auth_ingress/web/templates/admin/users.html and src/auth_ingress/web/templates/admin/user_detail.html
+- [X] T054 [US3] Implement clean-URL reset-cookie exchange and password completion routes in src/auth_ingress/web/routes/password_reset.py
+- [X] T055 [P] [US3] Build no-referrer, token-free password setup/reset and generic invalid-request templates in src/auth_ingress/web/templates/auth/reset_password.html
+- [X] T056 [US3] Reject setup-required credentials and recheck current account/admin state during authentication in src/auth_ingress/services/authentication_service.py and src/auth_ingress/security/dependencies.py
+- [X] T057 [US3] Register recovery routes and enforce query/reset-cookie redaction plus recovery security headers in src/auth_ingress/main.py and src/auth_ingress/web/routes/__init__.py
 
 **Checkpoint**: Authorized operators can manage the complete non-destructive user
 lifecycle and users can securely establish or reset credentials.
@@ -189,10 +189,10 @@ recovery, and redaction.
 
 ### Implementation for User Story 4
 
-- [X] T062 [US4] Implement hidden, rate-limited actor authentication and CLI-safe management context in src/auth_entry_portal/services/cli_user_auth.py
-- [X] T063 [US4] Implement table/JSON result rendering and stable exit-code mapping in src/auth_entry_portal/services/cli_user_output.py
-- [X] T064 [US4] Add users list/show/create/update/status/reset/membership parsers with preview-by-default semantics in src/auth_entry_portal/cli.py
-- [X] T065 [US4] Wire all users commands to shared management services with expected revisions, atomic outcomes, and CLI audit category in src/auth_entry_portal/cli.py
+- [X] T062 [US4] Implement hidden, rate-limited actor authentication and CLI-safe management context in src/auth_ingress/services/cli_user_auth.py
+- [X] T063 [US4] Implement table/JSON result rendering and stable exit-code mapping in src/auth_ingress/services/cli_user_output.py
+- [X] T064 [US4] Add users list/show/create/update/status/reset/membership parsers with preview-by-default semantics in src/auth_ingress/cli.py
+- [X] T065 [US4] Wire all users commands to shared management services with expected revisions, atomic outcomes, and CLI audit category in src/auth_ingress/cli.py
 - [X] T066 [US4] Document CLI grammar, automation-safe JSON, exit codes, preview/apply, conflict recovery, and secret handling in docs/user-management.md
 
 **Checkpoint**: All requested management operations work consistently through

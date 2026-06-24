@@ -1,4 +1,4 @@
-# Release Auth Entry Portal
+# Release auth-ingress
 
 ## Preconditions
 
@@ -8,7 +8,7 @@
 - The GitHub tag is exactly `v<version>` and stable/pre-release status agrees with
   the version.
 - PyPI and TestPyPI Trusted Publisher claims match
-  `zondatw/auth-entry-portal`, `release.yml`, and their exact environment names.
+  `zondatw/auth-ingress`, `release.yml`, and their exact environment names.
 - No package-index API token or maintainer password is stored in GitHub.
 
 ## Publish

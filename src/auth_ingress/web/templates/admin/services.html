@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Manage services · auth-ingress{% endblock %}
+{% block content %}
+<div class="title-row"><div><p class="eyebrow">Administration</p><h1>Service entries</h1></div><a href="/admin/audit">Audit events</a></div>
+{% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
+<section class="panel"><h2>Add service</h2><form method="post" action="/admin/services" class="form-grid">
+<input type="hidden" name="csrf" value="{{ csrf_token }}">
+<label>Slug<input name="slug" pattern="[a-z0-9-]+" required></label><label>Display name<input name="display_name" required></label>
+<label class="wide">Description<input name="description"></label><label class="wide">Internal destination<input name="destination" placeholder="https://app.internal" required></label>
+<label>Status<select name="status"><option>enabled</option><option>disabled</option></select></label><label>Groups (comma separated)<input name="group_names" required></label>
+<label><input type="checkbox" name="proxy_enabled" value="true"> Full web-app proxy</label><label><input type="checkbox" name="websocket_enabled" value="true"> WebSockets</label><button type="submit">Add service</button>
+</form></section>
+<div class="stack">{% for service in services %}<section class="panel"><form method="post" action="/admin/services/{{ service.slug }}" class="form-grid">
+<input type="hidden" name="csrf" value="{{ csrf_token }}"><label>Slug<input name="slug" value="{{ service.slug }}" required></label><label>Display name<input name="display_name" value="{{ service.display_name }}" required></label>
+<label class="wide">Description<input name="description" value="{{ service.description or '' }}"></label><label class="wide">Internal destination<input name="destination" value="{{ service.destination }}" required></label>
+<label>Status<select name="status"><option {% if service.status == 'enabled' %}selected{% endif %}>enabled</option><option {% if service.status == 'disabled' %}selected{% endif %}>disabled</option></select></label><label>Groups (comma separated)<input name="group_names" value="{{ service_group_names.get(service.id, '') }}" required></label>
+<label><input type="checkbox" name="proxy_enabled" value="true" {% if service.proxy_enabled %}checked{% endif %}> Full web-app proxy</label><label><input type="checkbox" name="websocket_enabled" value="true" {% if service.websocket_enabled %}checked{% endif %}> WebSockets</label>
+<p class="wide">Service host: <code>{{ service_origins.get(service.id) }}</code><br>Compatibility: <strong>{{ service.compatibility_status }}</strong>{% if service.compatibility_summary %} — {{ service.compatibility_summary }}{% endif %}</p><button type="submit">Save changes</button>
+</form><form method="post" action="/admin/services/{{ service.slug }}/compatibility"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="secondary" type="submit">Check compatibility</button></form></section>{% endfor %}</div>
+{% endblock %}

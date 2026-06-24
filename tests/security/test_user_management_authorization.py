@@ -13,6 +13,6 @@ def test_user_management_denies_signed_out_and_non_admin_without_disclosure(clie
 
 def test_membership_rejects_bad_csrf(client, csrf, db):
     sign_in(client, csrf, email="admin@example.test")
-    user = db.query(__import__("auth_entry_portal.models", fromlist=["User"]).User).filter_by(email="member@example.test").one()
+    user = db.query(__import__("auth_ingress.models", fromlist=["User"]).User).filter_by(email="member@example.test").one()
     response = client.post(f"/admin/users/{user.id}/memberships", data={"csrf": "bad", "expected_revision": user.revision})
     assert response.status_code == 400

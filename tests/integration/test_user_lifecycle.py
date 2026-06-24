@@ -1,7 +1,7 @@
-from auth_entry_portal.models import PortalSession, User
-from auth_entry_portal.services.authentication_service import authenticate
-from auth_entry_portal.services.user_admin_service import create_user, set_user_status, update_user
-from auth_entry_portal.services.user_management_types import OutcomeCode
+from auth_ingress.models import PortalSession, User
+from auth_ingress.services.authentication_service import authenticate
+from auth_ingress.services.user_admin_service import create_user, set_user_status, update_user
+from auth_ingress.services.user_management_types import OutcomeCode
 from tests.fixtures.recovery_delivery import CapturingRecoveryDelivery
 
 

@@ -42,7 +42,7 @@ jobs:
           enable-cache: true
       - run: uv sync --locked --extra test
       - run: uv run playwright install --with-deps chromium
-      - run: uv run pytest --cov=auth_entry_portal --cov-report=term
+      - run: uv run pytest --cov=auth_ingress --cov-report=term
 
   package:
     needs: [tests, browser-and-coverage]

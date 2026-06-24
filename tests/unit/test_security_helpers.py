@@ -2,13 +2,13 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from auth_entry_portal.config import Settings
-from auth_entry_portal.security.cookies import decode_session_id, encode_session_id
-from auth_entry_portal.security.passwords import hash_password, verify_password
-from auth_entry_portal.security.rate_limit import FailedSignInLimiter
-from auth_entry_portal.services.audit_service import sanitized_context
-from auth_entry_portal.services.service_admin_service import ServiceValidationError, validate_destination
-from auth_entry_portal.web.routes.auth import safe_return_to
+from auth_ingress.config import Settings
+from auth_ingress.security.cookies import decode_session_id, encode_session_id
+from auth_ingress.security.passwords import hash_password, verify_password
+from auth_ingress.security.rate_limit import FailedSignInLimiter
+from auth_ingress.services.audit_service import sanitized_context
+from auth_ingress.services.service_admin_service import ServiceValidationError, validate_destination
+from auth_ingress.web.routes.auth import safe_return_to
 
 
 def test_password_hash_and_verify():

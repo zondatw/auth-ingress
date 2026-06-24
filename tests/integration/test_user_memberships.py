@@ -1,8 +1,8 @@
 import pytest
 
-from auth_entry_portal.models import Group, User
-from auth_entry_portal.services.user_admin_service import change_memberships
-from auth_entry_portal.services.user_management_types import ManagementError, OutcomeCode
+from auth_ingress.models import Group, User
+from auth_ingress.services.user_admin_service import change_memberships
+from auth_ingress.services.user_management_types import ManagementError, OutcomeCode
 
 
 def test_membership_commit_is_atomic_idempotent_and_revision_checked(db):

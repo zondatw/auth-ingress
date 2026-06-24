@@ -10,9 +10,12 @@ from packaging.version import InvalidVersion, Version
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_DISTRIBUTION = "auth-entry-portal"
-EXPECTED_IMPORT = "auth_entry_portal"
-EXPECTED_REPOSITORY = "https://github.com/zondatw/auth-entry-portal"
+EXPECTED_DISTRIBUTION = "auth-ingress"
+EXPECTED_IMPORT = "auth_ingress"
+EXPECTED_REPOSITORY = "https://github.com/zondatw/auth-ingress"
+EXPECTED_WHEEL_PREFIX = "auth_ingress"
+PREFERRED_COMMAND = "auth-ingress"
+COMPATIBILITY_COMMAND = "auth-portal"
 REQUIRED_URLS = {"Homepage", "Documentation", "Source", "Issues", "Changelog", "Security"}
 REQUIRED_FILES = {"LICENSE", "README.md", "CHANGELOG.md", "SECURITY.md"}
 
@@ -61,6 +64,13 @@ def validate_project_metadata(
     imports = project.get("import-names")
     if imports != [EXPECTED_IMPORT]:
         raise ReleaseMetadataError("unexpected-import-names")
+
+    scripts = project.get("scripts")
+    if not isinstance(scripts, Mapping):
+        raise ReleaseMetadataError("missing-console-scripts")
+    expected_target = f"{EXPECTED_IMPORT}.cli:main"
+    if scripts.get(PREFERRED_COMMAND) != expected_target or scripts.get(COMPATIBILITY_COMMAND) != expected_target:
+        raise ReleaseMetadataError("unexpected-console-scripts")
 
     if project.get("license") != "MIT" or project.get("license-files") != ["LICENSE"]:
         raise ReleaseMetadataError("missing-approved-license")

@@ -11,14 +11,14 @@ from scripts.release.verify_index import (
 
 
 EXPECTED = {
-    "auth_entry_portal-0.1.0-py3-none-any.whl": "a" * 64,
-    "auth_entry_portal-0.1.0.tar.gz": "b" * 64,
+    "auth_ingress-0.1.0-py3-none-any.whl": "a" * 64,
+    "auth_ingress-0.1.0.tar.gz": "b" * 64,
 }
 
 
 def payload(hashes=EXPECTED):
     return {
-        "info": {"name": "auth-entry-portal", "version": "0.1.0"},
+        "info": {"name": "auth-ingress", "version": "0.1.0"},
         "urls": [
             {"filename": name, "digests": {"sha256": digest}}
             for name, digest in hashes.items()

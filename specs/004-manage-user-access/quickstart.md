@@ -13,8 +13,8 @@ identities or credentials.
   must not forward messages to real recipients.
 
 Set a strong application secret and point the portal at a fresh disposable
-database using the existing `AUTH_PORTAL_SECRET_KEY` and
-`AUTH_PORTAL_DATABASE_URL` settings. Configure the recovery adapter with the
+database using the existing `AUTH_INGRESS_SECRET_KEY` and
+`AUTH_INGRESS_DATABASE_URL` settings. Configure the recovery adapter with the
 planned SMTP host, port, sender, transport-security, and optional authentication
 settings. Secret values must come from protected deployment configuration and
 must not be pasted into recorded test output.
@@ -24,7 +24,7 @@ must not be pasted into recorded test output.
 Start from a database path that does not exist, then run:
 
 ```bash
-uv run auth-portal bootstrap-admin \
+uv run auth-ingress bootstrap-admin \
   --email admin@example.test \
   --display-name "Initial Administrator"
 ```
@@ -76,20 +76,20 @@ Expected:
 Use an active admin actor and hidden password prompt:
 
 ```bash
-uv run auth-portal users list \
+uv run auth-ingress users list \
   --actor-email admin@example.test \
   --format json
 
-uv run auth-portal users show 2 \
+uv run auth-ingress users show 2 \
   --actor-email admin@example.test \
   --format json
 
-uv run auth-portal users memberships add 2 staff \
+uv run auth-ingress users memberships add 2 staff \
   --actor-email admin@example.test \
   --expected-revision 1 \
   --format json
 
-uv run auth-portal users memberships add 2 staff \
+uv run auth-ingress users memberships add 2 staff \
   --actor-email admin@example.test \
   --expected-revision 1 \
   --apply \
@@ -141,7 +141,7 @@ Expected:
 ```bash
 uv run pytest tests/unit tests/contract tests/integration tests/security
 uv run pytest tests/e2e
-uv run pytest --cov=auth_entry_portal --cov-report=term-missing
+uv run pytest --cov=auth_ingress --cov-report=term-missing
 uv run python -m scripts.release.build_and_check
 ```
 
@@ -185,9 +185,9 @@ none before the feature is accepted.
   heading.
 - Release artifact validation passed with forced isolated reinstallation of the
   local artifact to avoid stale package-cache entry points.
-- Wheel: `auth_entry_portal-0.1.0-py3-none-any.whl`
+- Wheel: `auth_ingress-0.1.0-py3-none-any.whl`
   (`b66c14da58ba28830cb71762415fcb94007beb3305340ee3b2e8989bedcbc1ee`).
-- Source archive: `auth_entry_portal-0.1.0.tar.gz`
+- Source archive: `auth_ingress-0.1.0.tar.gz`
   (`24eaddf397637175500f73e543dbdffe482a41344fcf427d635145580b736f86`).
 - Artifact content scan passed for known demo credentials and release-token
   sentinel values; wheel/source smoke tests verified new templates and CLI

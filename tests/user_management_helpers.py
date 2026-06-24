@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from sqlalchemy.orm import Session
 
-from auth_entry_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
-from auth_entry_portal.security.passwords import hash_password
+from auth_ingress.models import AccessRule, Group, GroupMembership, ServiceEntry, User
+from auth_ingress.security.passwords import hash_password
 
 
 def managed_user(db: Session, email: str, *, admin: bool = False, status: str = "active") -> User:

@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}auth-ingress{% endblock %}</title>
+  <link rel="stylesheet" href="/static/portal.css">
+</head>
+<body>
+  <header class="site-header"><a href="/" class="brand">auth-ingress</a>{% if user %}<nav>{% if user.is_admin %}<a href="/admin/users">Users</a><a href="/admin/services">Services</a><a href="/admin/audit">Audit</a>{% endif %}<span>{{ user.display_name }}</span></nav>{% endif %}</header>
+  <main class="container">{% block content %}{% endblock %}</main>
+</body>
+</html>

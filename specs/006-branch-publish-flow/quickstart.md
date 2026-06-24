@@ -102,3 +102,77 @@ Expected:
 
 - Existing release, package, workflow, and security tests pass.
 - New branch-policy tests pass for both allowed branches and denied branches.
+
+## Validation Evidence
+
+Recorded on 2026-06-24 from branch `006-branch-publish-flow`.
+
+### Branch policy simulations
+
+Commands:
+
+```bash
+uv run python -m scripts.release.validate_release --action published --tag v0.1.0 --prerelease false --target-commitish beta
+uv run python -m scripts.release.validate_release --action published --tag v0.1.0 --prerelease false --target-commitish release
+uv run python -m scripts.release.validate_release --action published --tag v0.1.0 --prerelease false --target-commitish main
+```
+
+Results:
+
+- `beta` validated as `branch=beta index=testpypi`.
+- `release` validated as `branch=release index=pypi`.
+- `main` was rejected with safe reason `release-target-unsupported` and no
+  traceback.
+
+### Focused release validation
+
+Command:
+
+```bash
+uv run pytest tests/unit/test_release_validation.py tests/unit/test_index_verification.py tests/contract/test_branch_publish_policy.py tests/contract/test_github_workflows.py tests/security/test_release_workflow_security.py tests/contract/test_release_operations_contract.py -q
+```
+
+Result: `34 passed, 1 warning`.
+
+### Full regression
+
+Command:
+
+```bash
+uv run pytest -q
+```
+
+Result: `181 passed, 15 warnings`.
+
+### Release build/check
+
+Command:
+
+```bash
+uv run python -m scripts.release.build_and_check
+```
+
+Result:
+
+- Built `dist/auth_ingress-0.1.0.tar.gz`.
+- Built `dist/auth_ingress-0.1.0-py3-none-any.whl`.
+- Installed artifact smoke checks passed.
+
+Artifact hashes from `dist/SHA256SUMS`:
+
+- `45e8cf8173db3bd86d4df7e9ed31075897e8295b0f2f12d45698a498e156c812  auth_ingress-0.1.0-py3-none-any.whl`
+- `a54a0850652d849099d8ed5d90a31e85722d168d7f23c617a5f1c1a53fc7d823  auth_ingress-0.1.0.tar.gz`
+
+### Requirement and contract mapping
+
+- FR-001–FR-005 and SC-001–SC-003: covered by branch policy unit/contract
+  tests and branch-conditioned workflow tests.
+- FR-006–FR-008: covered by release validation and duplicate-version preflight
+  tests.
+- FR-009, SPR-003–SPR-005, and SC-005: covered by release evidence contracts,
+  safe summary output, redaction checks, and runbook updates.
+- FR-010 and SC-004: covered by updated release, recovery, setup, and historical
+  publish documentation.
+- SPR-001–SPR-002: covered by workflow security tests proving job-scoped OIDC,
+  no static package-index credentials, no checkout/run steps in publish jobs,
+  and separate branch-conditioned TestPyPI/PyPI publish paths.

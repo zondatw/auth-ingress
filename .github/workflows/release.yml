@@ -32,6 +32,7 @@ jobs:
           --prerelease '${{ github.event.release.prerelease }}'
           --target-commitish '${{ github.event.release.target_commitish }}'
           --require-clean
+          | tee -a "$GITHUB_STEP_SUMMARY"
 
   build:
     needs: validate
@@ -58,8 +59,28 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-  publish-testpypi:
+  preflight-testpypi:
     needs: build
+    if: github.event.release.target_commitish == 'beta'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.23"
+          python-version: "3.14"
+      - run: >-
+          uv run --with packaging python -m scripts.release.verify_index
+          --index testpypi
+          --version '${{ github.event.release.tag_name }}'
+          --expect-absent
+          | tee -a "$GITHUB_STEP_SUMMARY"
+
+  publish-testpypi:
+    needs: preflight-testpypi
+    if: github.event.release.target_commitish == 'beta'
     runs-on: ubuntu-latest
     environment:
       name: testpypi
@@ -79,6 +100,7 @@ jobs:
 
   verify-testpypi:
     needs: publish-testpypi
+    if: github.event.release.target_commitish == 'beta'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -96,11 +118,33 @@ jobs:
           uv run --with packaging python -m scripts.release.verify_staged_release
           --index testpypi
           --version '${{ github.event.release.tag_name }}'
-          --manifest manifest/SHA256SUMS
+          --branch '${{ github.event.release.target_commitish }}'
+          --manifest dist/manifest/SHA256SUMS
           --smoke-script tests/smoke/test_installed_package.py
+          | tee -a "$GITHUB_STEP_SUMMARY"
+
+  preflight-pypi:
+    needs: build
+    if: github.event.release.target_commitish == 'release'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          ref: ${{ github.event.release.tag_name }}
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.23"
+          python-version: "3.14"
+      - run: >-
+          uv run --with packaging python -m scripts.release.verify_index
+          --index pypi
+          --version '${{ github.event.release.tag_name }}'
+          --expect-absent
+          | tee -a "$GITHUB_STEP_SUMMARY"
 
   publish-pypi:
-    needs: verify-testpypi
+    needs: preflight-pypi
+    if: github.event.release.target_commitish == 'release'
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -119,6 +163,7 @@ jobs:
 
   verify-pypi:
     needs: publish-pypi
+    if: github.event.release.target_commitish == 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
@@ -137,7 +182,8 @@ jobs:
           uv run --with packaging python -m scripts.release.verify_index
           --index pypi
           --version '${{ github.event.release.tag_name }}'
-          --manifest manifest/SHA256SUMS
+          --branch '${{ github.event.release.target_commitish }}'
+          --manifest dist/manifest/SHA256SUMS
           --revision '${{ github.sha }}'
           --require-provenance
           | tee -a "$GITHUB_STEP_SUMMARY"

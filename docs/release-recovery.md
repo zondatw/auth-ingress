@@ -41,3 +41,16 @@ filename and SHA-256 value with the workflow manifest, and classify the outcome:
 - **Completed**: all filenames and hashes match; rerun verification only.
 - **Collision**: any identity, filename, or hash differs; stop publication,
   revoke authority if compromise is plausible, and investigate.
+
+## Blocked Branch Publish
+
+Branch policy blocks before upload when a staging release is not targeted at
+`beta`, a production release is not targeted at `release`, or a similar branch
+name such as `beta-fix`, `release-candidate`, or `releases` is used. Record the
+safe reason code, branch, target index, version, and release URL. Do not change
+environment approvals or Trusted Publisher settings to bypass the policy.
+
+If a version exists on the target index, treat it as immutable. Compare
+read-only index metadata and hashes with the workflow manifest. If the files
+match, rerun verification only. If the files differ or the state is ambiguous,
+stop, investigate, and prepare a new version for any corrected release.

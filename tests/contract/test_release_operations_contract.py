@@ -37,3 +37,18 @@ def test_recovery_runbook_covers_revocation_notification_and_separation():
         "investigation",
     ):
         assert phrase in text
+
+
+def test_release_runbooks_cover_branch_specific_publish_policy_and_evidence():
+    text = read_runbooks()
+    for phrase in (
+        "beta",
+        "testpypi",
+        "release",
+        "pypi",
+        "wrong-branch",
+        "branch policy blocks before upload",
+        "target index",
+        "artifact filenames",
+    ):
+        assert phrase in text

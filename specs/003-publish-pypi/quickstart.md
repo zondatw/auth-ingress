@@ -77,6 +77,8 @@ found. The test finishes within 5 minutes per clean environment.
 4. Bind both to owner `zondatw`, repository `auth-ingress`, workflow
    `release.yml`, and environments `pypi` or `testpypi` respectively.
 5. Create both GitHub environments and restrict them to version tags.
+   `testpypi` jobs must be conditioned on exact branch target `beta`; `pypi`
+   jobs must be conditioned on exact branch target `release`.
 6. Require a reviewer for `pypi`; prevent self-review and administrator bypass
    where supported.
 7. Make the CI workflow jobs required on `main`.
@@ -103,12 +105,11 @@ can run.
 
 For a new pre-release version reserved for validation:
 
-1. Merge the reviewed version and changelog update.
-2. Create tag `v<version>` at that main revision.
-3. Publish a GitHub pre-release with matching release notes.
+1. Merge the reviewed version and changelog update to `beta`.
+2. Create tag `v<version>` at that beta revision.
+3. Publish a GitHub pre-release targeting `beta` with matching release notes.
 4. Observe validation, one-time build, TestPyPI publication, and staged install.
-5. Reject or cancel the `pypi` environment approval so the candidate is not
-   promoted during this rehearsal.
+5. Confirm PyPI publication and verification jobs are skipped.
 
 Expected outcome: TestPyPI contains one source archive and one wheel with the
 workflow-recorded hashes; the exact staged version installs and passes smoke
@@ -117,11 +118,14 @@ checks. A pre-release is not selected by a normal stable install.
 ## Validate Public Promotion
 
 For the approved initial public release, repeat the release flow with the intended
-stable version. Review the staging evidence and approve the protected `pypi` job.
+stable version on the exact `release` branch.
 
 Expected outcome:
 
-- PyPI receives the same filenames and SHA-256 hashes tested on TestPyPI;
+- PyPI receives the expected filenames and SHA-256 hashes from the release branch
+  build;
+- TestPyPI publication and verification jobs are skipped for this release
+  request;
 - the public listing contains required metadata and links;
 - provenance/attestations identify the expected repository, workflow, tag, and
   revision;
@@ -136,7 +140,9 @@ version:
 
 - duplicate version and ambiguous timeout verification;
 - invalid metadata, missing asset, failed test, and source/tag mismatch;
-- rejected production environment approval;
+- wrong branch targets such as `main`, feature branches, `beta-fix`,
+  `release-candidate`, and `releases`;
+- rejected production environment approval for the `release` branch;
 - TestPyPI propagation delay with bounded read-only retry;
 - documented yank/new-version response for a defective candidate;
 - Trusted Publisher revocation after a simulated publisher compromise.

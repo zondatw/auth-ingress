@@ -42,16 +42,20 @@ def test_release_trigger_graph_environments_artifact_handoff_and_pins():
     expected = {
         "validate",
         "build",
+        "preflight-testpypi",
         "publish-testpypi",
         "verify-testpypi",
+        "preflight-pypi",
         "publish-pypi",
         "verify-pypi",
     }
     assert expected == set(jobs)
     assert jobs["build"]["needs"] == "validate"
-    assert jobs["publish-testpypi"]["needs"] == "build"
+    assert jobs["preflight-testpypi"]["needs"] == "build"
+    assert jobs["publish-testpypi"]["needs"] == "preflight-testpypi"
     assert jobs["verify-testpypi"]["needs"] == "publish-testpypi"
-    assert jobs["publish-pypi"]["needs"] == "verify-testpypi"
+    assert jobs["preflight-pypi"]["needs"] == "build"
+    assert jobs["publish-pypi"]["needs"] == "preflight-pypi"
     assert jobs["verify-pypi"]["needs"] == "publish-pypi"
     assert jobs["publish-testpypi"]["environment"]["name"] == "testpypi"
     assert jobs["publish-pypi"]["environment"]["name"] == "pypi"
@@ -64,3 +68,20 @@ def test_release_concurrency_never_cancels_publication():
     concurrency = workflow["concurrency"]
     assert "github.event.release.tag_name" in concurrency["group"]
     assert concurrency["cancel-in-progress"] == "false"
+
+
+def test_release_publish_jobs_are_branch_conditioned():
+    jobs = load_workflow("release.yml")["jobs"]
+    beta_condition = "github.event.release.target_commitish == 'beta'"
+    release_condition = "github.event.release.target_commitish == 'release'"
+    for name in ("preflight-testpypi", "publish-testpypi", "verify-testpypi"):
+        assert jobs[name]["if"] == beta_condition
+    for name in ("preflight-pypi", "publish-pypi", "verify-pypi"):
+        assert jobs[name]["if"] == release_condition
+
+
+def test_release_verify_jobs_use_downloaded_manifest_path():
+    jobs = load_workflow("release.yml")["jobs"]
+    for name in ("verify-testpypi", "verify-pypi"):
+        run_steps = [step["run"] for step in jobs[name]["steps"] if "run" in step]
+        assert any("--manifest dist/manifest/SHA256SUMS" in step for step in run_steps)

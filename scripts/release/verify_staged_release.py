@@ -94,6 +94,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Verify an exact staged package release")
     parser.add_argument("--index", choices=sorted(INDEXES), required=True)
     parser.add_argument("--version", required=True)
+    parser.add_argument("--branch", default="")
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--smoke-script", type=Path, required=True)
     parser.add_argument("--timeout", type=float, default=120)
@@ -104,7 +105,20 @@ def main() -> None:
     verify_index_hashes(payload, expected)
     install_and_smoke(arguments.index, version, arguments.smoke_script.resolve())
     manifest_digest = sha256(arguments.manifest.read_bytes()).hexdigest()
-    print(f"verified {arguments.index} version={version} manifest={manifest_digest}")
+    print(
+        json.dumps(
+            {
+                "branch": arguments.branch,
+                "target_index": arguments.index,
+                "version": version,
+                "outcome": "verified",
+                "reason": "hashes-and-smoke-pass",
+                "manifest": manifest_digest,
+                "hashes": expected,
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

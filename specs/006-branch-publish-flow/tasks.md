@@ -18,10 +18,10 @@
 
 **Purpose**: Establish shared release-target constants and fixtures used by all branch-publishing stories.
 
-- [ ] T001 Add release target constants for beta/TestPyPI and release/PyPI in scripts/release/package_metadata.py
-- [ ] T002 [P] Add branch publish policy fixture helpers for allowed and denied branches in tests/release_helpers.py
-- [ ] T003 [P] Add package-index duplicate-version fixture helpers for TestPyPI and PyPI cases in tests/release_helpers.py
-- [ ] T004 [P] Add branch publish flow contract references to docs/releasing.md
+- [X] T001 Add release target constants for beta/TestPyPI and release/PyPI in scripts/release/package_metadata.py
+- [X] T002 [P] Add branch publish policy fixture helpers for allowed and denied branches in tests/release_helpers.py
+- [X] T003 [P] Add package-index duplicate-version fixture helpers for TestPyPI and PyPI cases in tests/release_helpers.py
+- [X] T004 [P] Add branch publish flow contract references to docs/releasing.md
 
 ---
 
@@ -31,13 +31,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 Extend ReleaseContext with target branch and intended package index fields in scripts/release/validate_release.py
-- [ ] T006 Implement exact branch-to-index policy resolution with safe reason codes in scripts/release/validate_release.py
-- [ ] T007 Add target-index duplicate-version preflight interface in scripts/release/verify_index.py
-- [ ] T008 [P] Add unit tests for branch-to-index policy resolution in tests/unit/test_release_validation.py
-- [ ] T009 [P] Add unit tests for duplicate-version preflight outcomes in tests/unit/test_index_verification.py
-- [ ] T010 [P] Update release workflow contract tests to parse branch conditions in tests/contract/test_github_workflows.py
-- [ ] T011 [P] Update release workflow security tests for branch-conditioned OIDC jobs in tests/security/test_release_workflow_security.py
+- [X] T005 Extend ReleaseContext with target branch and intended package index fields in scripts/release/validate_release.py
+- [X] T006 Implement exact branch-to-index policy resolution with safe reason codes in scripts/release/validate_release.py
+- [X] T007 Add target-index duplicate-version preflight interface in scripts/release/verify_index.py
+- [X] T008 [P] Add unit tests for branch-to-index policy resolution in tests/unit/test_release_validation.py
+- [X] T009 [P] Add unit tests for duplicate-version preflight outcomes in tests/unit/test_index_verification.py
+- [X] T010 [P] Update release workflow contract tests to parse branch conditions in tests/contract/test_github_workflows.py
+- [X] T011 [P] Update release workflow security tests for branch-conditioned OIDC jobs in tests/security/test_release_workflow_security.py
 
 **Checkpoint**: Shared validation can identify the release target, reject unsupported branches, and detect existing target-index versions before any upload.
 
@@ -51,18 +51,18 @@
 
 ### Tests for User Story 1
 
-- [ ] T012 [P] [US1] Add branch policy contract tests for beta-to-TestPyPI and non-beta staging denial in tests/contract/test_branch_publish_policy.py
-- [ ] T013 [P] [US1] Add workflow contract tests proving TestPyPI publish and verify jobs run only for beta in tests/contract/test_github_workflows.py
-- [ ] T014 [P] [US1] Add security tests proving beta flow does not activate PyPI OIDC permission in tests/security/test_release_workflow_security.py
-- [ ] T015 [P] [US1] Add duplicate TestPyPI version denial tests in tests/unit/test_index_verification.py
+- [X] T012 [P] [US1] Add branch policy contract tests for beta-to-TestPyPI and non-beta staging denial in tests/contract/test_branch_publish_policy.py
+- [X] T013 [P] [US1] Add workflow contract tests proving TestPyPI publish and verify jobs run only for beta in tests/contract/test_github_workflows.py
+- [X] T014 [P] [US1] Add security tests proving beta flow does not activate PyPI OIDC permission in tests/security/test_release_workflow_security.py
+- [X] T015 [P] [US1] Add duplicate TestPyPI version denial tests in tests/unit/test_index_verification.py
 
 ### Implementation for User Story 1
 
-- [ ] T016 [US1] Update release validation to accept beta as TestPyPI target and reject non-beta TestPyPI attempts in scripts/release/validate_release.py
-- [ ] T017 [US1] Update release workflow TestPyPI publish and verify jobs with beta-only conditions in .github/workflows/release.yml
-- [ ] T018 [US1] Add TestPyPI duplicate-version preflight before TestPyPI upload in .github/workflows/release.yml
-- [ ] T019 [US1] Ensure TestPyPI verification records beta branch, target index, version, artifact names, and hashes in scripts/release/verify_staged_release.py
-- [ ] T020 [US1] Document beta branch staging release flow, blocked-branch handling, and retry rules in docs/releasing.md
+- [X] T016 [US1] Update release validation to accept beta as TestPyPI target and reject non-beta TestPyPI attempts in scripts/release/validate_release.py
+- [X] T017 [US1] Update release workflow TestPyPI publish and verify jobs with beta-only conditions in .github/workflows/release.yml
+- [X] T018 [US1] Add TestPyPI duplicate-version preflight before TestPyPI upload in .github/workflows/release.yml
+- [X] T019 [US1] Ensure TestPyPI verification records beta branch, target index, version, artifact names, and hashes in scripts/release/verify_staged_release.py
+- [X] T020 [US1] Document beta branch staging release flow, blocked-branch handling, and retry rules in docs/releasing.md
 
 **Checkpoint**: User Story 1 is independently functional; beta branch can stage to TestPyPI only and wrong-branch staging is blocked before upload.
 
@@ -76,18 +76,18 @@
 
 ### Tests for User Story 2
 
-- [ ] T021 [P] [US2] Add branch policy contract tests for release-to-PyPI and non-release production denial in tests/contract/test_branch_publish_policy.py
-- [ ] T022 [P] [US2] Add workflow contract tests proving PyPI publish and verify jobs run only for release in tests/contract/test_github_workflows.py
-- [ ] T023 [P] [US2] Add security tests proving release flow does not activate TestPyPI OIDC permission in tests/security/test_release_workflow_security.py
-- [ ] T024 [P] [US2] Add duplicate PyPI version denial tests in tests/unit/test_index_verification.py
+- [X] T021 [P] [US2] Add branch policy contract tests for release-to-PyPI and non-release production denial in tests/contract/test_branch_publish_policy.py
+- [X] T022 [P] [US2] Add workflow contract tests proving PyPI publish and verify jobs run only for release in tests/contract/test_github_workflows.py
+- [X] T023 [P] [US2] Add security tests proving release flow does not activate TestPyPI OIDC permission in tests/security/test_release_workflow_security.py
+- [X] T024 [P] [US2] Add duplicate PyPI version denial tests in tests/unit/test_index_verification.py
 
 ### Implementation for User Story 2
 
-- [ ] T025 [US2] Update release validation to accept release as PyPI target and reject non-release PyPI attempts in scripts/release/validate_release.py
-- [ ] T026 [US2] Update release workflow PyPI publish and verify jobs with release-only conditions in .github/workflows/release.yml
-- [ ] T027 [US2] Add PyPI duplicate-version preflight before PyPI upload in .github/workflows/release.yml
-- [ ] T028 [US2] Ensure PyPI verification records release branch, target index, version, artifact names, hashes, and provenance status in scripts/release/verify_index.py
-- [ ] T029 [US2] Document release branch production release flow, blocked-branch handling, and retry rules in docs/releasing.md
+- [X] T025 [US2] Update release validation to accept release as PyPI target and reject non-release PyPI attempts in scripts/release/validate_release.py
+- [X] T026 [US2] Update release workflow PyPI publish and verify jobs with release-only conditions in .github/workflows/release.yml
+- [X] T027 [US2] Add PyPI duplicate-version preflight before PyPI upload in .github/workflows/release.yml
+- [X] T028 [US2] Ensure PyPI verification records release branch, target index, version, artifact names, hashes, and provenance status in scripts/release/verify_index.py
+- [X] T029 [US2] Document release branch production release flow, blocked-branch handling, and retry rules in docs/releasing.md
 
 **Checkpoint**: User Story 2 is independently functional; release branch can publish to PyPI only and wrong-branch production attempts are blocked before upload.
 
@@ -101,18 +101,18 @@
 
 ### Tests for User Story 3
 
-- [ ] T030 [P] [US3] Add release evidence contract tests for required branch/index/version/hash fields in tests/contract/test_release_operations_contract.py
-- [ ] T031 [P] [US3] Add release evidence redaction tests for docs and workflow summaries in tests/security/test_release_workflow_security.py
-- [ ] T032 [P] [US3] Add blocked and ambiguous release evidence reason-code tests in tests/unit/test_release_validation.py
+- [X] T030 [P] [US3] Add release evidence contract tests for required branch/index/version/hash fields in tests/contract/test_release_operations_contract.py
+- [X] T031 [P] [US3] Add release evidence redaction tests for docs and workflow summaries in tests/security/test_release_workflow_security.py
+- [X] T032 [P] [US3] Add blocked and ambiguous release evidence reason-code tests in tests/unit/test_release_validation.py
 
 ### Implementation for User Story 3
 
-- [ ] T033 [US3] Add non-sensitive release target summary output to scripts/release/validate_release.py
-- [ ] T034 [US3] Add safe branch/index/version/hash evidence output to scripts/release/verify_staged_release.py
-- [ ] T035 [US3] Add safe branch/index/version/hash/provenance evidence output to scripts/release/verify_index.py
-- [ ] T036 [US3] Update release workflow summaries to include branch, target index, version, artifacts, hashes, verification result, and final outcome in .github/workflows/release.yml
-- [ ] T037 [US3] Update recovery guidance for duplicate, blocked, and ambiguous branch-publish attempts in docs/release-recovery.md
-- [ ] T038 [US3] Update feature quickstart validation evidence placeholders in specs/006-branch-publish-flow/quickstart.md
+- [X] T033 [US3] Add non-sensitive release target summary output to scripts/release/validate_release.py
+- [X] T034 [US3] Add safe branch/index/version/hash evidence output to scripts/release/verify_staged_release.py
+- [X] T035 [US3] Add safe branch/index/version/hash/provenance evidence output to scripts/release/verify_index.py
+- [X] T036 [US3] Update release workflow summaries to include branch, target index, version, artifacts, hashes, verification result, and final outcome in .github/workflows/release.yml
+- [X] T037 [US3] Update recovery guidance for duplicate, blocked, and ambiguous branch-publish attempts in docs/release-recovery.md
+- [X] T038 [US3] Update feature quickstart validation evidence placeholders in specs/006-branch-publish-flow/quickstart.md
 
 **Checkpoint**: User Story 3 is independently functional; operators can audit staging, production, blocked, and ambiguous release outcomes without secret exposure.
 
@@ -122,13 +122,13 @@
 
 **Purpose**: Final validation, documentation consistency, and release safety checks across all stories.
 
-- [ ] T039 [P] Update .github/RELEASE_SETUP.md with beta/TestPyPI and release/PyPI branch-to-environment setup requirements
-- [ ] T040 [P] Update specs/003-publish-pypi release docs to reflect branch-specific publishing in specs/003-publish-pypi/quickstart.md
-- [ ] T041 Run release validation focused tests and record results in specs/006-branch-publish-flow/quickstart.md
-- [ ] T042 Run workflow contract and release security tests and record results in specs/006-branch-publish-flow/quickstart.md
-- [ ] T043 Run full regression suite with uv run pytest -q and record results in specs/006-branch-publish-flow/quickstart.md
-- [ ] T044 Run uv run python -m scripts.release.build_and_check and record artifact hash evidence in specs/006-branch-publish-flow/quickstart.md
-- [ ] T045 Verify FR-001–FR-010, SPR-001–SPR-005, SC-001–SC-005, and all contracts have passing evidence in specs/006-branch-publish-flow/quickstart.md
+- [X] T039 [P] Update .github/RELEASE_SETUP.md with beta/TestPyPI and release/PyPI branch-to-environment setup requirements
+- [X] T040 [P] Update specs/003-publish-pypi release docs to reflect branch-specific publishing in specs/003-publish-pypi/quickstart.md
+- [X] T041 Run release validation focused tests and record results in specs/006-branch-publish-flow/quickstart.md
+- [X] T042 Run workflow contract and release security tests and record results in specs/006-branch-publish-flow/quickstart.md
+- [X] T043 Run full regression suite with uv run pytest -q and record results in specs/006-branch-publish-flow/quickstart.md
+- [X] T044 Run uv run python -m scripts.release.build_and_check and record artifact hash evidence in specs/006-branch-publish-flow/quickstart.md
+- [X] T045 Verify FR-001–FR-010, SPR-001–SPR-005, SC-001–SC-005, and all contracts have passing evidence in specs/006-branch-publish-flow/quickstart.md
 
 ---
 

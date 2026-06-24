@@ -84,4 +84,4 @@ def test_release_verify_jobs_use_downloaded_manifest_path():
     jobs = load_workflow("release.yml")["jobs"]
     for name in ("verify-testpypi", "verify-pypi"):
         run_steps = [step["run"] for step in jobs[name]["steps"] if "run" in step]
-        assert any("--manifest dist/manifest/SHA256SUMS" in step for step in run_steps)
+        assert any("--manifest manifest/SHA256SUMS" in step for step in run_steps)

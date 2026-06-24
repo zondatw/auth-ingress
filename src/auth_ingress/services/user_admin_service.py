@@ -59,7 +59,7 @@ def change_memberships(db: Session, actor: User, target_user_id: int, desired_gr
         raise ManagementError(OutcomeCode.CONFLICT, "User changed; refresh and preview again")
     groups = list(db.scalars(select(Group).where(Group.id.in_(desired_group_ids))).all()) if desired_group_ids else []
     if {group.id for group in groups} != desired_group_ids:
-        raise ManagementError(OutcomeCode.INVALID_INPUT, "One or more groups do not exist")
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "One or more groups do not exist", field="group_ids")
     existing = {membership.group_id for membership in target.memberships}
     added, removed = sorted(desired_group_ids - existing), sorted(existing - desired_group_ids)
     if not added and not removed:
@@ -88,13 +88,17 @@ def create_user(db: Session, actor: User, email: str, display_name: str, status:
     actor = require_admin_actor(db, actor)
     _ = (settings, delivery, base_url)
     canonical_email, canonical_name = email.strip(), display_name.strip()
-    if not canonical_name or "@" not in canonical_email or status not in {"active", "disabled"}:
-        raise ManagementError(OutcomeCode.INVALID_INPUT, "Valid email, display name, and status are required")
+    if "@" not in canonical_email:
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "Valid email is required", field="email")
+    if not canonical_name:
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "Display name is required", field="display_name")
+    if status not in {"active", "disabled"}:
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "Invalid status", field="status")
     if db.scalar(select(User.id).where(User.normalized_email == canonical_email.casefold())):
-        raise ManagementError(OutcomeCode.INVALID_INPUT, "Email is already in use")
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "Email is already in use", field="email")
     groups = list(db.scalars(select(Group).where(Group.id.in_(group_ids))).all()) if group_ids else []
     if {group.id for group in groups} != group_ids:
-        raise ManagementError(OutcomeCode.INVALID_INPUT, "One or more groups do not exist")
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "One or more groups do not exist", field="group_ids")
     changes = {"field_names": ["email", "display_name", "status", "is_admin"], "groups_added": sorted(group_ids)}
     if not apply:
         return OperationResult("user_create", OutcomeCode.SUCCESS, changes=changes, message="Preview user creation")
@@ -136,11 +140,11 @@ def update_user(db: Session, actor: User, target_id: int, expected_revision: int
     requested = {}
     if email is not None and email.strip() != target.email:
         if "@" not in email:
-            raise ManagementError(OutcomeCode.INVALID_INPUT, "Valid email is required")
+            raise ManagementError(OutcomeCode.INVALID_INPUT, "Valid email is required", field="email")
         requested["email"] = email.strip()
     if display_name is not None and display_name.strip() != target.display_name:
         if not display_name.strip():
-            raise ManagementError(OutcomeCode.INVALID_INPUT, "Display name is required")
+            raise ManagementError(OutcomeCode.INVALID_INPUT, "Display name is required", field="display_name")
         requested["display_name"] = display_name.strip()
     if is_admin is not None and is_admin != target.is_admin:
         requested["is_admin"] = is_admin
@@ -157,13 +161,13 @@ def update_user(db: Session, actor: User, target_id: int, expected_revision: int
         record_event(db, "user_updated", "changed", "profile_updated", actor_user_id=actor.id, target_user_id=target.id, context={"client_category": "management"}, change_summary={"revision": target.revision, "field_names": sorted(requested)}, commit=False)
         db.commit()
     except IntegrityError as error:
-        db.rollback(); raise ManagementError(OutcomeCode.CONFLICT, "Email is already in use") from error
+        db.rollback(); raise ManagementError(OutcomeCode.CONFLICT, "Email is already in use", field="email") from error
     return OperationResult("user_update", OutcomeCode.SUCCESS, target.id, target.revision, changes={"field_names": sorted(requested), **final_values}, message="Profile updated")
 
 
 def set_user_status(db: Session, actor: User, target_id: int, expected_revision: int, status: str, *, apply: bool) -> OperationResult:
     if status not in {"active", "disabled"}:
-        raise ManagementError(OutcomeCode.INVALID_INPUT, "Invalid status")
+        raise ManagementError(OutcomeCode.INVALID_INPUT, "Invalid status", field="status")
     actor, target = _target_for_change(db, actor, target_id, expected_revision)
     _protect_admin_change(db, actor, target, disabling=status == "disabled" and target.status == "active")
     if target.status == status:

@@ -13,17 +13,19 @@ SLUG = re.compile(r"^[a-z0-9-]+$")
 
 
 class ServiceValidationError(ValueError):
-    pass
+    def __init__(self, message: str, *, field: str | None = None):
+        super().__init__(message)
+        self.field = field
 
 
 def validate_destination(destination: str) -> str:
     parsed = urlsplit(destination.strip())
     if parsed.username or parsed.password or parsed.query or parsed.fragment:
-        raise ServiceValidationError("Destination must not contain credentials, query parameters, or fragments")
+        raise ServiceValidationError("Destination must not contain credentials, query parameters, or fragments", field="destination")
     if parsed.scheme == "mock" and parsed.netloc:
         return destination.strip()
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
-        raise ServiceValidationError("Destination must be an internal HTTP(S) or mock URL")
+        raise ServiceValidationError("Destination must be an internal HTTP(S) or mock URL", field="destination")
     hostname = parsed.hostname.casefold()
     internal = hostname in {"localhost", "127.0.0.1", "::1"} or hostname.endswith(".internal")
     try:
@@ -31,7 +33,7 @@ def validate_destination(destination: str) -> str:
     except ValueError:
         pass
     if not internal:
-        raise ServiceValidationError("Destination must resolve through a trusted internal path")
+        raise ServiceValidationError("Destination must resolve through a trusted internal path", field="destination")
     return destination.strip()
 
 
@@ -50,29 +52,29 @@ def save_service(
 ) -> tuple[ServiceEntry, str]:
     slug = slug.strip()
     if not SLUG.fullmatch(slug):
-        raise ServiceValidationError("Slug must contain lowercase letters, numbers, and hyphens")
+        raise ServiceValidationError("Slug must contain lowercase letters, numbers, and hyphens", field="slug")
     if not display_name.strip():
-        raise ServiceValidationError("Display name is required")
+        raise ServiceValidationError("Display name is required", field="display_name")
     if status not in {"enabled", "disabled"}:
-        raise ServiceValidationError("Invalid status")
+        raise ServiceValidationError("Invalid status", field="status")
     if websocket_enabled and not proxy_enabled:
-        raise ServiceValidationError("WebSockets require full proxy mode")
+        raise ServiceValidationError("WebSockets require full proxy mode", field="websocket_enabled")
     destination = validate_destination(destination)
     names = sorted({name.strip() for name in group_names if name.strip()})
     if status == "enabled" and not names:
-        raise ServiceValidationError("Enabled services require at least one access group")
+        raise ServiceValidationError("Enabled services require at least one access group", field="group_names")
     groups = list(db.scalars(select(Group).where(Group.name.in_(names))).all()) if names else []
     if len(groups) != len(names):
-        raise ServiceValidationError("One or more groups do not exist")
+        raise ServiceValidationError("One or more groups do not exist", field="group_names")
     service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == original_slug)) if original_slug else None
     action = "updated" if service else "created"
     if service is None:
         if db.scalar(select(ServiceEntry).where(ServiceEntry.slug == slug)):
-            raise ServiceValidationError("Slug already exists")
+            raise ServiceValidationError("Slug already exists", field="slug")
         service = ServiceEntry(slug=slug)
         db.add(service)
     elif slug != original_slug and db.scalar(select(ServiceEntry).where(ServiceEntry.slug == slug)):
-        raise ServiceValidationError("Slug already exists")
+        raise ServiceValidationError("Slug already exists", field="slug")
     previous_status = service.status
     proxy_policy_changed = (
         service.destination != destination

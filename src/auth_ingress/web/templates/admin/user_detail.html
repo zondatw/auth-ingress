@@ -63,12 +63,14 @@
 {% endif %}
 
 <div class="management-grid">
+  {% set membership_state = form_state if form_state.applies_to('memberships', managed.id) else none %}
   <section class="panel">
     <h2>Group memberships</h2>
     <form method="post" action="/admin/users/{{ managed.id }}/memberships">
       <input type="hidden" name="csrf" value="{{ csrf_token }}">
       <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
-      {% for group in groups %}<label class="check"><input type="checkbox" name="group_ids" value="{{ group.id }}" {% if group.id in memberships|map(attribute='id')|list %}checked{% endif %}>{{ group.name }}</label>{% endfor %}
+      {% for group in groups %}<label class="check"><input type="checkbox" name="group_ids" value="{{ group.id }}" {% if (membership_state and membership_state.is_selected('group_ids', group.id)) or (not membership_state and group.id in memberships|map(attribute='id')|list) %}checked{% endif %}>{{ group.name }}</label>{% endfor %}
+      {% if membership_state and membership_state.error_text('group_ids') %}<span class="field-error">{{ membership_state.error_text('group_ids') }}</span>{% endif %}
       <button type="submit">Preview access changes</button>
     </form>
   </section>
@@ -84,17 +86,19 @@
 </div>
 
 <div class="management-grid">
+  {% set profile_state = form_state if form_state.applies_to('profile', managed.id) else none %}
   <section class="panel">
     <h2>Update profile</h2>
     <form method="post" action="/admin/users/{{ managed.id }}/profile">
       <input type="hidden" name="csrf" value="{{ csrf_token }}">
       <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
-      <label>Email<input type="email" name="email" value="{{ managed.email }}" required></label>
-      <label>Display name<input name="display_name" value="{{ managed.display_name }}" required></label>
-      <label class="check"><input type="checkbox" name="is_admin" value="true" {% if managed.is_admin %}checked{% endif %}> Administrator</label>
+      <label>Email<input type="email" name="email" value="{{ profile_state.value('email', managed.email) if profile_state else managed.email }}" required>{% if profile_state and profile_state.error_text('email') %}<span class="field-error">{{ profile_state.error_text('email') }}</span>{% endif %}</label>
+      <label>Display name<input name="display_name" value="{{ profile_state.value('display_name', managed.display_name) if profile_state else managed.display_name }}" required>{% if profile_state and profile_state.error_text('display_name') %}<span class="field-error">{{ profile_state.error_text('display_name') }}</span>{% endif %}</label>
+      <label class="check"><input type="checkbox" name="is_admin" value="true" {% if (profile_state and profile_state.checked('is_admin')) or (not profile_state and managed.is_admin) %}checked{% endif %}> Administrator</label>
       <button type="submit">Preview profile changes</button>
     </form>
   </section>
+  {% set status_state = form_state if form_state.applies_to('status', managed.id) else none %}
   <section class="panel">
     <h2>Account lifecycle</h2>
     <p>Deactivate is the reversible disable account path. Permanent removal hard-deletes the user account.</p>
@@ -102,6 +106,7 @@
       <input type="hidden" name="csrf" value="{{ csrf_token }}">
       <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
       <input type="hidden" name="status" value="{{ 'active' if managed.status == 'disabled' else 'disabled' }}">
+      {% if status_state and status_state.error_text('status') %}<span class="field-error">{{ status_state.error_text('status') }}</span>{% endif %}
       <button type="submit">Preview {{ 'reactivation' if managed.status == 'disabled' else 'deactivation' }}</button>
     </form>
     <form method="post" action="/admin/users/{{ managed.id }}/reset-password">

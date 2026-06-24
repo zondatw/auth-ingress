@@ -219,3 +219,13 @@ def launch_proxy(client: TestClient, csrf: str, email: str = "member@example.tes
     assert bootstrap.status_code == 302
     assert bootstrap.headers["location"] == "/"
     return launch.headers["location"].split("/__portal/", 1)[0]
+
+
+def assert_contains_all(text: str, values: list[str]) -> None:
+    for value in values:
+        assert value in text
+
+
+def assert_contains_none(text: str, values: list[str]) -> None:
+    for value in values:
+        assert value not in text

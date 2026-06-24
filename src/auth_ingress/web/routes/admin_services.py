@@ -10,13 +10,23 @@ from auth_ingress.security.dependencies import Identity, require_admin
 from auth_ingress.services.audit_service import record_event
 from auth_ingress.services.service_admin_service import ServiceValidationError, save_service
 from auth_ingress.services.service_compatibility_service import check_service_compatibility
+from auth_ingress.services.user_management_types import FieldError, ManagementFormState
 from auth_ingress.security.proxy_host import service_origin
 from auth_ingress.web.web import template
 
 router = APIRouter(prefix="/admin")
 
 
-def page(request: Request, db: Session, settings: Settings, identity: Identity, *, error: str | None = None, status_code: int = 200):
+def page(
+    request: Request,
+    db: Session,
+    settings: Settings,
+    identity: Identity,
+    *,
+    error: str | None = None,
+    form_state: ManagementFormState | None = None,
+    status_code: int = 200,
+):
     services = list(db.scalars(select(ServiceEntry).order_by(ServiceEntry.display_name)).all())
     groups = list(db.scalars(select(Group).order_by(Group.name)).all())
     service_group_names: dict[int, list[str]] = {}
@@ -37,7 +47,46 @@ def page(request: Request, db: Session, settings: Settings, identity: Identity, 
         service_group_names={service_id: ", ".join(names) for service_id, names in service_group_names.items()},
         service_origins={service.id: service_origin(service.slug, settings) for service in services},
         error=error,
+        form_state=form_state,
         status_code=status_code,
+    )
+
+
+def service_form_state(
+    *,
+    form_name: str,
+    record_id: str | None,
+    slug: str,
+    display_name: str,
+    description: str,
+    destination: str,
+    status: str,
+    group_names: str,
+    proxy_enabled: bool,
+    websocket_enabled: bool,
+    error: str,
+    field: str | None = None,
+) -> ManagementFormState:
+    return ManagementFormState.from_submitted(
+        form_name,
+        {
+            "slug": slug,
+            "display_name": display_name,
+            "description": description,
+            "destination": destination,
+            "status": status,
+            "group_names": group_names,
+            "proxy_enabled": "true" if proxy_enabled else "",
+            "websocket_enabled": "true" if websocket_enabled else "",
+        },
+        record_id=record_id,
+        selected={
+            "status": [status],
+            "proxy_enabled": ["true"] if proxy_enabled else [],
+            "websocket_enabled": ["true"] if websocket_enabled else [],
+        },
+        field_errors=[FieldError(field, error)] if field else [],
+        form_errors=[] if field else [error],
     )
 
 
@@ -68,7 +117,28 @@ def persist(
     websocket_enabled: bool = False,
 ):
     if not valid_csrf(csrf, settings):
-        return page(request, db, settings, identity, error="The form expired. Please try again.", status_code=400)
+        error = "The form expired. Please try again."
+        return page(
+            request,
+            db,
+            settings,
+            identity,
+            error=error,
+            form_state=service_form_state(
+                form_name="service_edit" if original_slug else "service_create",
+                record_id=original_slug,
+                slug=slug,
+                display_name=display_name,
+                description=description,
+                destination=destination,
+                status=status,
+                group_names=group_names,
+                proxy_enabled=proxy_enabled,
+                websocket_enabled=websocket_enabled,
+                error=error,
+            ),
+            status_code=400,
+        )
     try:
         service, action = save_service(
             db,
@@ -84,7 +154,28 @@ def persist(
         )
     except ServiceValidationError as exc:
         db.rollback()
-        return page(request, db, settings, identity, error=str(exc), status_code=400)
+        return page(
+            request,
+            db,
+            settings,
+            identity,
+            error=str(exc),
+            form_state=service_form_state(
+                form_name="service_edit" if original_slug else "service_create",
+                record_id=original_slug,
+                slug=slug,
+                display_name=display_name,
+                description=description,
+                destination=destination,
+                status=status,
+                group_names=group_names,
+                proxy_enabled=proxy_enabled,
+                websocket_enabled=websocket_enabled,
+                error=str(exc),
+                field=exc.field,
+            ),
+            status_code=400,
+        )
     record_event(
         db,
         f"service_entry_{action}",

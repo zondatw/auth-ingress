@@ -18,10 +18,10 @@
 
 **Purpose**: Confirm current admin form surfaces and prepare focused regression locations.
 
-- [ ] T001 Inspect current service management form fields and validation branches in src/auth_ingress/web/routes/admin_services.py and src/auth_ingress/web/templates/admin/services.html
-- [ ] T002 Inspect current user management form fields and validation branches in src/auth_ingress/web/routes/admin_users.py, src/auth_ingress/web/templates/admin/users.html, and src/auth_ingress/web/templates/admin/user_detail.html
-- [ ] T003 [P] Review existing service admin tests for reusable fixtures in tests/contract/test_admin_contract.py, tests/integration/test_admin_services.py, and tests/e2e/test_admin_services.py
-- [ ] T004 [P] Review existing user admin tests for reusable fixtures in tests/contract/test_admin_users_contract.py, tests/integration/test_user_lifecycle.py, and tests/e2e/test_admin_users.py
+- [X] T001 Inspect current service management form fields and validation branches in src/auth_ingress/web/routes/admin_services.py and src/auth_ingress/web/templates/admin/services.html
+- [X] T002 Inspect current user management form fields and validation branches in src/auth_ingress/web/routes/admin_users.py, src/auth_ingress/web/templates/admin/users.html, and src/auth_ingress/web/templates/admin/user_detail.html
+- [X] T003 [P] Review existing service admin tests for reusable fixtures in tests/contract/test_admin_contract.py, tests/integration/test_admin_services.py, and tests/e2e/test_admin_services.py
+- [X] T004 [P] Review existing user admin tests for reusable fixtures in tests/contract/test_admin_users_contract.py, tests/integration/test_user_lifecycle.py, and tests/e2e/test_admin_users.py
 
 ---
 
@@ -31,11 +31,11 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [ ] T005 Define request-scoped ManagementFormState, FieldError, and sensitive-field helpers in src/auth_ingress/services/user_management_types.py
-- [ ] T006 [P] Add unit tests for ManagementFormState safe-value preservation and sensitive-field exclusion in tests/unit/test_management_form_state.py
-- [ ] T007 Add template context conventions for `form_state`, `field_errors`, and `form_errors` in src/auth_ingress/web/web.py
-- [ ] T008 Document sensitive management field names and default exclusion behavior in src/auth_ingress/services/user_management_types.py
-- [ ] T009 Add shared assertions for preserved safe values and absent sensitive values in tests/cli_helpers.py or tests/conftest.py
+- [X] T005 Define request-scoped ManagementFormState, FieldError, and sensitive-field helpers in src/auth_ingress/services/user_management_types.py
+- [X] T006 [P] Add unit tests for ManagementFormState safe-value preservation and sensitive-field exclusion in tests/unit/test_management_form_state.py
+- [X] T007 Add template context conventions for `form_state`, `field_errors`, and `form_errors` in src/auth_ingress/web/web.py
+- [X] T008 Document sensitive management field names and default exclusion behavior in src/auth_ingress/services/user_management_types.py
+- [X] T009 Add shared assertions for preserved safe values and absent sensitive values in tests/cli_helpers.py or tests/conftest.py
 
 **Checkpoint**: Shared form state exists, excludes sensitive values, and can be passed to templates consistently.
 
@@ -49,21 +49,21 @@
 
 ### Tests for User Story 1
 
-- [ ] T010 [P] [US1] Add service-create contract test for preserving slug, display_name, description, destination, status, group_names, proxy_enabled, and websocket_enabled after invalid submission in tests/contract/test_admin_contract.py
-- [ ] T011 [P] [US1] Add user-create contract test for preserving email, display_name, status, is_admin, and group_ids after invalid submission in tests/contract/test_admin_users_contract.py
-- [ ] T012 [P] [US1] Add security regression test proving temporary passwords, credentials, tokens, and recovery values are not echoed after failed management submissions in tests/security/test_management_form_state.py
-- [ ] T013 [P] [US1] Add integration test proving corrected service submission succeeds without re-entering unchanged fields in tests/integration/test_admin_services.py
-- [ ] T014 [P] [US1] Add integration test proving corrected user creation succeeds without re-entering unchanged fields and only displays temporary password after success in tests/integration/test_user_lifecycle.py
+- [X] T010 [P] [US1] Add service-create contract test for preserving slug, display_name, description, destination, status, group_names, proxy_enabled, and websocket_enabled after invalid submission in tests/contract/test_admin_contract.py
+- [X] T011 [P] [US1] Add user-create contract test for preserving email, display_name, status, is_admin, and group_ids after invalid submission in tests/contract/test_admin_users_contract.py
+- [X] T012 [P] [US1] Add security regression test proving temporary passwords, credentials, tokens, and recovery values are not echoed after failed management submissions in tests/security/test_management_form_state.py
+- [X] T013 [P] [US1] Add integration test proving corrected service submission succeeds without re-entering unchanged fields in tests/integration/test_admin_services.py
+- [X] T014 [P] [US1] Add integration test proving corrected user creation succeeds without re-entering unchanged fields and only displays temporary password after success in tests/integration/test_user_lifecycle.py
 
 ### Implementation for User Story 1
 
-- [ ] T015 [US1] Update service management route rendering to accept and pass request-scoped form_state in src/auth_ingress/web/routes/admin_services.py
-- [ ] T016 [US1] Preserve safe submitted service values after ServiceValidationError and CSRF validation failures in src/auth_ingress/web/routes/admin_services.py
-- [ ] T017 [US1] Update service management template fields to prefer form_state safe values over blank/default values after failed submissions in src/auth_ingress/web/templates/admin/services.html
-- [ ] T018 [US1] Update user creation list rendering to accept and pass request-scoped form_state in src/auth_ingress/web/routes/admin_users.py
-- [ ] T019 [US1] Preserve safe submitted user creation values after ManagementError and CSRF validation failures in src/auth_ingress/web/routes/admin_users.py
-- [ ] T020 [US1] Update user creation template fields to prefer form_state safe values while keeping temporary_password display success-only in src/auth_ingress/web/templates/admin/users.html
-- [ ] T021 [US1] Ensure failed management submission audit or diagnostic paths never include sensitive submitted values in src/auth_ingress/services/audit_service.py and src/auth_ingress/web/routes/admin_users.py
+- [X] T015 [US1] Update service management route rendering to accept and pass request-scoped form_state in src/auth_ingress/web/routes/admin_services.py
+- [X] T016 [US1] Preserve safe submitted service values after ServiceValidationError and CSRF validation failures in src/auth_ingress/web/routes/admin_services.py
+- [X] T017 [US1] Update service management template fields to prefer form_state safe values over blank/default values after failed submissions in src/auth_ingress/web/templates/admin/services.html
+- [X] T018 [US1] Update user creation list rendering to accept and pass request-scoped form_state in src/auth_ingress/web/routes/admin_users.py
+- [X] T019 [US1] Preserve safe submitted user creation values after ManagementError and CSRF validation failures in src/auth_ingress/web/routes/admin_users.py
+- [X] T020 [US1] Update user creation template fields to prefer form_state safe values while keeping temporary_password display success-only in src/auth_ingress/web/templates/admin/users.html
+- [X] T021 [US1] Ensure failed management submission audit or diagnostic paths never include sensitive submitted values in src/auth_ingress/services/audit_service.py and src/auth_ingress/web/routes/admin_users.py
 
 **Checkpoint**: MVP works for core service create/edit and user create validation recovery without sensitive-field echoing.
 
@@ -77,20 +77,20 @@
 
 ### Tests for User Story 2
 
-- [ ] T022 [P] [US2] Add contract tests for field-specific service validation messages in tests/contract/test_admin_contract.py
-- [ ] T023 [P] [US2] Add contract tests for field-specific user creation and profile validation messages in tests/contract/test_admin_users_contract.py
-- [ ] T024 [P] [US2] Add security tests proving denied, stale, not-found, and dependency-failure management outcomes are not rendered as ordinary field validation in tests/security/test_management_form_outcomes.py
-- [ ] T025 [P] [US2] Add integration tests for multiple simultaneous validation errors returning together when safe in tests/integration/test_admin_services.py
+- [X] T022 [P] [US2] Add contract tests for field-specific service validation messages in tests/contract/test_admin_contract.py
+- [X] T023 [P] [US2] Add contract tests for field-specific user creation and profile validation messages in tests/contract/test_admin_users_contract.py
+- [X] T024 [P] [US2] Add security tests proving denied, stale, not-found, and dependency-failure management outcomes are not rendered as ordinary field validation in tests/security/test_management_form_outcomes.py
+- [X] T025 [P] [US2] Add integration tests for multiple simultaneous validation errors returning together when safe in tests/integration/test_admin_services.py
 
 ### Implementation for User Story 2
 
-- [ ] T026 [US2] Extend service validation errors with stable field/error metadata while preserving existing messages in src/auth_ingress/services/service_admin_service.py
-- [ ] T027 [US2] Map service validation metadata to field_errors and form_errors in src/auth_ingress/web/routes/admin_services.py
-- [ ] T028 [US2] Render service field-level validation messages near affected fields in src/auth_ingress/web/templates/admin/services.html
-- [ ] T029 [US2] Extend user management errors with stable field/error metadata for user create, profile, memberships, and status changes in src/auth_ingress/services/user_admin_service.py and src/auth_ingress/services/user_management_types.py
-- [ ] T030 [US2] Map user management validation metadata to field_errors and form_errors in src/auth_ingress/web/routes/admin_users.py
-- [ ] T031 [US2] Render user management field-level validation messages near affected fields in src/auth_ingress/web/templates/admin/users.html and src/auth_ingress/web/templates/admin/user_detail.html
-- [ ] T032 [US2] Preserve distinct HTTP status and page-level messaging for denied, not-found, conflict, rate-limit, CSRF, and dependency-failure outcomes in src/auth_ingress/web/routes/admin_services.py and src/auth_ingress/web/routes/admin_users.py
+- [X] T026 [US2] Extend service validation errors with stable field/error metadata while preserving existing messages in src/auth_ingress/services/service_admin_service.py
+- [X] T027 [US2] Map service validation metadata to field_errors and form_errors in src/auth_ingress/web/routes/admin_services.py
+- [X] T028 [US2] Render service field-level validation messages near affected fields in src/auth_ingress/web/templates/admin/services.html
+- [X] T029 [US2] Extend user management errors with stable field/error metadata for user create, profile, memberships, and status changes in src/auth_ingress/services/user_admin_service.py and src/auth_ingress/services/user_management_types.py
+- [X] T030 [US2] Map user management validation metadata to field_errors and form_errors in src/auth_ingress/web/routes/admin_users.py
+- [X] T031 [US2] Render user management field-level validation messages near affected fields in src/auth_ingress/web/templates/admin/users.html and src/auth_ingress/web/templates/admin/user_detail.html
+- [X] T032 [US2] Preserve distinct HTTP status and page-level messaging for denied, not-found, conflict, rate-limit, CSRF, and dependency-failure outcomes in src/auth_ingress/web/routes/admin_services.py and src/auth_ingress/web/routes/admin_users.py
 
 **Checkpoint**: Administrators can see exactly what to fix, and security/control-flow failures remain clearly distinct from validation errors.
 
@@ -104,18 +104,18 @@
 
 ### Tests for User Story 3
 
-- [ ] T033 [P] [US3] Add service multi-value selection contract tests for group_names, proxy_enabled, websocket_enabled, and status preservation in tests/contract/test_admin_contract.py
-- [ ] T034 [P] [US3] Add user multi-value selection contract tests for group_ids, is_admin, status, and membership preservation in tests/contract/test_admin_users_contract.py
-- [ ] T035 [P] [US3] Add browser/e2e regression for service form selected groups and enabled flags after unrelated validation failure in tests/e2e/test_admin_services.py
-- [ ] T036 [P] [US3] Add browser/e2e regression for user form selected groups, admin flag, and status after unrelated validation failure in tests/e2e/test_admin_users.py
+- [X] T033 [P] [US3] Add service multi-value selection contract tests for group_names, proxy_enabled, websocket_enabled, and status preservation in tests/contract/test_admin_contract.py
+- [X] T034 [P] [US3] Add user multi-value selection contract tests for group_ids, is_admin, status, and membership preservation in tests/contract/test_admin_users_contract.py
+- [X] T035 [P] [US3] Add browser/e2e regression for service form selected groups and enabled flags after unrelated validation failure in tests/e2e/test_admin_services.py
+- [X] T036 [P] [US3] Add browser/e2e regression for user form selected groups, admin flag, and status after unrelated validation failure in tests/e2e/test_admin_users.py
 
 ### Implementation for User Story 3
 
-- [ ] T037 [US3] Normalize selected service group names and boolean flags into form_state selected_values in src/auth_ingress/web/routes/admin_services.py
-- [ ] T038 [US3] Render service group, status, proxy_enabled, and websocket_enabled controls from selected_values after validation failure in src/auth_ingress/web/templates/admin/services.html
-- [ ] T039 [US3] Normalize selected user group IDs, admin flag, status, and membership choices into form_state selected_values in src/auth_ingress/web/routes/admin_users.py
-- [ ] T040 [US3] Render user creation and user detail group/status/admin controls from selected_values after validation failure in src/auth_ingress/web/templates/admin/users.html and src/auth_ingress/web/templates/admin/user_detail.html
-- [ ] T041 [US3] Preserve existing record context for edited user and service records while applying selected_values only to the active failed form in src/auth_ingress/web/routes/admin_services.py and src/auth_ingress/web/routes/admin_users.py
+- [X] T037 [US3] Normalize selected service group names and boolean flags into form_state selected_values in src/auth_ingress/web/routes/admin_services.py
+- [X] T038 [US3] Render service group, status, proxy_enabled, and websocket_enabled controls from selected_values after validation failure in src/auth_ingress/web/templates/admin/services.html
+- [X] T039 [US3] Normalize selected user group IDs, admin flag, status, and membership choices into form_state selected_values in src/auth_ingress/web/routes/admin_users.py
+- [X] T040 [US3] Render user creation and user detail group/status/admin controls from selected_values after validation failure in src/auth_ingress/web/templates/admin/users.html and src/auth_ingress/web/templates/admin/user_detail.html
+- [X] T041 [US3] Preserve existing record context for edited user and service records while applying selected_values only to the active failed form in src/auth_ingress/web/routes/admin_services.py and src/auth_ingress/web/routes/admin_users.py
 
 **Checkpoint**: Multi-value administrative controls no longer reset after unrelated validation failures.
 
@@ -125,13 +125,13 @@
 
 **Purpose**: Validate full feature behavior, documentation, and regression safety.
 
-- [ ] T042 [P] Update quickstart validation notes if actual focused test commands differ in specs/007-preserve-form-input/quickstart.md
-- [ ] T043 [P] Add or update user-facing admin form copy for validation guidance in src/auth_ingress/web/templates/admin/services.html, src/auth_ingress/web/templates/admin/users.html, and src/auth_ingress/web/templates/admin/user_detail.html
-- [ ] T044 Run focused contract and integration tests from specs/007-preserve-form-input/quickstart.md
-- [ ] T045 Run focused e2e tests for admin service and user management form recovery in tests/e2e/test_admin_services.py and tests/e2e/test_admin_users.py
-- [ ] T046 Run security tests verifying sensitive values are not echoed or logged in tests/security/
-- [ ] T047 Run full test suite with uv run pytest and resolve regressions across tests/
-- [ ] T048 Review final diff for sensitive logging, duplicate submission behavior, and authorization/validation separation in src/auth_ingress/web/routes/admin_services.py, src/auth_ingress/web/routes/admin_users.py, and src/auth_ingress/services/
+- [X] T042 [P] Update quickstart validation notes if actual focused test commands differ in specs/007-preserve-form-input/quickstart.md
+- [X] T043 [P] Add or update user-facing admin form copy for validation guidance in src/auth_ingress/web/templates/admin/services.html, src/auth_ingress/web/templates/admin/users.html, and src/auth_ingress/web/templates/admin/user_detail.html
+- [X] T044 Run focused contract and integration tests from specs/007-preserve-form-input/quickstart.md
+- [X] T045 Run focused e2e tests for admin service and user management form recovery in tests/e2e/test_admin_services.py and tests/e2e/test_admin_users.py
+- [X] T046 Run security tests verifying sensitive values are not echoed or logged in tests/security/
+- [X] T047 Run full test suite with uv run pytest and resolve regressions across tests/
+- [X] T048 Review final diff for sensitive logging, duplicate submission behavior, and authorization/validation separation in src/auth_ingress/web/routes/admin_services.py, src/auth_ingress/web/routes/admin_users.py, and src/auth_ingress/services/
 
 ---
 

@@ -2,13 +2,13 @@ from pathlib import Path
 
 
 PRIMARY_TEMPLATES = [
-    Path("src/auth_entry_portal/web/templates/base.html"),
-    Path("src/auth_entry_portal/web/templates/auth/sign_in.html"),
-    Path("src/auth_entry_portal/web/templates/auth/setup_required.html"),
-    Path("src/auth_entry_portal/web/templates/portal/index.html"),
-    Path("src/auth_entry_portal/web/templates/admin/services.html"),
-    Path("src/auth_entry_portal/web/templates/admin/users.html"),
-    Path("src/auth_entry_portal/web/templates/admin/audit.html"),
+    Path("src/auth_ingress/web/templates/base.html"),
+    Path("src/auth_ingress/web/templates/auth/sign_in.html"),
+    Path("src/auth_ingress/web/templates/auth/setup_required.html"),
+    Path("src/auth_ingress/web/templates/portal/index.html"),
+    Path("src/auth_ingress/web/templates/admin/services.html"),
+    Path("src/auth_ingress/web/templates/admin/users.html"),
+    Path("src/auth_ingress/web/templates/admin/audit.html"),
 ]
 
 

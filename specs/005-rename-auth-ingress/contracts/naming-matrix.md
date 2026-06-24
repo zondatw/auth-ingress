@@ -9,7 +9,7 @@
 | CLI command | `auth-ingress` | `auth-portal` | Preferred command is installed and documented; compatibility command remains accepted |
 | Repository URL | `zondatw/auth-ingress` | `zondatw/auth-entry-portal` redirect or historical URL | Current docs use preferred URL; historical references may remain in old specs |
 | Configuration prefix | `AUTH_INGRESS_*` | `AUTH_PORTAL_*` | Preferred prefix takes precedence; old prefix remains accepted during migration |
-| Python import namespace | `auth_entry_portal` | N/A | Remains stable and documented as runtime import namespace |
+| Python import namespace | `auth_ingress` | N/A | Remains stable and documented as runtime import namespace |
 | Cookie and token internal labels | Existing stable names unless changed deliberately | Existing values | Must not change in a way that breaks active sessions or signed flows without an explicit migration decision |
 
 ## UI contract

@@ -13,7 +13,7 @@ secrets, or application credentials here.
 | Default branch | `main` | Verified with GitHub repository metadata |
 | Visibility | Public | Verified with GitHub repository metadata |
 | Distribution | `auth-ingress` | `pyproject.toml` |
-| Import namespace | `auth_entry_portal` | `src/auth_entry_portal/` |
+| Import namespace | `auth_ingress` | `src/auth_ingress/` |
 | Release workflow | `.github/workflows/release.yml` | Implemented and contract-tested locally |
 
 ## Required CI Checks

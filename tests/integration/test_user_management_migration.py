@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, inspect, text
 
-from auth_entry_portal.repositories.schema import create_schema
+from auth_ingress.repositories.schema import create_schema
 
 
 def test_prior_user_schema_upgrades_and_marks_installation_initialized(tmp_path):

@@ -1,7 +1,7 @@
 from time import monotonic
 
-from auth_entry_portal.models import User
-from auth_entry_portal.services.user_admin_service import search_users
+from auth_ingress.models import User
+from auth_ingress.services.user_admin_service import search_users
 
 
 def test_search_is_bounded_and_fast(db):

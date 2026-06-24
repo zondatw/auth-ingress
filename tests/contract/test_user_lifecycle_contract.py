@@ -1,5 +1,5 @@
-from auth_entry_portal.main import create_app
-from auth_entry_portal.models import User
+from auth_ingress.main import create_app
+from auth_ingress.models import User
 from tests.conftest import sign_in
 
 

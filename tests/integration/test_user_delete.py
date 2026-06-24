@@ -2,11 +2,11 @@ from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import select
 
-from auth_entry_portal.models import AuditEvent, GroupMembership, PasswordResetRequest, PortalSession, User
-from auth_entry_portal.services.audit_service import record_event
-from auth_entry_portal.services.password_reset_service import token_digest
-from auth_entry_portal.services.user_admin_service import delete_user
-from auth_entry_portal.services.user_management_types import ManagementError, OutcomeCode
+from auth_ingress.models import AuditEvent, GroupMembership, PasswordResetRequest, PortalSession, User
+from auth_ingress.services.audit_service import record_event
+from auth_ingress.services.password_reset_service import token_digest
+from auth_ingress.services.user_admin_service import delete_user
+from auth_ingress.services.user_management_types import ManagementError, OutcomeCode
 
 
 def test_delete_user_removes_account_auth_state_and_preserves_audit(db):

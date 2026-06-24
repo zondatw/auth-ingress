@@ -1,7 +1,7 @@
 from sqlalchemy import select
 
-from auth_entry_portal.models import AuditEvent
-from auth_entry_portal.services.audit_service import record_event
+from auth_ingress.models import AuditEvent
+from auth_ingress.services.audit_service import record_event
 
 
 def test_management_audit_is_allowlisted_and_caller_can_commit(db):

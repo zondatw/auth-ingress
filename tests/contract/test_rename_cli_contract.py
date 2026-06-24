@@ -1,5 +1,5 @@
-from auth_entry_portal.cli import build_parser
-from auth_entry_portal.config import COMPATIBILITY_COMMAND, PREFERRED_COMMAND
+from auth_ingress.cli import build_parser
+from auth_ingress.config import COMPATIBILITY_COMMAND, PREFERRED_COMMAND
 
 
 def test_cli_prefers_auth_ingress_name():

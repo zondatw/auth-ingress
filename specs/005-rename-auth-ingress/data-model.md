@@ -58,7 +58,7 @@ Represents the built distribution and verification output.
 | filename | Wheel/source archive name | Uses normalized `auth_ingress` file prefix after rename |
 | metadata_name | Embedded package name | Normalizes to `auth-ingress` |
 | commands | Installed command names | Includes preferred `auth-ingress`; compatibility `auth-portal` allowed |
-| import_namespace | Runtime import name | Remains documented as `auth_entry_portal` unless a later plan changes it |
+| import_namespace | Runtime import name | Remains documented as `auth_ingress` unless a later plan changes it |
 | smoke_result | Installed artifact validation | Confirms preferred command help and basic initialization behavior |
 
 ## Old-Name Scan Finding
@@ -67,7 +67,7 @@ Represents one detected old-name reference during validation.
 
 | Field | Meaning | Validation |
 |-------|---------|------------|
-| token | Old name found | `auth-entry-portal`, `auth_entry_portal`, `auth-portal`, `Auth Entry Portal`, `Auth Portal`, `auth_portal`, or `AUTH_PORTAL` |
+| token | Old name found | `auth-entry-portal`, `auth_ingress`, `auth-portal`, `Auth Entry Portal`, `Auth Portal`, `auth_portal`, or `AUTH_PORTAL` |
 | file_or_artifact | Location | Source, docs, tests, release metadata, built artifact, generated docs, historical spec |
 | classification | Required disposition | migrated, compatibility alias, historical reference, security-stable identifier, or intentional exception |
 | owner_action | Next step | Update, document, test, or accept with reason |

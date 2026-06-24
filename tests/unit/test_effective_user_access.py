@@ -1,5 +1,5 @@
-from auth_entry_portal.models import AccessRule, Group, GroupMembership, ServiceEntry, User
-from auth_entry_portal.services.access_service import effective_access_for_user
+from auth_ingress.models import AccessRule, Group, GroupMembership, ServiceEntry, User
+from auth_ingress.services.access_service import effective_access_for_user
 
 
 def test_effective_access_explains_overlapping_groups(db):

@@ -3,7 +3,7 @@
 ## Distribution Name and Existing Names
 
 **Decision**: Keep `auth-entry-portal` as the distribution name. Rename the Python
-import namespace to `auth_entry_portal`; keep `auth-portal` as the executable and
+import namespace to `auth_ingress`; keep `auth-portal` as the executable and
 `AUTH_PORTAL_*` as the configuration prefix.
 
 **Rationale**: PyPI name normalization treats hyphens, underscores, and dots as
@@ -32,7 +32,7 @@ setup time.
 `zondatw/auth-entry-portal` before configuring Trusted Publishers. The local
 `origin` uses the new URL. Project URLs, documentation, badges, workflow
 references, and publisher claims use the new repository identity. The Python
-import namespace remains `auth_entry_portal`.
+import namespace remains `auth_ingress`.
 
 **Rationale**: Matching the repository and public distribution names reduces
 operator ambiguity and makes source links easier to verify. Trusted Publishing

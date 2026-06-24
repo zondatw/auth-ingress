@@ -1,6 +1,6 @@
 import pytest
 
-from auth_entry_portal.services.service_admin_service import ServiceValidationError, validate_destination
+from auth_ingress.services.service_admin_service import ServiceValidationError, validate_destination
 from tests.conftest import sign_in
 
 

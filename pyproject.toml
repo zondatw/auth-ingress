@@ -25,7 +25,7 @@ classifiers = [
   "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
   "Topic :: Security",
 ]
-import-names = ["auth_entry_portal"]
+import-names = ["auth_ingress"]
 dependencies = [
   "argon2-cffi>=23.1",
   "fastapi>=0.115",
@@ -48,8 +48,8 @@ test = [
 ]
 
 [project.scripts]
-auth-ingress = "auth_entry_portal.cli:main"
-auth-portal = "auth_entry_portal.cli:main"
+auth-ingress = "auth_ingress.cli:main"
+auth-portal = "auth_ingress.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/zondatw/auth-ingress"
@@ -60,7 +60,7 @@ Changelog = "https://github.com/zondatw/auth-ingress/blob/main/CHANGELOG.md"
 Security = "https://github.com/zondatw/auth-ingress/security/policy"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/auth_entry_portal"]
+packages = ["src/auth_ingress"]
 
 [tool.hatch.build.targets.sdist]
 include = [

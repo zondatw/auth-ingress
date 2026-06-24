@@ -21,7 +21,7 @@ Do not create PyPI API-token secrets. This design uses OIDC Trusted Publishing.
 ```bash
 uv sync --locked --extra test
 uv run playwright install chromium
-uv run pytest --cov=auth_entry_portal
+uv run pytest --cov=auth_ingress
 ```
 
 Expected outcome: the existing auth, proxy, security, and real-browser suites pass
@@ -44,7 +44,7 @@ Expected outcome:
 
 - filenames and embedded metadata use `auth-ingress` and the project version;
 - the wheel is `py3-none-any`;
-- both artifacts include `auth_entry_portal`, all templates/static files, README,
+- both artifacts include `auth_ingress`, all templates/static files, README,
   changelog, and approved license;
 - neither artifact includes tests, databases, caches, environment files, secrets,
   or repository metadata.
@@ -55,11 +55,11 @@ Run the installed-package smoke test once for each artifact in an isolated
 environment, not against the repository checkout:
 
 ```bash
-uv run --isolated --no-project --with dist/auth_entry_portal-*.whl tests/smoke/test_installed_package.py
-uv run --isolated --no-project --with dist/auth_entry_portal-*.tar.gz tests/smoke/test_installed_package.py
+uv run --isolated --no-project --with dist/auth_ingress-*.whl tests/smoke/test_installed_package.py
+uv run --isolated --no-project --with dist/auth_ingress-*.tar.gz tests/smoke/test_installed_package.py
 ```
 
-Expected outcome: `auth_entry_portal` imports, `auth-ingress --help` succeeds, disposable
+Expected outcome: `auth_ingress` imports, `auth-ingress --help` succeeds, disposable
 database initialization succeeds, and installed templates/static resources are
 found. The test finishes within 5 minutes per clean environment.
 
@@ -148,12 +148,12 @@ revision, hash, outcome, and reason-code data.
 ## Local Validation Record — 2026-06-22
 
 - Foundation metadata: MIT license, canonical project URLs, static version,
-  `auth_entry_portal` import declaration, and constrained Hatch build passed.
+  `auth_ingress` import declaration, and constrained Hatch build passed.
 - Package tests: 7 passed in 1.37 seconds.
 - Clean build and isolated wheel/source smoke checks: passed in 7.7 seconds.
-- Wheel: `auth_entry_portal-0.1.0-py3-none-any.whl`
+- Wheel: `auth_ingress-0.1.0-py3-none-any.whl`
   (`7e2f0d5dd31d0fb6775e66a1df808189eea609bc77fb6550e553084606511583`).
-- Source archive: `auth_entry_portal-0.1.0.tar.gz`
+- Source archive: `auth_ingress-0.1.0.tar.gz`
   (`0f2ec128c5ab3f22ac428f0477381b6485f9a052235b3a603d13bc2fd7413239`).
 - Both artifacts imported the package, resolved templates/static assets, exposed
   CLI help, and initialized a disposable database without repository imports.

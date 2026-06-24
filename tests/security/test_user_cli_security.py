@@ -1,6 +1,6 @@
 import inspect
 
-from auth_entry_portal.services.cli_user_auth import authenticate_cli_actor
+from auth_ingress.services.cli_user_auth import authenticate_cli_actor
 
 
 def test_cli_auth_has_no_password_argument_or_environment_path():

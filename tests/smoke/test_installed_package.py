@@ -10,11 +10,11 @@ from time import perf_counter
 
 def run_smoke() -> None:
     started = perf_counter()
-    import auth_entry_portal
-    from auth_entry_portal.main import app
-    from auth_entry_portal.web.web import WEB_ROOT
+    import auth_ingress
+    from auth_ingress.main import app
+    from auth_ingress.web.web import WEB_ROOT
 
-    assert auth_entry_portal.__name__ == "auth_entry_portal"
+    assert auth_ingress.__name__ == "auth_ingress"
     assert app.title == "auth-ingress"
     assert (WEB_ROOT / "templates" / "base.html").is_file()
     assert (WEB_ROOT / "static" / "portal.css").is_file()

@@ -106,7 +106,7 @@ Expected:
 
 ```bash
 uv run pytest -q
-uv run pytest --cov=auth_entry_portal --cov-report=term-missing
+uv run pytest --cov=auth_ingress --cov-report=term-missing
 ```
 
 Expected:
@@ -125,7 +125,7 @@ Recorded on 2026-06-24 from branch `005-rename-auth-ingress`.
   keeps `auth-portal` as a compatibility command pointing to the same CLI entry.
 - Runtime configuration prefers `AUTH_INGRESS_*` and falls back to
   `AUTH_PORTAL_*` when the new variable is absent.
-- Python import namespace remains `auth_entry_portal`.
+- Python import namespace remains `auth_ingress`.
 - Security-stable cookie, CSRF, password-reset, proxy-header, and historical
   labels that still contain old names are classified as intentional historical
   or compatibility references.
@@ -156,7 +156,7 @@ Commands:
 
 ```bash
 uv run pytest -q
-uv run pytest --cov=auth_entry_portal --cov-report=term-missing
+uv run pytest --cov=auth_ingress --cov-report=term-missing
 ```
 
 Results:
@@ -203,8 +203,8 @@ Result:
 
 Artifact hashes from `dist/SHA256SUMS`:
 
-- `5ca5586b2ad145c594703503a72974d1a1b9e6581f95672120b71178a09181d2  auth_ingress-0.1.0-py3-none-any.whl`
-- `87b658faabdecdc6f4c95f501e8fd65073d2f9e812b4a5c8deb65a157280d088  auth_ingress-0.1.0.tar.gz`
+- `45e8cf8173db3bd86d4df7e9ed31075897e8295b0f2f12d45698a498e156c812  auth_ingress-0.1.0-py3-none-any.whl`
+- `a54a0850652d849099d8ed5d90a31e85722d168d7f23c617a5f1c1a53fc7d823  auth_ingress-0.1.0.tar.gz`
 
 ### Requirement and contract mapping
 

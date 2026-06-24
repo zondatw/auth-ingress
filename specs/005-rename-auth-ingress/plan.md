@@ -112,7 +112,7 @@ scripts/release/
 ├── validate_release.py
 ├── verify_index.py
 └── verify_staged_release.py
-src/auth_entry_portal/
+src/auth_ingress/
 ├── cli.py
 ├── config.py
 ├── main.py
@@ -129,7 +129,7 @@ tests/
 
 **Structure Decision**: Extend the existing single application and release
 tooling in place. The runtime import namespace remains under
-`src/auth_entry_portal/` for compatibility unless implementation tasks prove a
+`src/auth_ingress/` for compatibility unless implementation tasks prove a
 safe alias-only migration is necessary; the public distribution, command, docs,
 repository metadata, and UI identity become `auth-ingress`.
 

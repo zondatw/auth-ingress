@@ -3,7 +3,7 @@ from tests.conftest import sign_in
 
 def test_admin_can_preview_and_apply_access_change(client, csrf, db):
     sign_in(client, csrf, email="admin@example.test")
-    models = __import__("auth_entry_portal.models", fromlist=["User", "Group"])
+    models = __import__("auth_ingress.models", fromlist=["User", "Group"])
     target = db.query(models.User).filter_by(email="outsider@example.test").one()
     staff = db.query(models.Group).filter_by(name="staff").one()
     preview = client.post(f"/admin/users/{target.id}/memberships", data={"csrf": csrf, "expected_revision": target.revision, "group_ids": str(staff.id)})

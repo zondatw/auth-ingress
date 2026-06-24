@@ -39,7 +39,7 @@ still need alignment.
 
 ## Runtime import namespace
 
-**Decision**: Keep `auth_entry_portal` as the Python import namespace for this
+**Decision**: Keep `auth_ingress` as the Python import namespace for this
 rename phase and document it as an internal compatibility namespace, while
 changing public distribution and command identity to `auth-ingress`.
 

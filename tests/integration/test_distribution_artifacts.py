@@ -29,9 +29,9 @@ def test_wheel_contains_runtime_assets_and_public_metadata(built_artifacts: Buil
         names = set(archive.namelist())
         metadata_name = next(name for name in names if name.endswith(".dist-info/METADATA"))
         metadata = BytesParser().parsebytes(archive.read(metadata_name))
-    assert "auth_entry_portal/__init__.py" in names
-    assert "auth_entry_portal/web/static/portal.css" in names
-    assert "auth_entry_portal/web/templates/base.html" in names
+    assert "auth_ingress/__init__.py" in names
+    assert "auth_ingress/web/static/portal.css" in names
+    assert "auth_ingress/web/templates/base.html" in names
     assert metadata["Name"] == "auth-ingress"
     assert metadata["License-Expression"] == "MIT"
     assert "LICENSE" in metadata.get_all("License-File", [])
@@ -41,9 +41,9 @@ def test_source_archive_is_minimal_and_complete(built_artifacts: BuiltArtifacts)
     with tarfile.open(built_artifacts.source, "r:gz") as archive:
         names = {PurePosixPath(name) for name in archive.getnames()}
     root = PurePosixPath(f"auth_ingress-{project_metadata()['version']}")
-    assert root / "src/auth_entry_portal/__init__.py" in names
-    assert root / "src/auth_entry_portal/web/templates/base.html" in names
-    assert root / "src/auth_entry_portal/web/static/portal.css" in names
+    assert root / "src/auth_ingress/__init__.py" in names
+    assert root / "src/auth_ingress/web/templates/base.html" in names
+    assert root / "src/auth_ingress/web/static/portal.css" in names
     assert root / "README.md" in names
     assert root / "CHANGELOG.md" in names
     assert root / "SECURITY.md" in names

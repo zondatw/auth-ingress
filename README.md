@@ -16,11 +16,11 @@ python -m pip install "auth-ingress==0.1.0"
 auth-ingress --help
 ```
 
-The distribution name is `auth-ingress`, the Python import namespace remains
-`auth_entry_portal`, and the preferred command is `auth-ingress`:
+The distribution name is `auth-ingress`, the Python import namespace is
+`auth_ingress`, and the preferred command is `auth-ingress`:
 
 ```python
-from auth_entry_portal.main import create_app
+from auth_ingress.main import create_app
 ```
 
 ## Rename compatibility
@@ -35,7 +35,7 @@ evidence, and migration examples. During the migration window:
 - `auth-portal` remains available as a compatibility command;
 - `AUTH_INGRESS_*` settings take precedence when both prefixes are present;
 - `AUTH_PORTAL_*` settings are still accepted when the preferred key is absent;
-- `auth_entry_portal` remains the Python import namespace for runtime code;
+- `auth_ingress` is the Python import namespace for runtime code;
 - cookie names and signed-token salts may retain old internal labels to avoid
   breaking active sessions or historical evidence.
 

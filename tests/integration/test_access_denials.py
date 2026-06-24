@@ -1,6 +1,6 @@
 from sqlalchemy import delete, select
 
-from auth_entry_portal.models import AccessRule, ServiceEntry
+from auth_ingress.models import AccessRule, ServiceEntry
 from tests.conftest import sign_in
 
 

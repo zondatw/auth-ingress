@@ -15,7 +15,7 @@ def test_current_primary_files_have_no_unclassified_old_names():
         Path("README.md"),
         Path("docs/releasing.md"),
         Path("docs/user-management.md"),
-        Path("src/auth_entry_portal/config.py"),
+        Path("src/auth_ingress/config.py"),
     ]
     assert unclassified_findings(paths) == []
 

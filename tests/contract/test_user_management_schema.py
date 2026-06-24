@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, inspect, text
 
-from auth_entry_portal.repositories.schema import create_schema
+from auth_ingress.repositories.schema import create_schema
 
 
 def test_clean_schema_contains_user_management_columns_and_tables():

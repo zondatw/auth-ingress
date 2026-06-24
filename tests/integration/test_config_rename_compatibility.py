@@ -1,4 +1,4 @@
-from auth_entry_portal.config import get_settings
+from auth_ingress.config import get_settings
 
 
 def test_new_prefix_overrides_old_prefix_for_same_setting(monkeypatch):

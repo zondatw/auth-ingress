@@ -1,4 +1,4 @@
-from auth_entry_portal.config import get_settings
+from auth_ingress.config import get_settings
 
 
 def test_auth_ingress_environment_takes_precedence(monkeypatch):

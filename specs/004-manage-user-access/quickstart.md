@@ -141,7 +141,7 @@ Expected:
 ```bash
 uv run pytest tests/unit tests/contract tests/integration tests/security
 uv run pytest tests/e2e
-uv run pytest --cov=auth_entry_portal --cov-report=term-missing
+uv run pytest --cov=auth_ingress --cov-report=term-missing
 uv run python -m scripts.release.build_and_check
 ```
 
@@ -185,9 +185,9 @@ none before the feature is accepted.
   heading.
 - Release artifact validation passed with forced isolated reinstallation of the
   local artifact to avoid stale package-cache entry points.
-- Wheel: `auth_entry_portal-0.1.0-py3-none-any.whl`
+- Wheel: `auth_ingress-0.1.0-py3-none-any.whl`
   (`b66c14da58ba28830cb71762415fcb94007beb3305340ee3b2e8989bedcbc1ee`).
-- Source archive: `auth_entry_portal-0.1.0.tar.gz`
+- Source archive: `auth_ingress-0.1.0.tar.gz`
   (`24eaddf397637175500f73e543dbdffe482a41344fcf427d635145580b736f86`).
 - Artifact content scan passed for known demo credentials and release-token
   sentinel values; wheel/source smoke tests verified new templates and CLI

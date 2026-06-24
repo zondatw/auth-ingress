@@ -5,7 +5,7 @@
 | Surface | Required value |
 |---------|----------------|
 | PyPI/TestPyPI distribution | `auth-ingress` |
-| Python import namespace | `auth_entry_portal` |
+| Python import namespace | `auth_ingress` |
 | Command-line executable | `auth-ingress` |
 | Configuration prefix | `AUTH_INGRESS_` |
 | Wheel compatibility | `py3-none-any` |
@@ -31,9 +31,9 @@ Every release produces exactly:
 
 Both artifacts MUST include:
 
-- all `auth_entry_portal` Python modules;
-- all templates under `auth_entry_portal/web/templates/`;
-- all static resources under `auth_entry_portal/web/static/`;
+- all `auth_ingress` Python modules;
+- all templates under `auth_ingress/web/templates/`;
+- all static resources under `auth_ingress/web/static/`;
 - package metadata, README, changelog, and owner-approved license file;
 - the `auth-ingress` entry point and complete runtime dependency metadata.
 
@@ -51,7 +51,7 @@ The public metadata includes:
 - maintainers/authors, relevant keywords, and accurate classifiers;
 - Homepage, Documentation, Source, Issues, Changelog/Release Notes, and Security
   links using recognized project URL labels;
-- declared `auth_entry_portal` import name and all runtime/optional dependencies.
+- declared `auth_ingress` import name and all runtime/optional dependencies.
 
 Metadata links resolve to the canonical `zondatw/auth-ingress` repository.
 Publication stops if required owner/legal/security content is missing or any
@@ -62,7 +62,7 @@ public link still identifies the former repository name.
 The wheel and source archive are tested separately in clean isolated environments
 without access to the repository checkout. Each test MUST prove:
 
-1. `import auth_entry_portal` succeeds.
+1. `import auth_ingress` succeeds.
 2. `auth-ingress --help` exits successfully and lists supported subcommands.
 3. `auth-ingress init-db` creates a disposable schema using an isolated path.
 4. The application can be created and resolves every required template/static

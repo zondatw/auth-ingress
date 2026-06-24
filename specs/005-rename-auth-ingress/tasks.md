@@ -18,7 +18,7 @@
 
 **Purpose**: Establish rename constants, scan fixtures, and compatibility expectations used by all stories.
 
-- [X] T001 Add shared rename constants for display name, distribution name, preferred command, compatibility command, repository URL, preferred config prefix, and legacy config prefix in src/auth_entry_portal/config.py
+- [X] T001 Add shared rename constants for display name, distribution name, preferred command, compatibility command, repository URL, preferred config prefix, and legacy config prefix in src/auth_ingress/config.py
 - [X] T002 [P] Add old-name token inventory fixture and allowed-classification schema in tests/fixtures/rename_inventory.py
 - [X] T003 [P] Add rename scan helper for source/docs/artifact text classification in tests/rename_helpers.py
 - [X] T004 [P] Add release artifact filename and metadata expectation constants for auth-ingress in scripts/release/package_metadata.py
@@ -31,7 +31,7 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete.
 
-- [X] T005 Add AUTH_INGRESS_* environment-variable lookup with AUTH_PORTAL_* fallback and new-prefix precedence in src/auth_entry_portal/config.py
+- [X] T005 Add AUTH_INGRESS_* environment-variable lookup with AUTH_PORTAL_* fallback and new-prefix precedence in src/auth_ingress/config.py
 - [X] T006 [P] Add configuration prefix precedence and fallback unit tests in tests/unit/test_config_rename.py
 - [X] T007 [P] Add old-name scan contract tests with required classifications in tests/contract/test_rename_inventory_contract.py
 - [X] T008 Add preferred and compatibility console-script metadata to pyproject.toml
@@ -63,10 +63,10 @@
 - [X] T018 [US1] Update README install, startup, first-install, demo, user-management, proxy, and configuration examples to auth-ingress and AUTH_INGRESS_* in README.md
 - [X] T019 [P] [US1] Update user-management and release operator docs to use auth-ingress primary naming in docs/user-management.md and docs/releasing.md
 - [X] T020 [P] [US1] Update release recovery and GitHub release setup docs to use zondatw/auth-ingress and auth-ingress in docs/release-recovery.md and .github/RELEASE_SETUP.md
-- [X] T021 [US1] Rename web UI product labels and page titles to auth-ingress in src/auth_entry_portal/web/templates/base.html
-- [X] T022 [P] [US1] Rename auth page titles, setup command examples, and recovery page labels to auth-ingress in src/auth_entry_portal/web/templates/auth/sign_in.html, src/auth_entry_portal/web/templates/auth/setup_required.html, src/auth_entry_portal/web/templates/auth/reset_password.html, and src/auth_entry_portal/web/templates/auth/change_password.html
-- [X] T023 [P] [US1] Rename portal/admin/error page titles to auth-ingress in src/auth_entry_portal/web/templates/portal/index.html, src/auth_entry_portal/web/templates/admin/services.html, src/auth_entry_portal/web/templates/admin/users.html, src/auth_entry_portal/web/templates/admin/user_detail.html, src/auth_entry_portal/web/templates/admin/audit.html, and src/auth_entry_portal/web/templates/errors/access_denied.html
-- [X] T024 [US1] Update CLI parser program name and help epilog to prefer auth-ingress while mentioning auth-portal compatibility in src/auth_entry_portal/cli.py
+- [X] T021 [US1] Rename web UI product labels and page titles to auth-ingress in src/auth_ingress/web/templates/base.html
+- [X] T022 [P] [US1] Rename auth page titles, setup command examples, and recovery page labels to auth-ingress in src/auth_ingress/web/templates/auth/sign_in.html, src/auth_ingress/web/templates/auth/setup_required.html, src/auth_ingress/web/templates/auth/reset_password.html, and src/auth_ingress/web/templates/auth/change_password.html
+- [X] T023 [P] [US1] Rename portal/admin/error page titles to auth-ingress in src/auth_ingress/web/templates/portal/index.html, src/auth_ingress/web/templates/admin/services.html, src/auth_ingress/web/templates/admin/users.html, src/auth_ingress/web/templates/admin/user_detail.html, src/auth_ingress/web/templates/admin/audit.html, and src/auth_ingress/web/templates/errors/access_denied.html
+- [X] T024 [US1] Update CLI parser program name and help epilog to prefer auth-ingress while mentioning auth-portal compatibility in src/auth_ingress/cli.py
 - [X] T025 [US1] Update tests and helper command invocations from auth-portal to auth-ingress where they represent current primary usage in tests/cli_helpers.py, tests/e2e/test_first_install.py, specs/004-manage-user-access/quickstart.md, and specs/004-manage-user-access/contracts/ui-flows.md
 
 **Checkpoint**: User Story 1 is independently functional; primary operator and UI surfaces consistently show auth-ingress.
@@ -88,9 +88,9 @@
 
 ### Implementation for User Story 2
 
-- [X] T030 [US2] Implement auth-portal compatibility command behavior through project script metadata and shared CLI entry in pyproject.toml and src/auth_entry_portal/cli.py
-- [X] T031 [US2] Add compatibility help text and migration notice for old CLI usage in src/auth_entry_portal/cli.py
-- [X] T032 [US2] Implement configuration lookup helper that supports AUTH_INGRESS_* preferred keys and AUTH_PORTAL_* legacy keys without logging secret values in src/auth_entry_portal/config.py
+- [X] T030 [US2] Implement auth-portal compatibility command behavior through project script metadata and shared CLI entry in pyproject.toml and src/auth_ingress/cli.py
+- [X] T031 [US2] Add compatibility help text and migration notice for old CLI usage in src/auth_ingress/cli.py
+- [X] T032 [US2] Implement configuration lookup helper that supports AUTH_INGRESS_* preferred keys and AUTH_PORTAL_* legacy keys without logging secret values in src/auth_ingress/config.py
 - [X] T033 [US2] Document CLI, package, repository, configuration, import namespace, cookie/internal-label, and historical-reference migration mapping in README.md
 - [X] T034 [P] [US2] Add compatibility notes for SRE/Admin workflows in docs/user-management.md
 - [X] T035 [P] [US2] Add release and rollback migration notes for old package/repository names in docs/releasing.md and docs/release-recovery.md
@@ -239,6 +239,6 @@ With multiple developers after Foundation:
 
 - [P] tasks = different files, no dependencies.
 - [US1], [US2], [US3] map to prioritized stories in spec.md.
-- Keep `auth_entry_portal` import namespace stable unless a later explicit task changes the plan.
+- Keep `auth_ingress` import namespace stable unless a later explicit task changes the plan.
 - Keep credentials, tokens, sessions, reset secrets, and unnecessary personal data out of logs, docs, tests, and release output.
 - Do not rewrite historical audit records or security-stable token/cookie labels without a documented migration decision.

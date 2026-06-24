@@ -43,7 +43,7 @@ prerequisites are complete.
 - [X] T006 Obtain and add the owner-approved license text in LICENSE and its SPDX expression/license-file declaration in pyproject.toml
 - [X] T007 [P] Add Keep-a-Changelog-compatible initial release history and upgrade notes in CHANGELOG.md
 - [X] T008 [P] Add vulnerability reporting, supported-version, disclosure, and release-compromise contacts in SECURITY.md
-- [X] T009 Complete authors/maintainers, classifiers, keywords, `auth_entry_portal` import declaration, canonical zondatw/auth-ingress project URLs, and Hatch wheel/source inclusion rules in pyproject.toml
+- [X] T009 Complete authors/maintainers, classifiers, keywords, `auth_ingress` import declaration, canonical zondatw/auth-ingress project URLs, and Hatch wheel/source inclusion rules in pyproject.toml
 - [X] T010 Implement shared static package name, version, tag, release type, required metadata, and canonical repository validation in scripts/release/package_metadata.py
 - [X] T011 Document and verify the renamed origin, default branch, required CI checks, protected environments, and no-token policy in .github/RELEASE_SETUP.md
 
@@ -58,7 +58,7 @@ story-specific package and workflow work can proceed.
 clean supported environments without access to repository files.
 
 **Independent Test**: Build one wheel and one source archive, install each into an
-isolated environment, import `auth_entry_portal`, invoke `auth-ingress --help`,
+isolated environment, import `auth_ingress`, invoke `auth-ingress --help`,
 initialize a disposable database, and resolve every installed template/static
 resource within five minutes.
 
@@ -75,7 +75,7 @@ resource within five minutes.
 
 - [X] T015 [US1] Implement deterministic wheel/source discovery, SHA-256 manifest generation, required-content checks, forbidden-content checks, and metadata checks in scripts/release/check_artifacts.py
 - [X] T016 [US1] Implement the clean build, metadata check, artifact inspection, and separate wheel/source smoke-test orchestration in scripts/release/build_and_check.py
-- [X] T017 [US1] Add PyPI installation, exact version pinning, upgrade, configuration prerequisites, verification, and removal guidance using `auth_entry_portal` examples in README.md
+- [X] T017 [US1] Add PyPI installation, exact version pinning, upgrade, configuration prerequisites, verification, and removal guidance using `auth_ingress` examples in README.md
 - [X] T018 [US1] Execute the local artifact and installed-package scenarios and record filenames, hashes, durations, and outcomes in specs/003-publish-pypi/quickstart.md
 
 **Checkpoint**: Both local distribution formats are independently installable and
@@ -285,7 +285,7 @@ After Foundation:
 ## Notes
 
 - The GitHub repository is already renamed to `zondatw/auth-ingress`, the
-  local origin is updated, and the `auth_entry_portal` import migration is already
+  local origin is updated, and the `auth_ingress` import migration is already
   committed; tasks verify and package that baseline rather than repeat it.
 - `[P]` tasks touch different files and have no incomplete same-phase dependency.
 - Keep OIDC permission job-scoped and never execute repository code in publish

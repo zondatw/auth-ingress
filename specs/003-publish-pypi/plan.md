@@ -14,7 +14,7 @@ requests and main receive locked multi-version tests. A published GitHub Release
 builds and validates artifacts once, stages them on TestPyPI, verifies an exact
 clean install, and promotes the unchanged artifacts to PyPI through a protected
 environment using OIDC Trusted Publishing. The Python import namespace is renamed
-to `auth_entry_portal`; the `auth-portal` CLI and configuration names remain
+to `auth_ingress`; the `auth-portal` CLI and configuration names remain
 stable. The canonical GitHub repository is `zondatw/auth-entry-portal` before
 release integration is registered.
 
@@ -110,7 +110,7 @@ specs/003-publish-pypi/
     ├── ci.yml
     └── release.yml
 
-src/auth_entry_portal/                 # renamed runtime/import namespace
+src/auth_ingress/                 # renamed runtime/import namespace
 ├── cli.py
 ├── main.py
 └── web/
@@ -144,7 +144,7 @@ Research is recorded in [research.md](./research.md). The resolved decisions are
 1. Retain `auth-entry-portal`; recheck availability immediately before Trusted
    Publisher registration.
 2. Use the renamed canonical GitHub repository `zondatw/auth-entry-portal` and
-   rename the Python import namespace to `auth_entry_portal`.
+   rename the Python import namespace to `auth_ingress`.
 3. Use pull-request/main CI and a separate GitHub Release-driven workflow.
 4. Use TestPyPI and PyPI Trusted Publishers with separate protected environments.
 5. Build once, validate both artifacts, and promote the identical artifact set.
@@ -158,10 +158,10 @@ Research is recorded in [research.md](./research.md). The resolved decisions are
 ### Package Boundary
 
 - Distribution: `auth-entry-portal`.
-- Import namespace: `auth_entry_portal`.
+- Import namespace: `auth_ingress`.
 - CLI: `auth-portal`.
 - Build output: exactly one `py3-none-any` wheel and one source archive.
-- Runtime assets: all templates and static files under `src/auth_entry_portal/web/`.
+- Runtime assets: all templates and static files under `src/auth_ingress/web/`.
 - Version source: static `[project].version`, exactly matching the release tag.
 
 ### Continuous Integration

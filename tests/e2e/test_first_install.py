@@ -1,8 +1,8 @@
 from fastapi.testclient import TestClient
 
-from auth_entry_portal.config import get_settings
-from auth_entry_portal.main import create_app
-from auth_entry_portal.repositories.database import get_db
+from auth_ingress.config import get_settings
+from auth_ingress.main import create_app
+from auth_ingress.repositories.database import get_db
 
 
 def test_first_install_page_is_actionable_and_non_sensitive(db_factory, settings):

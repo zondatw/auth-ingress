@@ -3,9 +3,9 @@ from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import create_engine, func, select
 from sqlalchemy.orm import sessionmaker
 
-from auth_entry_portal.models import InstallationState, User
-from auth_entry_portal.repositories.schema import create_schema
-from auth_entry_portal.services.bootstrap_service import BootstrapError, bootstrap_admin
+from auth_ingress.models import InstallationState, User
+from auth_ingress.repositories.schema import create_schema
+from auth_ingress.services.bootstrap_service import BootstrapError, bootstrap_admin
 
 
 def test_bootstrap_creates_one_admin_and_then_closes(tmp_path):

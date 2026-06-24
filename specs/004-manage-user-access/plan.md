@@ -105,7 +105,7 @@ specs/004-manage-user-access/
 ### Source Code (repository root)
 
 ```text
-src/auth_entry_portal/
+src/auth_ingress/
 ├── cli.py
 ├── config.py
 ├── main.py
@@ -141,7 +141,7 @@ tests/
 └── unit/
 ```
 
-**Structure Decision**: Extend the existing `src/auth_entry_portal/` single
+**Structure Decision**: Extend the existing `src/auth_ingress/` single
 application. Routes and CLI remain thin adapters; shared services own validation,
 authorization, transactions, preview calculation, lockout safeguards, and audit
 creation. This preserves the current architecture and guarantees interface

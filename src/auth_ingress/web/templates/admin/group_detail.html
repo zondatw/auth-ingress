@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}{{ managed.name }} · Groups · auth-ingress{% endblock %}
+{% block content %}
+<p><a href="/admin/groups">← Groups</a></p>
+<div class="title-row"><div><p class="eyebrow">Group management</p><h1>{{ managed.name }}</h1><p><span class="status status-{{ managed.status }}">{{ managed.status }}</span> · Revision {{ managed.revision }}</p></div></div>
+{% if error %}<div class="alert" role="alert" tabindex="-1">{{ error }}</div>{% endif %}
+{% if message %}<div class="notice" role="status" tabindex="-1">{{ message }}</div>{% endif %}
+
+{% if preview %}
+<section class="panel confirmation">
+  <h2>Preview {{ preview.operation.replace('_', ' ') }}</h2>
+  <p>{{ preview.message }}</p>
+  {% if preview.dependency_summary %}
+  <p>Assigned users: {{ preview.dependency_summary.user_count }}. Associated services: {{ preview.dependency_summary.service_count }}.</p>
+  {% endif %}
+  {% if preview.operation == 'group_update' %}
+  <form method="post" action="/admin/groups/{{ managed.id }}/profile">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="name" value="{{ preview.changes.name }}">
+    <input type="hidden" name="description" value="{{ preview.changes.description }}">
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit">Confirm group changes</button>
+  </form>
+  {% elif preview.operation in ['group_deactivate', 'group_reactivate', 'group_remove'] %}
+  <form method="post" action="/admin/groups/{{ managed.id }}/lifecycle">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="action" value="{{ preview.changes.action }}">
+    <input type="hidden" name="confirm" value="true">
+    <button type="submit" {% if preview.operation == 'group_remove' %}class="danger"{% endif %}>Confirm {{ preview.changes.action }}</button>
+  </form>
+  {% endif %}
+</section>
+{% endif %}
+
+<div class="management-grid">
+  <section class="panel">
+    <h2>Dependencies</h2>
+    <p>Assigned users: <strong>{{ dependencies.user_count }}</strong>. Associated services: <strong>{{ dependencies.service_count }}</strong>.</p>
+    <h3>Users</h3>
+    {% if dependencies.sample_users %}
+      <ul>{% for managed_user in dependencies.sample_users %}<li>{{ managed_user.email }}{% if managed_user.is_admin %} · administrator{% endif %}</li>{% endfor %}</ul>
+      {% if dependencies.has_more_users %}<p class="muted">More users are assigned than shown here.</p>{% endif %}
+    {% else %}<p class="muted">No assigned users.</p>{% endif %}
+    <h3>Services</h3>
+    {% if dependencies.sample_services %}
+      <ul>{% for service in dependencies.sample_services %}<li>{{ service.display_name }} · {{ service.slug }}</li>{% endfor %}</ul>
+      {% if dependencies.has_more_services %}<p class="muted">More services are associated than shown here.</p>{% endif %}
+    {% else %}<p class="muted">No associated services.</p>{% endif %}
+  </section>
+  <section class="panel">
+    <h2>Access impact</h2>
+    {% if managed.status == 'active' %}
+      <p>This group can currently grant access through matching service rules.</p>
+    {% else %}
+      <p>This group is deactivated and does not currently grant service access.</p>
+    {% endif %}
+  </section>
+</div>
+
+{% set edit_state = form_state if form_state.applies_to('group_edit', managed.id) else none %}
+<section class="panel">
+  <h2>Edit metadata</h2>
+  <form method="post" action="/admin/groups/{{ managed.id }}/profile" class="form-grid">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ edit_state.value('expected_revision', managed.revision) if edit_state else managed.revision }}">
+    <label>Name
+      <input name="name" value="{{ edit_state.value('name', managed.name) if edit_state else managed.name }}" required>
+      {% if edit_state and edit_state.error_text('name') %}<span class="field-error">{{ edit_state.error_text('name') }}</span>{% endif %}
+    </label>
+    <label class="wide">Description
+      <input name="description" value="{{ edit_state.value('description', managed.description or '') if edit_state else managed.description or '' }}">
+    </label>
+    <button type="submit">Preview group changes</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Lifecycle</h2>
+  <p>Deactivate is reversible and preserves users, services, and audit history. Permanent removal is allowed only for unused groups.</p>
+  {% if managed.status == 'active' %}
+  <form method="post" action="/admin/groups/{{ managed.id }}/lifecycle">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="action" value="deactivate">
+    <button type="submit">Preview deactivation</button>
+  </form>
+  {% else %}
+  <form method="post" action="/admin/groups/{{ managed.id }}/lifecycle">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="action" value="reactivate">
+    <button type="submit">Preview reactivation</button>
+  </form>
+  {% endif %}
+  <form method="post" action="/admin/groups/{{ managed.id }}/lifecycle">
+    <input type="hidden" name="csrf" value="{{ csrf_token }}">
+    <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
+    <input type="hidden" name="action" value="remove">
+    <button type="submit" class="danger">Preview permanent removal</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Recent group audit</h2>
+  {% if audit_events %}
+  <ul>{% for event in audit_events %}<li>{{ event.created_at }} · {{ event.event_type }} · {{ event.decision }} · {{ event.reason }}</li>{% endfor %}</ul>
+  {% else %}<p class="muted">No recent group audit events.</p>{% endif %}
+</section>
+{% endblock %}

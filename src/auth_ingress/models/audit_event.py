@@ -19,6 +19,7 @@ class AuditEvent(Base):
     event_type: Mapped[str] = mapped_column(String(60), index=True)
     actor_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
     target_user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"), index=True)
+    target_group_id: Mapped[int | None] = mapped_column(ForeignKey("groups.id", ondelete="SET NULL"), index=True)
     service_entry_id: Mapped[int | None] = mapped_column(ForeignKey("service_entries.id", ondelete="SET NULL"))
     decision: Mapped[str] = mapped_column(String(20))
     reason: Mapped[str] = mapped_column(String(80))

@@ -54,10 +54,27 @@ class Group(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), unique=True)
+    normalized_name: Mapped[str] = mapped_column(String(100), unique=True, index=True)
     description: Mapped[str | None] = mapped_column(String(500))
+    status: Mapped[str] = mapped_column(String(16), default="active", server_default="active")
+    revision: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
     memberships: Mapped[list[GroupMembership]] = relationship(back_populates="group", cascade="all, delete-orphan")
+
+    @validates("name")
+    def validate_name(self, _key: str, value: str) -> str:
+        canonical = " ".join(value.strip().split())
+        if not canonical:
+            raise ValueError("group name is required")
+        self.normalized_name = canonical.casefold()
+        return canonical
+
+    @validates("status")
+    def validate_group_status(self, _key: str, value: str) -> str:
+        if value not in {"active", "deactivated"}:
+            raise ValueError("invalid group status")
+        return value
 
 
 class GroupMembership(Base):

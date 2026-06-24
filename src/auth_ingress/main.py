@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from auth_ingress.repositories.schema import create_schema
 from auth_ingress.services.downstream_service import close_clients
 from auth_ingress.services.proxy_websocket_service import close_websockets
-from auth_ingress.web.routes import admin_audit, admin_services, admin_users, auth, password_reset, portal, services
+from auth_ingress.web.routes import admin_audit, admin_groups, admin_services, admin_users, auth, password_reset, portal, services
 from auth_ingress.web.routes.proxy import ProxyDispatchMiddleware
 from auth_ingress.web.web import WEB_ROOT
 
@@ -64,6 +64,7 @@ def create_app(*, initialize_schema: bool = True, proxy_settings=None, proxy_ses
     app.include_router(portal.router)
     app.include_router(services.router)
     app.include_router(admin_services.router)
+    app.include_router(admin_groups.router)
     app.include_router(admin_audit.router)
     app.include_router(admin_users.creation_router)
     app.include_router(admin_users.router)

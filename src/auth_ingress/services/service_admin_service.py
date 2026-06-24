@@ -63,9 +63,9 @@ def save_service(
     names = sorted({name.strip() for name in group_names if name.strip()})
     if status == "enabled" and not names:
         raise ServiceValidationError("Enabled services require at least one access group", field="group_names")
-    groups = list(db.scalars(select(Group).where(Group.name.in_(names))).all()) if names else []
+    groups = list(db.scalars(select(Group).where(Group.name.in_(names), Group.status == "active")).all()) if names else []
     if len(groups) != len(names):
-        raise ServiceValidationError("One or more groups do not exist", field="group_names")
+        raise ServiceValidationError("One or more groups do not exist or are deactivated", field="group_names")
     service = db.scalar(select(ServiceEntry).where(ServiceEntry.slug == original_slug)) if original_slug else None
     action = "updated" if service else "created"
     if service is None:

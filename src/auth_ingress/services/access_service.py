@@ -10,6 +10,8 @@ def permitted_service_query(user: User):
     membership = exists().where(
         GroupMembership.user_id == user.id,
         GroupMembership.group_id == AccessRule.group_id,
+        Group.id == AccessRule.group_id,
+        Group.status == "active",
     )
     return (
         select(ServiceEntry)
@@ -35,6 +37,8 @@ def may_enter(db: Session, user: User, service: ServiceEntry) -> bool:
                 AccessRule.service_entry_id == service.id,
                 GroupMembership.user_id == user.id,
                 GroupMembership.group_id == AccessRule.group_id,
+                Group.id == AccessRule.group_id,
+                Group.status == "active",
             ))
         )
     )
@@ -46,7 +50,7 @@ def effective_access_for_user(db: Session, user: User) -> list[dict]:
         select(AccessRule.service_entry_id, Group.name)
         .join(Group, Group.id == AccessRule.group_id)
         .join(GroupMembership, GroupMembership.group_id == AccessRule.group_id)
-        .where(GroupMembership.user_id == user.id)
+        .where(GroupMembership.user_id == user.id, Group.status == "active")
         .order_by(Group.name)
     )
     for service_id, group_name in rows:

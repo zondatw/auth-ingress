@@ -21,8 +21,14 @@ USER_UPGRADES = {
     "credential_status": "VARCHAR(24) NOT NULL DEFAULT 'active'",
     "revision": "INTEGER NOT NULL DEFAULT 1",
 }
+GROUP_UPGRADES = {
+    "normalized_name": "VARCHAR(100)",
+    "status": "VARCHAR(16) NOT NULL DEFAULT 'active'",
+    "revision": "INTEGER NOT NULL DEFAULT 1",
+}
 AUDIT_UPGRADES = {
     "target_user_id": "INTEGER",
+    "target_group_id": "INTEGER",
     "change_summary": "JSON NOT NULL DEFAULT '{}'",
 }
 
@@ -63,11 +69,35 @@ def _backfill_normalized_emails(bind) -> None:
         connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_users_normalized_email ON users (normalized_email)"))
 
 
+def _backfill_normalized_groups(bind) -> None:
+    inspector = inspect(bind)
+    if "groups" not in inspector.get_table_names() or "normalized_name" not in {c["name"] for c in inspector.get_columns("groups")}:
+        return
+    with bind.begin() as connection:
+        rows = connection.execute(text("SELECT id, name, normalized_name FROM groups ORDER BY id")).all()
+        seen: dict[str, int] = {}
+        for group_id, name, normalized in rows:
+            value = (normalized or " ".join((name or "").strip().split())).casefold()
+            if not value:
+                raise RuntimeError("invalid normalized group name during schema upgrade")
+            if value in seen and seen[value] != group_id:
+                raise RuntimeError("normalized group name collision during schema upgrade")
+            seen[value] = group_id
+            canonical = " ".join((name or "").strip().split())
+            connection.execute(
+                text("UPDATE groups SET name = :name, normalized_name = :value WHERE id = :group_id"),
+                {"name": canonical, "value": value, "group_id": group_id},
+            )
+        connection.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_groups_normalized_name ON groups (normalized_name)"))
+
+
 def upgrade_existing_schema(bind=engine) -> None:
     _add_columns(bind, "service_entries", SERVICE_ENTRY_UPGRADES)
     _add_columns(bind, "users", USER_UPGRADES)
+    _add_columns(bind, "groups", GROUP_UPGRADES)
     _add_columns(bind, "audit_events", AUDIT_UPGRADES)
     _backfill_normalized_emails(bind)
+    _backfill_normalized_groups(bind)
 
 
 def _ensure_installation_state(bind) -> None:

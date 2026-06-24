@@ -5,6 +5,7 @@ import pytest
 from scripts.release.verify_index import (
     IndexOutcome,
     IndexVerificationError,
+    assert_version_absent,
     compare_release,
     poll_release,
 )
@@ -68,3 +69,15 @@ def test_polling_is_bounded_and_never_uploads_or_retries_mutations():
 def test_invalid_expected_hashes_fail_closed():
     with pytest.raises(IndexVerificationError, match="invalid-expected-hash"):
         compare_release(payload(), {"file.whl": "secret"}, version="0.1.0")
+
+
+def test_version_absence_preflight_allows_missing_version():
+    result = assert_version_absent(lambda _index, _version: None, "testpypi", "0.1.0")
+    assert result.outcome is IndexOutcome.ABSENT
+    assert result.reason == "version-not-found"
+
+
+def test_version_absence_preflight_blocks_existing_testpypi_and_pypi_versions():
+    for index in ("testpypi", "pypi"):
+        with pytest.raises(IndexVerificationError, match="version-already-exists"):
+            assert_version_absent(lambda _index, _version: payload(), index, "0.1.0")

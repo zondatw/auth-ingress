@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import subprocess
+import sys
 
 import pytest
 
 from scripts.release.package_metadata import load_pyproject
-from scripts.release.validate_release import ReleaseContext, validate_release
+from scripts.release.validate_release import ReleaseContext, release_target, validate_release
 
 
 def valid_context(**changes) -> ReleaseContext:
@@ -13,7 +15,8 @@ def valid_context(**changes) -> ReleaseContext:
         "action": "published",
         "tag": "v0.1.0",
         "prerelease": False,
-        "target_commitish": "main",
+        "target_commitish": "beta",
+        "target_index": "testpypi",
         "clean": True,
     }
     values.update(changes)
@@ -23,6 +26,25 @@ def valid_context(**changes) -> ReleaseContext:
 def test_valid_stable_release_passes():
     metadata = validate_release(valid_context(), load_pyproject())
     assert str(metadata.version) == "0.1.0"
+    assert metadata.target_index == "testpypi"
+
+
+def test_release_branch_targets_pypi():
+    metadata = validate_release(
+        valid_context(target_commitish="release", target_index="pypi"),
+        load_pyproject(),
+    )
+    assert str(metadata.version) == "0.1.0"
+    assert metadata.target_branch == "release"
+    assert metadata.target_index == "pypi"
+
+
+def test_branch_target_resolution_is_exact():
+    assert release_target("beta") == "testpypi"
+    assert release_target("release") == "pypi"
+    for branch in ("main", "beta-fix", "release-candidate", "releases", "hotfix"):
+        with pytest.raises(ValueError, match="release-target-unsupported"):
+            release_target(branch)
 
 
 @pytest.mark.parametrize(
@@ -32,7 +54,9 @@ def test_valid_stable_release_passes():
         ({"tag": "0.1.0"}, "release-tag-must-start-with-v"),
         ({"tag": "v0.2.0"}, "tag-version-mismatch"),
         ({"prerelease": True}, "release-type-mismatch"),
-        ({"target_commitish": "feature"}, "release-target-not-main"),
+        ({"target_commitish": "feature"}, "release-target-unsupported"),
+        ({"target_commitish": "release"}, "release-target-not-testpypi"),
+        ({"target_index": "pypi"}, "release-target-not-pypi"),
         ({"clean": False}, "release-input-not-clean"),
     ],
 )
@@ -54,3 +78,27 @@ def test_prerelease_requires_matching_prerelease_version():
     context = valid_context(tag="v0.2.0rc1", prerelease=True)
     metadata = validate_release(context, document)
     assert metadata.version.is_prerelease
+
+
+def test_release_validation_cli_reports_safe_reason_without_traceback():
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "scripts.release.validate_release",
+            "--action",
+            "published",
+            "--tag",
+            "v0.1.0",
+            "--prerelease",
+            "false",
+            "--target-commitish",
+            "main",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode != 0
+    assert "release-target-unsupported" in result.stderr
+    assert "Traceback" not in result.stderr

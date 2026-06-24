@@ -24,6 +24,15 @@ def test_oidc_is_job_scoped_and_only_publish_jobs_receive_it():
             assert "id-token" not in permissions
 
 
+def test_branch_conditioned_publish_paths_do_not_cross_activate_oidc():
+    _, workflow = load_release()
+    jobs = workflow["jobs"]
+    assert jobs["publish-testpypi"]["if"] == "github.event.release.target_commitish == 'beta'"
+    assert jobs["publish-pypi"]["if"] == "github.event.release.target_commitish == 'release'"
+    assert jobs["verify-testpypi"]["if"] == jobs["publish-testpypi"]["if"]
+    assert jobs["verify-pypi"]["if"] == jobs["publish-pypi"]["if"]
+
+
 def test_publish_jobs_do_not_checkout_or_execute_repository_code():
     _, workflow = load_release()
     for name in ("publish-testpypi", "publish-pypi"):

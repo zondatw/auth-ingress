@@ -110,6 +110,17 @@ def fetch_release(index: str, version: str) -> Mapping[str, object] | None:
     return payload
 
 
+def assert_version_absent(
+    fetch: Callable[[str, str], Mapping[str, object] | None],
+    index: str,
+    version: str,
+) -> IndexResult:
+    payload = fetch(index, version)
+    if payload is None:
+        return IndexResult(IndexOutcome.ABSENT, version, {}, "version-not-found")
+    raise IndexVerificationError("version-already-exists")
+
+
 def verify_provenance(index: str, version: str, filenames: Mapping[str, str]) -> None:
     domain = "pypi.org" if index == "pypi" else "test.pypi.org"
     for filename in filenames:
@@ -127,7 +138,16 @@ def verify_provenance(index: str, version: str, filenames: Mapping[str, str]) ->
 
 
 def safe_summary(source: Mapping[str, object]) -> dict[str, object]:
-    allowed = ("version", "revision", "outcome", "reason", "hashes")
+    allowed = (
+        "branch",
+        "target_index",
+        "version",
+        "revision",
+        "outcome",
+        "reason",
+        "hashes",
+        "provenance",
+    )
     return {key: source[key] for key in allowed if key in source}
 
 
@@ -135,13 +155,34 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Read and verify an immutable package-index release")
     parser.add_argument("--index", choices=sorted(INDEXES), required=True)
     parser.add_argument("--version", required=True)
-    parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--manifest", type=Path)
     parser.add_argument("--timeout", type=float, default=120)
     parser.add_argument("--interval", type=float, default=5)
     parser.add_argument("--revision", default="")
+    parser.add_argument("--branch", default="")
     parser.add_argument("--require-provenance", action="store_true")
+    parser.add_argument("--expect-absent", action="store_true")
     arguments = parser.parse_args()
     version = arguments.version.removeprefix("v")
+    if arguments.expect_absent:
+        result = assert_version_absent(fetch_release, arguments.index, version)
+        print(
+            json.dumps(
+                safe_summary(
+                    {
+                        "branch": arguments.branch,
+                        "version": version,
+                        "target_index": arguments.index,
+                        "outcome": result.outcome.value,
+                        "reason": result.reason,
+                    }
+                ),
+                sort_keys=True,
+            )
+        )
+        return
+    if arguments.manifest is None:
+        raise IndexVerificationError("manifest-required")
     expected = read_manifest(arguments.manifest)
     result = poll_release(
         lambda: fetch_release(arguments.index, version),
@@ -152,15 +193,20 @@ def main() -> None:
     )
     if result.outcome is IndexOutcome.COLLISION:
         raise IndexVerificationError(result.reason)
+    provenance = "not-required"
     if arguments.require_provenance:
         verify_provenance(arguments.index, version, expected)
+        provenance = "verified"
     summary = safe_summary(
         {
+            "branch": arguments.branch,
+            "target_index": arguments.index,
             "version": version,
             "revision": arguments.revision,
             "outcome": result.outcome.value,
             "reason": result.reason,
             "hashes": result.hashes,
+            "provenance": provenance,
         }
     )
     print(json.dumps(summary, sort_keys=True))

@@ -18,6 +18,18 @@ PREFERRED_COMMAND = "auth-ingress"
 COMPATIBILITY_COMMAND = "auth-portal"
 REQUIRED_URLS = {"Homepage", "Documentation", "Source", "Issues", "Changelog", "Security"}
 REQUIRED_FILES = {"LICENSE", "README.md", "CHANGELOG.md", "SECURITY.md"}
+BETA_BRANCH = "beta"
+RELEASE_BRANCH = "release"
+TESTPYPI_INDEX = "testpypi"
+PYPI_INDEX = "pypi"
+BRANCH_TARGETS = {
+    BETA_BRANCH: TESTPYPI_INDEX,
+    RELEASE_BRANCH: PYPI_INDEX,
+}
+INDEX_ENVIRONMENTS = {
+    TESTPYPI_INDEX: "testpypi",
+    PYPI_INDEX: "pypi",
+}
 
 
 class ReleaseMetadataError(ValueError):
@@ -31,6 +43,8 @@ class PackageMetadata:
     requires_python: str
     import_names: tuple[str, ...]
     urls: Mapping[str, str]
+    target_branch: str = ""
+    target_index: str = ""
 
 
 def normalize_distribution_name(value: str) -> str:

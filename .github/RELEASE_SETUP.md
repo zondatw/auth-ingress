@@ -27,12 +27,16 @@ Do not allow a GitHub Release from a revision that lacks those successful checks
 ### `testpypi`
 
 - Restrict deployments to tags matching `v*`.
+- Release workflow jobs using this environment must be conditioned on exact
+  branch target `beta`.
 - Do not store TestPyPI API credentials.
 - Bind only the TestPyPI Trusted Publisher described below.
 
 ### `pypi`
 
 - Restrict deployments to tags matching `v*`.
+- Release workflow jobs using this environment must be conditioned on exact
+  branch target `release`.
 - Require a maintainer reviewer.
 - Prevent self-review and administrator bypass where the repository plan allows.
 - Do not store PyPI API credentials.
@@ -49,6 +53,9 @@ Create separate pending publishers at PyPI and TestPyPI with these exact claims:
 | Repository | `auth-ingress` | `auth-ingress` |
 | Workflow | `release.yml` | `release.yml` |
 | Environment | `pypi` | `testpypi` |
+
+The branch-to-index policy is exact: `beta` publishes only to TestPyPI and
+`release` publishes only to PyPI. Similar branch names are blocked before upload.
 
 The workflow must use job-scoped `id-token: write`; workflow-level OIDC
 permission is prohibited. A claim mismatch is corrected in configuration and is

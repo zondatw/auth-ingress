@@ -10,6 +10,20 @@ import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
+ALLOWED_BRANCH_TARGETS = {
+    "beta": "testpypi",
+    "release": "pypi",
+}
+DENIED_RELEASE_BRANCHES = (
+    "main",
+    "006-branch-publish-flow",
+    "beta-fix",
+    "release-candidate",
+    "releases",
+    "hotfix",
+)
+TESTPYPI_EXISTING_VERSION = "0.1.0"
+PYPI_EXISTING_VERSION = "0.1.0"
 
 
 @dataclass(frozen=True)

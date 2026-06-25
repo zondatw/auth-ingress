@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Form, Request
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from auth_ingress.config import Settings, get_settings
-from auth_ingress.models import Group
+from auth_ingress.models import Group, User
 from auth_ingress.repositories.database import get_db
 from auth_ingress.security.csrf import valid_csrf
 from auth_ingress.security.dependencies import Identity, require_admin
@@ -30,22 +30,44 @@ def _groups(db: Session) -> list[Group]:
     return list(db.scalars(select(Group).order_by(Group.name)).all())
 
 
+def _user_summary(db: Session, users: list[User] | None = None) -> list[dict[str, object]]:
+    active = db.scalar(select(func.count(User.id)).where(User.status == "active")) or 0
+    disabled = db.scalar(select(func.count(User.id)).where(User.status == "disabled")) or 0
+    admins = db.scalar(select(func.count(User.id)).where(User.is_admin.is_(True))) or 0
+    return [
+        {"label": "Active users", "value": active, "status": "success", "hint": "Accounts allowed to sign in when credentials are valid."},
+        {"label": "Disabled users", "value": disabled, "status": "disabled" if disabled else "neutral", "hint": "Accounts blocked without removing audit history."},
+        {"label": "Administrators", "value": admins, "status": "warning" if admins else "danger", "hint": "Users with management-console access."},
+        {"label": "Filtered results", "value": len(users) if users is not None else active + disabled, "status": "neutral", "hint": "Rows matching the current list filter."},
+    ]
+
+
+def _user_detail_summary(managed: User, memberships: list[Group], effective_access: list[dict]) -> list[dict[str, object]]:
+    usable = sum(1 for access in effective_access if access.get("currently_usable"))
+    return [
+        {"label": "Account status", "value": managed.status, "status": "success" if managed.status == "active" else "disabled", "hint": "Current sign-in lifecycle state."},
+        {"label": "Groups", "value": len(memberships), "status": "neutral", "hint": "Assigned groups used to derive service access."},
+        {"label": "Usable services", "value": usable, "status": "success" if usable else "warning", "hint": "Currently reachable through active groups and services."},
+        {"label": "Revision", "value": managed.revision, "status": "neutral", "hint": "Used to detect stale management updates."},
+    ]
+
+
 def detail_page(request: Request, db: Session, settings: Settings, identity: Identity, user_id: int, *, preview=None, error=None, message=None, form_state: ManagementFormState | None = None, status_code=200):
     try:
         detail = user_detail(db, identity.user, user_id, audit=preview is None and error is None)
     except ManagementError as exc:
         return template(request, "errors/access_denied.html", settings, title="User not found", message=str(exc), status_code=404)
-    return template(request, "admin/user_detail.html", settings, user=identity.user, managed=detail["user"], memberships=detail["memberships"], effective_access=detail["effective_access"], groups=_groups(db), preview=preview, error=error, message=message, form_state=form_state, status_code=status_code)
+    return template(request, "admin/user_detail.html", settings, user=identity.user, managed=detail["user"], memberships=detail["memberships"], effective_access=detail["effective_access"], groups=_groups(db), summary=_user_detail_summary(detail["user"], detail["memberships"], detail["effective_access"]), preview=preview, error=error, message=message, form_state=form_state, status_code=status_code)
 
 
 @router.get("")
 def list_users(request: Request, q: str = "", status: str | None = None, admin: str | None = None, group: str | None = None, page: int = 1, identity: Identity = Depends(require_admin), db: Session = Depends(get_db), settings: Settings = Depends(get_settings)):
     if page < 1 or status not in {None, "", "active", "disabled"} or admin not in {None, "", "true", "false"}:
-        return template(request, "admin/users.html", settings, user=identity.user, users=[], groups=_groups(db), page=1, filters={}, error="Invalid search filters", status_code=400)
+        return template(request, "admin/users.html", settings, user=identity.user, users=[], groups=_groups(db), summary=_user_summary(db, []), page=1, filters={}, error="Invalid search filters", status_code=400)
     if not limiter(settings).allow(f"user:{identity.user.id}"):
         return template(request, "errors/access_denied.html", settings, title="Too many requests", message="Wait and try again.", status_code=429)
     users = search_users(db, query=q, status=status or None, is_admin=None if not admin else admin == "true", group=group or None, page=page, page_size=settings.user_search_page_size)
-    return template(request, "admin/users.html", settings, user=identity.user, users=users, groups=_groups(db), page=page, filters={"q": q, "status": status or "", "admin": admin or "", "group": group or ""}, error=None, create_preview=None, message=None)
+    return template(request, "admin/users.html", settings, user=identity.user, users=users, groups=_groups(db), summary=_user_summary(db, users), page=page, filters={"q": q, "status": status or "", "admin": admin or "", "group": group or ""}, error=None, create_preview=None, message=None)
 
 
 @router.get("/{user_id}")
@@ -69,7 +91,8 @@ def memberships(user_id: int, request: Request, expected_revision: int = Form(..
 
 
 def _list_after_create(request: Request, db: Session, settings: Settings, identity: Identity, *, preview=None, error=None, message=None, temporary_password=None, form_state: ManagementFormState | None = None, status_code=200):
-    return template(request, "admin/users.html", settings, user=identity.user, users=search_users(db, page_size=settings.user_search_page_size), groups=_groups(db), page=1, filters={"q": "", "status": "", "admin": "", "group": ""}, error=error, create_preview=preview, message=message, temporary_password=temporary_password, form_state=form_state, status_code=status_code)
+    users = search_users(db, page_size=settings.user_search_page_size)
+    return template(request, "admin/users.html", settings, user=identity.user, users=users, groups=_groups(db), summary=_user_summary(db, users), page=1, filters={"q": "", "status": "", "admin": "", "group": ""}, error=error, create_preview=preview, message=message, temporary_password=temporary_password, form_state=form_state, status_code=status_code)
 
 
 def create_form_state(email: str, display_name: str, status: str, is_admin: bool, group_ids: list[int], error: str, field: str | None = None) -> ManagementFormState:

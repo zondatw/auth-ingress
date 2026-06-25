@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import RedirectResponse
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from auth_ingress.config import Settings, get_settings
+from auth_ingress.models import AccessRule, Group
 from auth_ingress.repositories.database import get_db
 from auth_ingress.security.csrf import valid_csrf
 from auth_ingress.security.dependencies import Identity, require_admin
@@ -31,6 +33,28 @@ _limiters: dict[tuple[int, int], ManagementRequestLimiter] = {}
 def limiter(settings: Settings) -> ManagementRequestLimiter:
     key = (settings.management_rate_limit_attempts, settings.management_rate_limit_window_seconds)
     return _limiters.setdefault(key, ManagementRequestLimiter(*key))
+
+
+def _group_summary(db: Session, groups: list | None = None) -> list[dict[str, object]]:
+    active = db.scalar(select(func.count(Group.id)).where(Group.status == "active")) or 0
+    deactivated = db.scalar(select(func.count(Group.id)).where(Group.status == "deactivated")) or 0
+    used = db.scalar(select(func.count(func.distinct(AccessRule.group_id)))) or 0
+    total = active + deactivated
+    return [
+        {"label": "Active groups", "value": active, "status": "success", "hint": "Groups currently able to grant service access."},
+        {"label": "Deactivated", "value": deactivated, "status": "disabled" if deactivated else "neutral", "hint": "Groups preserved but not granting access."},
+        {"label": "Linked to services", "value": used, "status": "neutral", "hint": "Groups referenced by one or more service rules."},
+        {"label": "Unused groups", "value": max(total - used, 0), "status": "warning" if total - used else "neutral", "hint": "Groups with no current service dependency."},
+    ]
+
+
+def _group_detail_summary(group, dependencies) -> list[dict[str, object]]:
+    return [
+        {"label": "Lifecycle", "value": group.status, "status": "success" if group.status == "active" else "disabled", "hint": "Current group state."},
+        {"label": "Assigned users", "value": dependencies.user_count, "status": "neutral", "hint": "Users directly assigned to this group."},
+        {"label": "Associated services", "value": dependencies.service_count, "status": "neutral", "hint": "Services depending on this group."},
+        {"label": "Revision", "value": group.revision, "status": "neutral", "hint": "Used to detect stale lifecycle changes."},
+    ]
 
 
 def group_form_state(
@@ -80,6 +104,7 @@ def list_page(
         error=error,
         message=message,
         form_state=form_state,
+        summary=_group_summary(db, groups),
         status_code=status_code,
     )
 
@@ -109,6 +134,7 @@ def detail_page(
         managed=detail["group"],
         dependencies=detail["dependencies"],
         audit_events=detail["events"],
+        summary=_group_detail_summary(detail["group"], detail["dependencies"]),
         error=error,
         message=message,
         preview=preview,

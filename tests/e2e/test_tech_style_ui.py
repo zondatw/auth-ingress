@@ -14,6 +14,10 @@ def test_tech_style_admin_navigation_and_responsive_layout(browser, live_server)
     assert page.locator(".summary-grid").first.is_visible()
     assert page.get_by_role("link", name="Groups").is_visible()
     assert page.get_by_role("link", name="Services").is_visible()
+    header_box = page.locator(".site-header").bounding_box()
+    assert header_box is not None
+    assert header_box["height"] <= 96
+    assert page.locator(".user-chip").is_hidden()
     page.keyboard.press("Tab")
     assert page.evaluate("document.activeElement !== document.body")
     page.close()

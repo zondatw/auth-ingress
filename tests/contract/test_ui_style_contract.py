@@ -47,6 +47,8 @@ def test_status_and_state_tokens_exist_in_css():
         ".danger-zone",
         ".secret-display",
         ".panel>form+form",
+        ".site-nav{width:100%;justify-content:flex-start;flex-wrap:nowrap",
+        ".user-chip{display:none}",
         ":focus-visible",
     ):
         assert token in css

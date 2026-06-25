@@ -102,7 +102,13 @@ tr:hover td{background:rgba(71,215,255,.04)}
 .danger-zone{border-color:rgba(255,93,115,.45)}.danger-zone h2{color:#ffd7dd}
 .scroll-region{overflow:auto}
 @media(max-width:760px){
-  .site-header{align-items:flex-start}.site-nav{justify-content:flex-start}.site-nav a{font-size:.82rem;padding:6px 9px}
+  .site-header{display:grid;grid-template-columns:1fr;align-items:start;gap:8px;min-height:auto;padding:10px 14px}
+  .brand{font-size:.95rem}
+  .brand::before{width:9px;height:9px}
+  .site-nav{width:100%;justify-content:flex-start;flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  .site-nav::-webkit-scrollbar{display:none}
+  .site-nav a{flex:0 0 auto;font-size:.76rem;padding:5px 8px}
+  .user-chip{display:none}
   .management-grid,.form-grid,.page-header,.title-row,.timeline-row{grid-template-columns:1fr;display:grid}
   .wide{grid-column:auto}.container{width:min(94vw,1180px);margin:32px auto}button,.button{width:100%;text-align:center}
 }

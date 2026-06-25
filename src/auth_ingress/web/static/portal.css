@@ -45,6 +45,8 @@ p{color:var(--muted)}code{color:#d7e7ff;overflow-wrap:anywhere}
   border:1px solid rgba(113,144,191,.28);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow)
 }
 .panel.compact{padding:18px}.empty{border-style:dashed;text-align:left}
+.panel>form+form{margin-top:16px}
+.panel>p+form,.panel>.muted+form{margin-top:12px}
 .summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:0 0 24px}
 .metric-card{padding:18px;box-shadow:none;position:relative;overflow:hidden}
 .metric-card::after{content:"";position:absolute;inset:auto 16px 0 16px;height:2px;background:linear-gradient(90deg,var(--accent),transparent)}

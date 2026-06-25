@@ -46,6 +46,7 @@ def test_status_and_state_tokens_exist_in_css():
         ".timeline-row",
         ".danger-zone",
         ".secret-display",
+        ".panel>form+form",
         ":focus-visible",
     ):
         assert token in css

@@ -2,18 +2,19 @@
 {% block title %}{{ managed.display_name }} · Users · auth-ingress{% endblock %}
 {% block content %}
 <p><a href="/admin/users">← Users</a></p>
-<div class="title-row">
+<div class="page-header">
   <div>
     <p class="eyebrow">User management</p>
     <h1>{{ managed.display_name }}</h1>
     <p>{{ managed.email }} · <span class="status status-{{ managed.status }}">{{ managed.status }}</span>{% if managed.is_admin %} · Administrator{% endif %}</p>
   </div>
 </div>
+{% if summary %}<section class="summary-grid" aria-label="User relationship summary">{% for item in summary %}<article class="metric-card metric-{{ item.status }}"><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.value }}</span><p class="metric-hint">{{ item.hint }}</p></article>{% endfor %}</section>{% endif %}
 {% if error %}<div class="alert" role="alert" tabindex="-1">{{ error }}</div>{% endif %}
 {% if message %}<div class="notice" role="status" tabindex="-1">{{ message }}</div>{% endif %}
 
 {% if preview %}
-<section class="panel confirmation">
+<section class="panel confirmation{% if preview.operation == 'user_delete' %} danger-zone{% endif %}">
   <h2>Preview changes</h2>
   <p>{{ preview.message }}</p>
   {% if preview.operation == 'membership_set' %}
@@ -44,7 +45,7 @@
     <button type="submit">Confirm status change</button>
   </form>
   {% elif preview.operation == 'user_delete' %}
-  <p>This permanently removes the user account. Audit history is retained, but the user will not be able to sign in again.</p>
+  <p><strong>Permanent removal:</strong> this removes the user account. Audit history and relationship records remain for review, but the user will not be able to sign in again.</p>
   <form method="post" action="/admin/users/{{ managed.id }}/delete">
     <input type="hidden" name="csrf" value="{{ csrf_token }}">
     <input type="hidden" name="expected_revision" value="{{ managed.revision }}">
@@ -87,7 +88,7 @@
 
 <div class="management-grid">
   {% set profile_state = form_state if form_state.applies_to('profile', managed.id) else none %}
-  <section class="panel">
+  <section class="panel danger-zone">
     <h2>Update profile</h2>
     <form method="post" action="/admin/users/{{ managed.id }}/profile">
       <input type="hidden" name="csrf" value="{{ csrf_token }}">

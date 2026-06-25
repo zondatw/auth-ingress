@@ -4,6 +4,10 @@ A small server-rendered FastAPI portal that authenticates internal users before
 allowing them to enter downstream services that do not implement their own login
 flow.
 
+## Portal preview
+
+![auth-ingress portal showing assigned services and service-entry cards](https://raw.githubusercontent.com/zondatw/auth-ingress/main/docs/assets/portal-screenshot.png)
+
 ## Install from PyPI
 
 auth-ingress requires Python 3.12 or newer. Install a stable release in a
@@ -12,7 +16,7 @@ virtual environment and pin the version in managed deployments:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install "auth-ingress==0.2.0"
+python -m pip install "auth-ingress==0.3.0rc1"
 auth-ingress --help
 ```
 

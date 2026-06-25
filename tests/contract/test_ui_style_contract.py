@@ -46,6 +46,11 @@ def test_status_and_state_tokens_exist_in_css():
         ".timeline-row",
         ".danger-zone",
         ".secret-display",
+        ".service-entry-card",
+        ".service-avatar",
+        "width:30px;height:30px",
+        ".service-slug",
+        ".service-launch",
         ".panel>form+form",
         ".site-nav{width:100%;justify-content:flex-start;flex-wrap:nowrap",
         ".user-chip{display:none}",
@@ -74,3 +79,16 @@ def test_no_light_only_legacy_css_contract():
     assert "color-scheme:dark" in css
     assert "background:white" not in css
     assert "--bg:#f5f7fb" not in css
+
+
+def test_portal_service_entries_have_visual_identity(client, csrf):
+    sign_in(client, csrf)
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert "service-entry-card" in response.text
+    assert "service-avatar" in response.text
+    assert "service-slug" in response.text
+    assert "service-launch" in response.text
+    assert "demo" in response.text

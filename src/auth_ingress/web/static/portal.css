@@ -54,9 +54,16 @@ p{color:var(--muted)}code{color:#d7e7ff;overflow-wrap:anywhere}
 .metric-value{display:block;color:var(--ink);font-size:1.8rem;font-weight:850;line-height:1.1;margin-top:8px;overflow-wrap:anywhere}
 .metric-hint{margin:.55rem 0 0;font-size:.88rem}
 .service-grid,.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-.service-card{display:block;color:var(--ink);text-decoration:none;transition:transform .16s ease,border-color .16s ease}
-.service-card:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none}
+.service-card{display:block;color:var(--ink);text-decoration:none;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.service-card:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none;box-shadow:0 28px 90px rgba(71,215,255,.18)}
+.service-entry-card{position:relative;overflow:hidden;min-height:200px;border-color:rgba(71,215,255,.34);background:linear-gradient(145deg,rgba(18,33,67,.96),rgba(8,15,31,.95) 60%,rgba(71,215,255,.08))}
+.service-entry-card::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 82% 18%,rgba(71,215,255,.22),transparent 9rem),linear-gradient(135deg,rgba(71,215,255,.22),transparent 28%);pointer-events:none}
+.service-entry-card>*{position:relative}
+.service-identity{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.service-avatar{display:grid;place-items:center;width:30px;height:30px;border-radius:10px;color:#03111d;background:linear-gradient(135deg,var(--accent),var(--success));font-size:.86rem;font-weight:900;box-shadow:0 0 16px rgba(71,215,255,.18)}
+.service-slug{max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(71,215,255,.32);border-radius:999px;padding:4px 8px;color:var(--accent);background:rgba(2,6,23,.42);font-size:.75rem;font-weight:850;letter-spacing:.04em}
 .service-card span,.card-kicker{color:var(--accent);font-weight:800}
+.service-launch{display:inline-flex;align-items:center;gap:6px;margin-top:10px;color:var(--ink);font-weight:900}
 .admin-links,.action-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:24px}
 form{display:grid;gap:18px}label{display:grid;gap:7px;color:var(--ink);font-weight:720}
 fieldset{border:1px solid var(--line);border-radius:var(--radius-sm);padding:16px}legend{color:var(--muted);font-weight:800}

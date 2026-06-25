@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 {% block title %}Audit events · auth-ingress{% endblock %}
-{% block content %}<div class="title-row"><div><p class="eyebrow">Administration</p><h1>Audit events</h1></div><a href="/admin/services">Service entries</a></div>
-<div class="table-wrap"><table><thead><tr><th>Time</th><th>Event</th><th>Decision</th><th>Reason</th><th>Actor</th><th>Service</th></tr></thead><tbody>{% for event in events %}<tr><td>{{ event.created_at }}</td><td>{{ event.event_type }}</td><td>{{ event.decision }}</td><td>{{ event.reason }}</td><td>{{ event.actor_user_id or '—' }}</td><td>{{ event.service_entry_id or '—' }}</td></tr>{% else %}<tr><td colspan="6">No retained audit events.</td></tr>{% endfor %}</tbody></table></div>{% endblock %}
-
+{% block content %}
+<div class="page-header"><div><p class="eyebrow">Administration</p><h1>Audit events</h1><p class="muted">Review retained decisions and management activity without exposing request secrets.</p></div><a class="button secondary" href="/admin/services">Service entries</a></div>
+{% if summary %}<section class="summary-grid" aria-label="Audit summary">{% for item in summary %}<article class="metric-card metric-{{ item.status }}"><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.value }}</span><p class="metric-hint">{{ item.hint }}</p></article>{% endfor %}</section>{% endif %}
+<section class="panel">
+  <h2>Event timeline</h2>
+  {% for event in events %}
+  <article class="timeline-row">
+    <span class="timeline-meta">{{ event.created_at }}</span>
+    <span><strong>{{ event.event_type }}</strong> · <span class="status status-{{ event.decision }}">{{ event.decision }}</span> · {{ event.reason }} · Actor {{ event.actor_user_id or '—' }} · Service {{ event.service_entry_id or '—' }}</span>
+  </article>
+  {% else %}
+  <section class="empty"><h2>No retained audit events</h2><p>Audit events will appear here after sign-in, access, and management activity.</p></section>
+  {% endfor %}
+</section>
+{% endblock %}

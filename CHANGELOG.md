@@ -7,6 +7,22 @@ and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-25
+
+### Added
+
+- Group management page for administrators to list, inspect, create, edit,
+  deactivate, reactivate, and remove groups with dependency guardrails.
+- Group lifecycle audit evidence and access-decision handling for deactivated
+  groups.
+
+### Changed
+
+- Management forms now preserve safe submitted values and field-specific errors
+  after validation failures.
+
+## [0.1.0] - 2026-06-24
+
 ### Added
 
 - Authenticated entry portal with administrator-managed service access rules.
@@ -32,4 +48,6 @@ and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   compatibility aliases. Cookie names, audit logger names, and the default
   database filename may retain old internal labels to preserve security state.
 
-[Unreleased]: https://github.com/zondatw/auth-ingress/commits/main
+[Unreleased]: https://github.com/zondatw/auth-ingress/compare/v0.2.0...main
+[0.2.0]: https://github.com/zondatw/auth-ingress/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/zondatw/auth-ingress/releases/tag/v0.1.0

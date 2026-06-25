@@ -12,7 +12,7 @@ virtual environment and pin the version in managed deployments:
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install "auth-ingress==0.1.0"
+python -m pip install "auth-ingress==0.2.0"
 auth-ingress --help
 ```
 

@@ -7,7 +7,7 @@ and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-06-25
+## [0.2.0rc1] - 2026-06-25
 
 ### Added
 
@@ -48,6 +48,6 @@ and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   compatibility aliases. Cookie names, audit logger names, and the default
   database filename may retain old internal labels to preserve security state.
 
-[Unreleased]: https://github.com/zondatw/auth-ingress/compare/v0.2.0...main
-[0.2.0]: https://github.com/zondatw/auth-ingress/compare/v0.1.0...v0.2.0
+[Unreleased]: https://github.com/zondatw/auth-ingress/compare/v0.2.0rc1...main
+[0.2.0rc1]: https://github.com/zondatw/auth-ingress/compare/v0.1.0...v0.2.0rc1
 [0.1.0]: https://github.com/zondatw/auth-ingress/releases/tag/v0.1.0

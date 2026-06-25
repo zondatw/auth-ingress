@@ -13,8 +13,8 @@ from scripts.release.validate_release import ReleaseContext, release_target, val
 def valid_context(**changes) -> ReleaseContext:
     values = {
         "action": "published",
-        "tag": "v0.2.0",
-        "prerelease": False,
+        "tag": "v0.2.0rc1",
+        "prerelease": True,
         "target_commitish": "beta",
         "target_index": "testpypi",
         "clean": True,
@@ -25,7 +25,7 @@ def valid_context(**changes) -> ReleaseContext:
 
 def test_valid_stable_release_passes():
     metadata = validate_release(valid_context(), load_pyproject())
-    assert str(metadata.version) == "0.2.0"
+    assert str(metadata.version) == "0.2.0rc1"
     assert metadata.target_index == "testpypi"
 
 
@@ -34,7 +34,7 @@ def test_release_branch_targets_pypi():
         valid_context(target_commitish="release", target_index="pypi"),
         load_pyproject(),
     )
-    assert str(metadata.version) == "0.2.0"
+    assert str(metadata.version) == "0.2.0rc1"
     assert metadata.target_branch == "release"
     assert metadata.target_index == "pypi"
 
@@ -51,9 +51,9 @@ def test_branch_target_resolution_is_exact():
     ("changes", "reason"),
     [
         ({"action": "created"}, "release-event-not-published"),
-        ({"tag": "0.2.0"}, "release-tag-must-start-with-v"),
-        ({"tag": "v0.3.0"}, "tag-version-mismatch"),
-        ({"prerelease": True}, "release-type-mismatch"),
+        ({"tag": "0.2.0rc1"}, "release-tag-must-start-with-v"),
+        ({"tag": "v0.3.0rc1"}, "tag-version-mismatch"),
+        ({"prerelease": False}, "release-type-mismatch"),
         ({"target_commitish": "feature"}, "release-target-unsupported"),
         ({"target_commitish": "release"}, "release-target-not-testpypi"),
         ({"target_index": "pypi"}, "release-target-not-pypi"),
@@ -89,9 +89,9 @@ def test_release_validation_cli_reports_safe_reason_without_traceback():
             "--action",
             "published",
             "--tag",
-            "v0.2.0",
+            "v0.2.0rc1",
             "--prerelease",
-            "false",
+            "true",
             "--target-commitish",
             "main",
         ],

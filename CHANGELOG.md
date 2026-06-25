@@ -7,6 +7,20 @@ and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-25
+
+### Added
+
+- Tech-style portal refresh with dark control-surface styling, operational
+  summary cards, stronger service-entry cards, responsive navigation, and a
+  README portal screenshot.
+
+### Changed
+
+- Improved laptop and mobile UI density so portal and management objects remain
+  readable across common browser sizes.
+- Refined management form spacing and portal service-card identity treatment.
+
 ## [0.2.0] - 2026-06-25
 
 ### Added
@@ -48,6 +62,7 @@ and versions follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   compatibility aliases. Cookie names, audit logger names, and the default
   database filename may retain old internal labels to preserve security state.
 
-[Unreleased]: https://github.com/zondatw/auth-ingress/compare/v0.2.0...main
+[Unreleased]: https://github.com/zondatw/auth-ingress/compare/v0.3.0...main
+[0.3.0]: https://github.com/zondatw/auth-ingress/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/zondatw/auth-ingress/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/zondatw/auth-ingress/releases/tag/v0.1.0

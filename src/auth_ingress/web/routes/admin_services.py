@@ -17,6 +17,21 @@ from auth_ingress.web.web import template
 router = APIRouter(prefix="/admin")
 
 
+def _service_summary(services: list[ServiceEntry], service_group_names: dict[int, list[str]]) -> list[dict[str, object]]:
+    enabled = sum(1 for service in services if service.status == "enabled")
+    disabled = sum(1 for service in services if service.status == "disabled")
+    proxied = sum(1 for service in services if service.proxy_enabled)
+    websockets = sum(1 for service in services if service.websocket_enabled)
+    linked = sum(1 for service in services if service_group_names.get(service.id))
+    return [
+        {"label": "Enabled services", "value": enabled, "status": "success", "hint": "Entries available when group access also matches."},
+        {"label": "Disabled services", "value": disabled, "status": "disabled" if disabled else "neutral", "hint": "Entries intentionally unavailable."},
+        {"label": "Proxy enabled", "value": proxied, "status": "neutral", "hint": "Full web-app proxy support enabled."},
+        {"label": "Group linked", "value": linked, "status": "neutral", "hint": "Entries with at least one access group."},
+        {"label": "WebSockets", "value": websockets, "status": "neutral", "hint": "Entries allowing websocket traffic."},
+    ]
+
+
 def page(
     request: Request,
     db: Session,
@@ -45,7 +60,9 @@ def page(
         services=services,
         groups=groups,
         service_group_names={service_id: ", ".join(names) for service_id, names in service_group_names.items()},
+        service_group_lists=service_group_names,
         service_origins={service.id: service_origin(service.slug, settings) for service in services},
+        summary=_service_summary(services, service_group_names),
         error=error,
         form_state=form_state,
         status_code=status_code,

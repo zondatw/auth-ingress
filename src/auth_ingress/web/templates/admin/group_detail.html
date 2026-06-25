@@ -2,12 +2,13 @@
 {% block title %}{{ managed.name }} · Groups · auth-ingress{% endblock %}
 {% block content %}
 <p><a href="/admin/groups">← Groups</a></p>
-<div class="title-row"><div><p class="eyebrow">Group management</p><h1>{{ managed.name }}</h1><p><span class="status status-{{ managed.status }}">{{ managed.status }}</span> · Revision {{ managed.revision }}</p></div></div>
+<div class="page-header"><div><p class="eyebrow">Group management</p><h1>{{ managed.name }}</h1><p><span class="status status-{{ managed.status }}">{{ managed.status }}</span> · Revision {{ managed.revision }}</p></div></div>
+{% if summary %}<section class="summary-grid" aria-label="Group dependency summary">{% for item in summary %}<article class="metric-card metric-{{ item.status }}"><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.value }}</span><p class="metric-hint">{{ item.hint }}</p></article>{% endfor %}</section>{% endif %}
 {% if error %}<div class="alert" role="alert" tabindex="-1">{{ error }}</div>{% endif %}
 {% if message %}<div class="notice" role="status" tabindex="-1">{{ message }}</div>{% endif %}
 
 {% if preview %}
-<section class="panel confirmation">
+<section class="panel confirmation{% if preview.operation == 'group_remove' %} danger-zone{% endif %}">
   <h2>Preview {{ preview.operation.replace('_', ' ') }}</h2>
   <p>{{ preview.message }}</p>
   {% if preview.dependency_summary %}
@@ -60,7 +61,7 @@
 </div>
 
 {% set edit_state = form_state if form_state.applies_to('group_edit', managed.id) else none %}
-<section class="panel">
+<section class="panel danger-zone">
   <h2>Edit metadata</h2>
   <form method="post" action="/admin/groups/{{ managed.id }}/profile" class="form-grid">
     <input type="hidden" name="csrf" value="{{ csrf_token }}">
@@ -105,7 +106,7 @@
 <section class="panel">
   <h2>Recent group audit</h2>
   {% if audit_events %}
-  <ul>{% for event in audit_events %}<li>{{ event.created_at }} · {{ event.event_type }} · {{ event.decision }} · {{ event.reason }}</li>{% endfor %}</ul>
+  <div>{% for event in audit_events %}<article class="timeline-row"><span class="timeline-meta">{{ event.created_at }}</span><span>{{ event.event_type }} · <span class="status status-{{ event.decision }}">{{ event.decision }}</span> · {{ event.reason }}</span></article>{% endfor %}</div>
   {% else %}<p class="muted">No recent group audit events.</p>{% endif %}
 </section>
 {% endblock %}

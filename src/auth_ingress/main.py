@@ -7,13 +7,14 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from auth_ingress.repositories.schema import create_schema
 from auth_ingress.services.downstream_service import close_clients
 from auth_ingress.services.proxy_websocket_service import close_websockets
 from auth_ingress.web.routes import admin_audit, admin_groups, admin_services, admin_users, auth, password_reset, portal, services
 from auth_ingress.web.routes.proxy import ProxyDispatchMiddleware
-from auth_ingress.web.web import WEB_ROOT
+from auth_ingress.web.web import WEB_ROOT, template
 
 logger = logging.getLogger("auth_portal")
 
@@ -68,6 +69,16 @@ def create_app(*, initialize_schema: bool = True, proxy_settings=None, proxy_ses
     app.include_router(admin_audit.router)
     app.include_router(admin_users.creation_router)
     app.include_router(admin_users.router)
+
+    @app.exception_handler(StarletteHTTPException)
+    async def web_http_exception(request: Request, exc: StarletteHTTPException):
+        if exc.status_code not in {401, 403, 404}:
+            raise exc
+        from auth_ingress.config import get_settings as current_settings
+
+        title = "Access denied" if exc.status_code in {401, 403} else "Page not found"
+        message = str(exc.detail) if exc.detail else "The requested page is unavailable."
+        return template(request, "errors/access_denied.html", current_settings(), title=title, message=message, status_code=exc.status_code)
 
     @app.middleware("http")
     async def request_context(request: Request, call_next):

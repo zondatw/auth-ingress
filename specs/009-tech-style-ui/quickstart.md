@@ -103,3 +103,8 @@ Expected:
 ## Validation Evidence
 
 Record final focused and full-regression results here during implementation.
+
+- 2026-06-25: `uv run pytest tests/contract/test_ui_style_contract.py tests/security/test_ui_style_security.py tests/integration/test_ui_style_routes.py -q` → 13 passed, 1 warning.
+- 2026-06-25: `uv run pytest tests/e2e/test_tech_style_ui.py -q` → 2 passed, 3 warnings.
+- 2026-06-25: `uv run pytest tests/contract/test_admin_contract.py tests/contract/test_admin_users_contract.py tests/contract/test_admin_groups_contract.py tests/contract/test_user_entry_contract.py tests/security/test_admin_boundary.py tests/security/test_group_management_security.py tests/security/test_management_form_state.py tests/security/test_management_form_outcomes.py -q` → 28 passed, 1 warning.
+- 2026-06-25: `uv run pytest -q` → 232 passed, 15 warnings.

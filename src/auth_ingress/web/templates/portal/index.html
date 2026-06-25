@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Your services · auth-ingress{% endblock %}
 {% block content %}
-<div class="title-row"><div><p class="eyebrow">Authorized workspace</p><h1>Your services</h1></div>
+<div class="page-header"><div><p class="eyebrow">Authorized workspace</p><h1>Your services</h1><p class="muted">Launch assigned services and review your current access context.</p></div>
 <form method="post" action="/sign-out"><input type="hidden" name="csrf" value="{{ csrf_token }}"><button class="secondary">Sign out</button></form></div>
-{% if services %}<div class="service-grid">{% for service in services %}<a class="service-card" href="/services/{{ service.slug }}"><h2>{{ service.display_name }}</h2><p>{{ service.description or "Open protected service" }}</p><span>Open service →</span></a>{% endfor %}</div>
-{% else %}<section class="empty"><h2>No services available</h2><p>Your account is active, but no services are assigned. Contact your administrator for access.</p></section>{% endif %}
+{% if summary %}<section class="summary-grid" aria-label="Portal summary">{% for item in summary %}<article class="metric-card metric-{{ item.status }}"><span class="metric-label">{{ item.label }}</span><span class="metric-value">{{ item.value }}</span><p class="metric-hint">{{ item.hint }}</p></article>{% endfor %}</section>{% endif %}
+{% if services %}<div class="service-grid">{% for service in services %}<a class="panel service-card" href="/services/{{ service.slug }}"><p class="card-kicker">Service entry</p><h2>{{ service.display_name }}</h2><p>{{ service.description or "Open protected service" }}</p><span>Open service →</span></a>{% endfor %}</div>
+{% else %}<section class="panel empty"><h2>No services available</h2><p>Your account is active, but no services are assigned. Contact your administrator for access.</p></section>{% endif %}
 {% if user.is_admin %}<nav class="admin-links"><a href="/admin/services">Manage services</a><a href="/admin/audit">Review audit events</a></nav>{% endif %}
 {% endblock %}
-

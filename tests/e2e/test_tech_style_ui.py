@@ -41,3 +41,21 @@ def test_tech_style_empty_state_and_validation_preservation(browser, live_server
     assert page.get_by_role("alert").is_visible()
     assert page.locator('form[action="/admin/services"]').get_by_label("Slug").input_value() == "bad slug"
     page.close()
+
+
+def test_laptop_portal_objects_are_readable_scale(browser, live_server):
+    page = browser.new_page(viewport={"width": 1366, "height": 768})
+    _browser_sign_in(page, live_server, email="member@example.test")
+
+    page.goto(f"{live_server}/")
+    card_box = page.locator(".service-entry-card").first.bounding_box()
+    metric_box = page.locator(".metric-card").first.bounding_box()
+    font_size = page.evaluate("getComputedStyle(document.body).fontSize")
+
+    assert card_box is not None
+    assert metric_box is not None
+    assert card_box["width"] >= 300
+    assert card_box["height"] >= 230
+    assert metric_box["width"] >= 210
+    assert font_size == "17px"
+    page.close()
